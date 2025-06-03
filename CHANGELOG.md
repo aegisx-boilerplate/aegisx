@@ -1,3 +1,16 @@
+## 2.0.0 (2025-06-03)
+
+* feat: add persistent volumes to docker-compose ([4bab1a1](https://github.com/aegisx-boilerplate/aegisx/commit/4bab1a1))
+* feat: enhance development workflow with streamlined scripts and Docker improvements ([845f5f7](https://github.com/aegisx-boilerplate/aegisx/commit/845f5f7))
+* chore: remove unused jsonwebtoken dependency ([ee4cc47](https://github.com/aegisx-boilerplate/aegisx/commit/ee4cc47))
+* Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([74e9f83](https://github.com/aegisx-boilerplate/aegisx/commit/74e9f83))
+* docs: clean up redundant documentation files ([be3f071](https://github.com/aegisx-boilerplate/aegisx/commit/be3f071))
+
+
+### BREAKING CHANGE
+
+* Requires Node.js 20.8.1+ and updated .env configuration
+
 ## 1.1.0 (2025-06-03)
 
 * Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([81714b0](https://github.com/aegisx-boilerplate/aegisx/commit/81714b0))
