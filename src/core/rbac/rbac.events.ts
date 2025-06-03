@@ -211,9 +211,10 @@ async function publishRbacEvents(eventData: RbacEventData, request: FastifyReque
       // Try to extract user ID from URL or request body
       const targetUserId = extractTargetUserIdFromRequest(request);
       if (targetUserId) {
-        await EventPublisher.userEvent({
-          type: `user.role.${action}`,
+        await EventPublisher.rbacEvent({
+          type: `user.role.${action}` as 'user.role.assign' | 'user.role.revoke',
           userId: targetUserId,
+          roleId: resourceId,
           data: {
             roleId: resourceId,
             roleName: name,

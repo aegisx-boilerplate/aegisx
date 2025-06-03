@@ -10,5 +10,7 @@ export async function logAudit(
     userAgent?: string;
   }
 ) {
-  return await AuditService.create(actor, action, target, details, metadata);
+  // Merge metadata into details if provided
+  const enrichedDetails = metadata ? { ...details, ...metadata } : details;
+  return await AuditService.create(actor, action, target, enrichedDetails);
 }

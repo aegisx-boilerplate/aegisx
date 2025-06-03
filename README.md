@@ -183,11 +183,14 @@ await AuditEventBuilder.create()
 # Development with hot reload
 npm run dev
 
-# Build for production
+# Build for production (using SWC - super fast!)
 npm run build
 
-# Type checking
+# Type checking (required with SWC)
 npm run type-check
+
+# Complete check (lint + type-check + build)
+npm run check
 
 # Linting
 npm run lint
@@ -199,7 +202,44 @@ npm run format
 npm run commit
 ```
 
-### Git Workflow
+## Build System
+
+This project uses SWC for fast compilation instead of TypeScript's tsc compiler. **Important**: SWC only handles transpilation and does not perform type checking.
+
+### Type Checking vs Building
+
+- **Building** (`npm run build`): Uses SWC for fast transpilation
+- **Type Checking** (`npm run type-check`): Uses TypeScript compiler for type validation
+- **Combined Check** (`npm run check`): Runs linting, type checking, and building
+
+### Development Scripts
+
+- `npm run dev` - Start development server with ts-node-dev
+- `npm run build` - Compile TypeScript to JavaScript using SWC
+- `npm run start` - Run production server
+- `npm run type-check` - Run TypeScript type checking only
+- `npm run check` - Run full code quality checks (lint + type-check + build)
+
+### Pre-commit Hooks
+
+Git pre-commit hooks automatically run:
+
+1. ESLint for code linting
+2. TypeScript type checking
+
+This ensures code quality before commits are made.
+
+### Why SWC?
+
+- ⚡ **20x faster** than TypeScript compiler
+- 🔧 **Zero configuration** for most TypeScript projects
+- 📦 **Smaller bundle size** with better optimizations
+- 🎯 **Same output** - fully compatible  
+- 🔧 **Better DX** - faster feedback loop
+
+**Note**: SWC only transpiles code, so we run TypeScript separately for type checking.
+
+## Git Workflow & Release Management
 
 This project uses [Conventional Commits](https://www.conventionalcommits.org/) with Husky hooks and [Semantic Release](https://semantic-release.gitbook.io/):
 

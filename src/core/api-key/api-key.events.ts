@@ -138,8 +138,13 @@ async function publishApiKeyEvents(
 
   try {
     // Always publish to api_key.events queue for API key tracking
+    const eventType = action === 'create' ? 'created' :
+      action === 'revoke' ? 'revoked' :
+        action === 'usage' ? 'used' :
+          action === 'list' ? 'used' : 'used';
+
     await EventPublisher.apiKeyEvent({
-      type: `api_key.${action}`,
+      type: `api_key.${eventType}` as 'api_key.created' | 'api_key.revoked' | 'api_key.used',
       apiKeyId: apiKeyId || 'unknown',
       data: {
         name,

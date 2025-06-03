@@ -36,24 +36,29 @@ class EventBus {
       }
 
       console.log('Connecting to RabbitMQ...');
-      this.connection = await amqp.connect(env.RABBITMQ_URL);
-      this.channel = await this.connection.createChannel();
+      const connection = await amqp.connect(env.RABBITMQ_URL);
+      this.connection = connection as any; // Type assertion to handle amqplib type issues
+      this.channel = await (this.connection as any).createChannel();
 
       // Create exchange
-      await this.channel.assertExchange(this.config.exchange!, this.config.exchangeType!, {
-        durable: this.config.durable,
-      });
+      if (this.channel && this.config.exchange && this.config.exchangeType && this.config.durable !== undefined) {
+        await this.channel.assertExchange(this.config.exchange, this.config.exchangeType, {
+          durable: this.config.durable,
+        });
+      }
 
       // Handle connection events
-      this.connection.on('error', (err) => {
-        console.error('RabbitMQ connection error:', err);
-        this.isConnected = false;
-      });
+      if (this.connection) {
+        this.connection.on('error', (err: Error) => {
+          console.error('RabbitMQ connection error:', err);
+          this.isConnected = false;
+        });
 
-      this.connection.on('close', () => {
-        console.log('RabbitMQ connection closed');
-        this.isConnected = false;
-      });
+        this.connection.on('close', () => {
+          console.log('RabbitMQ connection closed');
+          this.isConnected = false;
+        });
+      }
 
       this.isConnected = true;
       console.log('Connected to RabbitMQ successfully');
@@ -72,7 +77,7 @@ class EventBus {
         await this.channel.close();
       }
       if (this.connection) {
-        await this.connection.close();
+        await (this.connection as any).close(); // Type assertion for amqplib
       }
       this.isConnected = false;
       console.log('Disconnected from RabbitMQ');
@@ -247,11 +252,22 @@ export interface ApiKeyEvent {
   timestamp: string;
 }
 
+// RBAC Events
+export interface RBACEvent {
+  type: 'user.role.assign' | 'user.role.revoke' | 'role.created' | 'role.updated' | 'permission.granted' | 'permission.revoked';
+  userId?: string;
+  roleId?: string;
+  permissionId?: string;
+  data?: Record<string, any>;
+  timestamp: string;
+}
+
 // Queue constants
 export const QUEUES = {
   AUDIT_LOG: 'audit.log',
   USER_EVENTS: 'user.events',
   API_KEY_EVENTS: 'api_key.events',
+  RBAC_EVENTS: 'rbac.events',
   EMAIL_NOTIFICATIONS: 'email.notifications',
   SYSTEM_ALERTS: 'system.alerts',
 } as const;
@@ -283,6 +299,16 @@ export class EventPublisher {
    */
   static async apiKeyEvent(event: ApiKeyEvent): Promise<void> {
     await eventBus.publishEvent(QUEUES.API_KEY_EVENTS, {
+      ...event,
+      timestamp: event.timestamp || new Date().toISOString(),
+    });
+  }
+
+  /**
+   * Publish RBAC event
+   */
+  static async rbacEvent(event: RBACEvent): Promise<void> {
+    await eventBus.publishEvent(QUEUES.RBAC_EVENTS, {
       ...event,
       timestamp: event.timestamp || new Date().toISOString(),
     });
