@@ -2,6 +2,7 @@
   "name": "aegisx-boilerplate",
   "version": "2.1.0",
   "description": "Fastify + TypeScript + Knex + Redis + TypeBox API Boilerplate",
+  "license": "MIT",
   "main": "dist/src/server.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",

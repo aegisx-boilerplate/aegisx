@@ -84,7 +84,6 @@ npm run stop:local
 - `npm run db:setup` - Build + migrate + seed database
 - `npm run setup:local` - Start Docker services only
 - `npm run stop:local` - Stop all services
-```
 
 ## 📚 Core Modules
 
@@ -197,10 +196,12 @@ await AuditEventBuilder.create()
 
 - If RabbitMQ is down, audit events are written to `logs/audit-offline.jsonl` (or per-pod log file)
 - To replay offline logs, run:
+
   ```bash
   npx ts-node scripts/replay-audit-offline.ts
   # or for per-pod: npx ts-node scripts/replay-audit-offline.ts /path/to/audit-offline-<pod>.jsonl
   ```
+
 - The script will only remove the offline log if all events are successfully replayed and RabbitMQ is healthy
 - See [docs/audit-log-replay-automation.md](./docs/audit-log-replay-automation.md) for deployment patterns (Kubernetes, Docker Compose, per-pod log, etc)
 
@@ -249,13 +250,16 @@ npm run test:events    # Test event system
 
 ### Development Environment
 
-- **API Documentation**: http://localhost:3000/docs
-- **Health Check**: http://localhost:3000/health
-- **Event Status**: http://localhost:3000/events/status
-- **RabbitMQ Management**: http://localhost:15672 (admin/password)
+- **API Documentation**: <http://localhost:3000/docs>
+- **Health Check**: <http://localhost:3000/health>
+- **Event Status**: <http://localhost:3000/events/status>
+- **RabbitMQ Management**: <http://localhost:15672> (admin/password)
 
 For detailed development workflow, see [Development Workflow Guide](./docs/development-workflow.md).
 
+## Production Build Scripts
+
+```bash
 # Build for production (using SWC - super fast!)
 npm run build
 
@@ -285,7 +289,7 @@ This project uses SWC for fast compilation instead of TypeScript's tsc compiler.
 - **Type Checking** (`npm run type-check`): Uses TypeScript compiler for type validation
 - **Combined Check** (`npm run check`): Runs linting, type checking, and building
 
-### Development Scripts
+### Build & Development Scripts
 
 - `npm run dev` - Start development server with ts-node-dev
 - `npm run build` - Compile TypeScript to JavaScript using SWC
