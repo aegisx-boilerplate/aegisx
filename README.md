@@ -50,24 +50,40 @@ npm install
 cp .env.example .env
 # Edit .env with your database and service configurations
 
-# Run database migrations
-npm run knex:migrate
-
-# Seed initial data (roles, permissions, admin user)
-npm run knex:seed
+# Complete development setup (recommended)
+npm run dev:setup
 
 # Start development server
 npm run dev
 ```
 
-### Using Docker (Recommended for development)
+### Quick Development Workflow
 
 ```bash
-# Start all services (PostgreSQL, Redis, RabbitMQ, API)
-npm run setup:local
+# Option 1: One command setup + start (easiest)
+npm run dev:full
 
-# Stop services
+# Option 2: Step by step
+npm run dev:setup     # Setup services + migrate + seed
+npm run dev          # Start development server
+
+# Option 3: Manual Docker approach
+npm run setup:local  # Start Docker services only
+npm run db:setup     # Build + migrate + seed
+npm run dev          # Start development server
+
+# Stop services when done
 npm run stop:local
+```
+
+### Development Scripts
+
+- `npm run dev:setup` - Complete environment setup with health checks
+- `npm run dev:full` - Setup + start development server in one command
+- `npm run dev` - Start development server only
+- `npm run db:setup` - Build + migrate + seed database
+- `npm run setup:local` - Start Docker services only
+- `npm run stop:local` - Stop all services
 ```
 
 ## 📚 Core Modules
@@ -179,9 +195,50 @@ await AuditEventBuilder.create()
 
 ## 🛠️ Development
 
+### Quick Start Development
+
 ```bash
-# Development with hot reload
+# Complete setup in one command (recommended for first time)
+npm run dev:full
+
+# Or setup step by step
+npm run dev:setup    # Setup services + migrate + seed
+npm run dev         # Start development server
+
+# Daily development (when services are already running)
 npm run dev
+```
+
+### Advanced Development
+
+```bash
+# Database operations
+npm run knex:migrate    # Run migrations
+npm run knex:seed      # Run seeds
+npm run db:setup       # Build + migrate + seed
+
+# Service management
+npm run setup:local    # Start Docker services
+npm run stop:local     # Stop Docker services
+
+# Code quality
+npm run lint           # Lint code
+npm run format         # Format code
+npm run type-check     # Type checking
+npm run check          # Lint + type-check + build
+
+# Testing
+npm run test:events    # Test event system
+```
+
+### Development Environment
+
+- **API Documentation**: http://localhost:3000/docs
+- **Health Check**: http://localhost:3000/health
+- **Event Status**: http://localhost:3000/events/status
+- **RabbitMQ Management**: http://localhost:15672 (admin/password)
+
+For detailed development workflow, see [Development Workflow Guide](./docs/development-workflow.md).
 
 # Build for production (using SWC - super fast!)
 npm run build
