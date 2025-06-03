@@ -1,3 +1,11 @@
+## 2.1.0 (2025-06-03)
+
+* chore(audit): support per-container audit log replay for Docker Compose and K8s ([0713553](https://github.com/aegisx-boilerplate/aegisx/commit/0713553))
+* chore(audit): support per-container audit log replay for Docker Compose and K8s ([082f080](https://github.com/aegisx-boilerplate/aegisx/commit/082f080))
+* chore(gitignore): ignore logs/ directory for audit log durability and cleanliness ([439b427](https://github.com/aegisx-boilerplate/aegisx/commit/439b427))
+* Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([ade37bc](https://github.com/aegisx-boilerplate/aegisx/commit/ade37bc))
+* feat(audit): add durable offline audit log and replay script ([5002000](https://github.com/aegisx-boilerplate/aegisx/commit/5002000))
+
 ## 2.0.0 (2025-06-03)
 
 * feat: add persistent volumes to docker-compose ([4bab1a1](https://github.com/aegisx-boilerplate/aegisx/commit/4bab1a1))
