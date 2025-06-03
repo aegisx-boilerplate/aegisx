@@ -1,3 +1,8 @@
+## <small>1.0.1 (2025-06-03)</small>
+
+* Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([db8e21f](https://github.com/aegisx-boilerplate/aegisx/commit/db8e21f))
+* refactor: simplify release workflow following best practices ([7e141d8](https://github.com/aegisx-boilerplate/aegisx/commit/7e141d8))
+
 ## 1.0.0 (2025-06-03)
 
 * fix: resolve TypeScript compilation errors in event system ([25a5fbe](https://github.com/aegisx-boilerplate/aegisx/commit/25a5fbe))
