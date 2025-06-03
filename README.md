@@ -31,7 +31,7 @@ Enterprise-grade API boilerplate built with Fastify, TypeScript, and Event-Drive
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20.8.1+
 - PostgreSQL 14+
 - Redis 6+
 - RabbitMQ 3.8+ (for event bus)
