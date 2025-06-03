@@ -27,7 +27,16 @@
     "check": "npm run lint && npm run type-check && npm run build",
     "release": "semantic-release",
     "release:dry": "semantic-release --dry-run",
-    "prepare": "husky"
+    "prepare": "husky",
+    "docker:build": "./scripts/docker-build.sh",
+    "docker:build:prod": "./scripts/docker-build.sh latest production",
+    "docker:dev": "./scripts/docker-deploy.sh development",
+    "docker:prod": "./scripts/docker-deploy.sh production",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:clean": "docker-compose down -v --remove-orphans",
+    "docker:clean:full": "docker-compose down -v --remove-orphans && docker system prune -f --volumes"
   },
   "dependencies": {
     "@fastify/autoload": "^6.3.1",
