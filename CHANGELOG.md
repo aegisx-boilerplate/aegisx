@@ -1,3 +1,8 @@
+## 1.1.0 (2025-06-03)
+
+* Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([81714b0](https://github.com/aegisx-boilerplate/aegisx/commit/81714b0))
+* feat(node): update Node.js requirements to 20.8.1+ for semantic-release compatibility ([c4af6ac](https://github.com/aegisx-boilerplate/aegisx/commit/c4af6ac))
+
 ## <small>1.0.1 (2025-06-03)</small>
 
 * Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([db8e21f](https://github.com/aegisx-boilerplate/aegisx/commit/db8e21f))
