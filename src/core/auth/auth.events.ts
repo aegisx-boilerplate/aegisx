@@ -1,0 +1,191 @@
+import { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginAsync } from 'fastify';
+import fp from 'fastify-plugin';
+import { EventPublisher } from '../../utils/event-bus';
+import { EventAnalyticsService } from '../../utils/event-analytics';
+
+interface AuthRequestBody {
+  username?: string;
+  password?: string;
+}
+
+interface AuthLoginData {
+  username: string;
+  ip: string;
+  userAgent: string;
+  statusCode: number;
+}
+
+/**
+ * Auth Events Plugin
+ *
+ * Plugin สำหรับจัดการ authentication events ใน auth module
+ * ใช้ Fastify onSend hook เพื่อ publish authentication events
+ * หลังจากส่ง response ให้ client แล้ว (non-blocking)
+ *
+ * Features:
+ * - Successful login events → user.events + audit.log queues
+ * - Failed login events → audit.log queue
+ * - IP tracking และ User Agent logging
+ * - Async event publishing ไม่รบกวน authentication flow
+ *
+ * Location: core/auth/ เพราะเป็น auth-specific functionality
+ */
+const authEventsPlugin: FastifyPluginAsync = async (fastify: FastifyInstance) => {
+  fastify.log.info('[AUTH-EVENTS] Plugin loaded successfully');
+
+  // Test hook to see if any hooks work
+  fastify.addHook('onRequest', async (request: FastifyRequest) => {
+    if (request.url.includes('/auth/login')) {
+      fastify.log.info(`[AUTH-EVENTS] onRequest hook for: ${request.url} ${request.method}`);
+    }
+  });
+
+  // Try onSend hook instead - runs right before response is sent
+  fastify.addHook('onSend', async (request: FastifyRequest, reply: FastifyReply, payload) => {
+    // Debug: ดู request URL ทุก request
+    fastify.log.info(
+      `[AUTH-EVENTS] onSend hook for: ${request.url} ${request.method} Status: ${reply.statusCode}`
+    );
+
+    // ตรวจสอบว่าเป็น auth login route หรือไม่
+    if (!isAuthLoginRoute(request)) {
+      fastify.log.info(`[AUTH-EVENTS] Not an auth login route: ${request.url}`);
+      return payload;
+    }
+
+    fastify.log.info(`[AUTH-EVENTS] Processing auth login route...`);
+
+    const { username } = (request.body as AuthRequestBody) || {};
+    if (!username) {
+      fastify.log.warn('[AUTH-EVENTS] No username found in request body');
+      return payload;
+    }
+
+    fastify.log.info(`[AUTH-EVENTS] Processing auth event for user: ${username}`);
+
+    const authData: AuthLoginData = {
+      username,
+      ip: request.ip,
+      userAgent: request.headers['user-agent'] || 'unknown',
+      statusCode: reply.statusCode,
+    };
+
+    // Publish events asynchronously (ไม่ block response)
+    // ใช้ setTimeout เพื่อให้แน่ใจว่า events จะถูก publish
+    setTimeout(async () => {
+      try {
+        fastify.log.info(
+          `[AUTH-EVENTS] Publishing events for ${username} with status ${authData.statusCode}`
+        );
+        await publishAuthenticationEvents(authData, request);
+      } catch (error) {
+        fastify.log.error('[AUTH-EVENTS] Failed to publish authentication events:', error);
+      }
+    }, 0);
+
+    return payload;
+  });
+};
+
+// Export with fastify-plugin wrapper
+export default fp(authEventsPlugin);
+
+// Also export the function directly for backward compatibility
+export { authEventsPlugin };
+
+/**
+ * ตรวจสอบว่าเป็น auth login route หรือไม่
+ */
+function isAuthLoginRoute(request: FastifyRequest): boolean {
+  const url = request.routeOptions?.url || request.url;
+  return url.includes('/auth/login') && request.method === 'POST';
+}
+
+/**
+ * Publish authentication events ไปยัง RabbitMQ queues
+ */
+async function publishAuthenticationEvents(
+  authData: AuthLoginData,
+  request: FastifyRequest
+): Promise<void> {
+  const { username, ip, userAgent, statusCode } = authData;
+  const isSuccess = statusCode === 200;
+
+  request.log.info(
+    `[AUTH-EVENTS] Publishing events - User: ${username}, Success: ${isSuccess}, Status: ${statusCode}`
+  );
+
+  try {
+    if (isSuccess) {
+      // Successful login events - publish to both queues
+      await Promise.all([
+        // User events queue - for user activity tracking
+        EventPublisher.userEvent({
+          type: 'user.login',
+          userId: username,
+          data: {
+            ip,
+            userAgent,
+            timestamp: new Date().toISOString(),
+          },
+          timestamp: new Date().toISOString(),
+        }),
+
+        // Audit log queue - for security monitoring
+        EventPublisher.auditLog({
+          userId: username,
+          action: 'user.login',
+          resource: 'auth',
+          details: {
+            success: true,
+            ip,
+            userAgent,
+          },
+          timestamp: new Date().toISOString(),
+          ip,
+          userAgent,
+        }),
+      ]);
+
+      // Record event in analytics service
+      EventAnalyticsService.recordEvent('user.login', 'user.events', username, {
+        ip,
+        userAgent,
+        success: true,
+      });
+
+      request.log.info(
+        `[AUTH-EVENTS] Successfully published successful login events for user: ${username}`
+      );
+    } else {
+      // Failed login attempt - audit log only
+      await EventPublisher.auditLog({
+        action: 'user.login.failed',
+        resource: 'auth',
+        details: {
+          success: false,
+          ip,
+          userAgent,
+          attemptedUsername: username,
+          statusCode,
+        },
+        timestamp: new Date().toISOString(),
+        ip,
+        userAgent,
+      });
+
+      // Record failed attempt in analytics service
+      EventAnalyticsService.recordEvent('user.login.failed', 'audit.log', username, {
+        ip,
+        userAgent,
+        success: false,
+        statusCode,
+      });
+
+      request.log.info(`Published failed login event for attempted user: ${username}`);
+    }
+  } catch (error) {
+    request.log.error('Error publishing authentication events:', error);
+    // ไม่ throw error เพราะไม่ต้องการให้ส่งผลกระทบต่อ main application flow
+  }
+}

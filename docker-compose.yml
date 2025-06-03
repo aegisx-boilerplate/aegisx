@@ -1,0 +1,36 @@
+services:
+  app:
+    build: .
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+      - rabbitmq
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: aegisx
+    ports:
+      - '5432:5432'
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: password
+    ports:
+      - '5672:5672' # AMQP port
+      - '15672:15672' # Management UI
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+volumes:
+  rabbitmq_data:
