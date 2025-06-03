@@ -1,3 +1,21 @@
+## 1.0.0 (2025-06-03)
+
+* fix: resolve TypeScript compilation errors in event system ([25a5fbe](https://github.com/aegisx-boilerplate/aegisx/commit/25a5fbe))
+* fix: update commit-msg hook to skip commitlint for semantic-release commits ([f449833](https://github.com/aegisx-boilerplate/aegisx/commit/f449833))
+* fix: update semantic-release and GitHub Actions configuration ([8de7d6d](https://github.com/aegisx-boilerplate/aegisx/commit/8de7d6d))
+* fix(node): update release workflow to use Node.js 20 ([9ad0f43](https://github.com/aegisx-boilerplate/aegisx/commit/9ad0f43))
+* docs: add final project completion summary with semantic-release info ([9177baf](https://github.com/aegisx-boilerplate/aegisx/commit/9177baf))
+* docs: add production readiness checklist and project completion status ([c8fa198](https://github.com/aegisx-boilerplate/aegisx/commit/c8fa198))
+* docs: add quick start guide for new developers ([feef3c6](https://github.com/aegisx-boilerplate/aegisx/commit/feef3c6))
+* feat: add semantic-release for automated versioning ([e457091](https://github.com/aegisx-boilerplate/aegisx/commit/e457091))
+* feat: initial AegisX API boilerplate release ([1ca77d7](https://github.com/aegisx-boilerplate/aegisx/commit/1ca77d7))
+* build(commitlint): add config ([6b15d2e](https://github.com/aegisx-boilerplate/aegisx/commit/6b15d2e))
+
+
+### BREAKING CHANGE
+
+* This introduces automated versioning workflow
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
