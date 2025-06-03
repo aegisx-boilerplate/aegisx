@@ -109,12 +109,16 @@ npm run stop:local
 - Key rotation and revocation
 - Usage tracking
 
+
 ### 📝 Audit System (`/core/audit`)
 
 - Automatic event logging
 - Custom audit events
 - Query and filtering
 - Export capabilities
+- **Durable audit log**: If RabbitMQ is unavailable, audit events are written to `logs/audit-offline.jsonl` (or per-pod/per-container log file)
+- **Safe replay**: Use `scripts/replay-audit-offline.ts` to replay offline logs to RabbitMQ when it is healthy again
+- **Per-pod/per-container support**: For Kubernetes or Compose scaling, each pod/container can write its own log file (e.g. `audit-offline-<pod>.jsonl`)
 
 ### 🛡️ RBAC (`/core/rbac`)
 
@@ -183,10 +187,22 @@ await AuditEventBuilder.create()
   .publish();
 ```
 
+
 ### Analytics
 
 - `GET /api/events/analytics` - Real-time event analytics
 - `GET /api/events/analytics/dashboard` - Event dashboard
+
+### Audit Log Durability & Replay
+
+- If RabbitMQ is down, audit events are written to `logs/audit-offline.jsonl` (or per-pod log file)
+- To replay offline logs, run:
+  ```bash
+  npx ts-node scripts/replay-audit-offline.ts
+  # or for per-pod: npx ts-node scripts/replay-audit-offline.ts /path/to/audit-offline-<pod>.jsonl
+  ```
+- The script will only remove the offline log if all events are successfully replayed and RabbitMQ is healthy
+- See [docs/audit-log-replay-automation.md](./docs/audit-log-replay-automation.md) for deployment patterns (Kubernetes, Docker Compose, per-pod log, etc)
 
 ### Documentation
 
