@@ -338,6 +338,34 @@ src/
 └── shared/              # Shared utilities
 ```
 
+## 🚀 Production Deployment
+
+### Environment Setup Checklist
+
+- [ ] Set strong `JWT_SECRET` and `JWT_REFRESH_SECRET` in production
+- [ ] Configure production database connection with connection pooling
+- [ ] Setup Redis cluster for high availability
+- [ ] Configure RabbitMQ cluster with proper queues
+- [ ] Setup monitoring and logging (PM2, Docker logs, etc.)
+- [ ] Configure environment-specific variables
+
+### Security Review
+
+- [ ] Review and rotate API keys regularly
+- [ ] Setup proper CORS origins for your domains
+- [ ] Configure rate limiting based on expected usage
+- [ ] Review RBAC permissions and roles
+- [ ] Setup SSL/TLS certificates
+- [ ] Configure security headers appropriately
+
+### Performance Optimization
+
+- [ ] Database connection pooling tuning
+- [ ] Redis memory optimization and persistence settings
+- [ ] RabbitMQ queue management and monitoring
+- [ ] Enable gzip compression
+- [ ] Setup CDN for static assets (if applicable)
+
 ## 🤝 Contributing
 
 1. Fork the repository
