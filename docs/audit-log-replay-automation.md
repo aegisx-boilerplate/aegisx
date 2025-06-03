@@ -125,11 +125,46 @@ spec:
 
 ---
 
-## **Best Practices**
-- Use a PersistentVolume (PVC) for logs in Kubernetes to ensure durability.
+
+## **Best Practices & Per-Pod Simplicity**
+
+- **Per-pod log file (Simple & Safe for scaling):**
+  - ให้แต่ละ pod เขียนไฟล์ log ของตัวเอง เช่น `/app/logs/audit-offline-<podname>.jsonl` หรือ `/app/logs/audit-offline-<hostname>.jsonl`
+  - แต่ละ pod มี sidecar/replay script ของตัวเอง (หรือ main app เรียก replay เอง)
+  - ไม่ต้องแชร์ไฟล์ audit-offline.jsonl ระหว่าง pod หมดปัญหา race condition, file corruption, replay ซ้ำซ้อน
+  - ถ้า pod ตายก่อน replay หมด log pod นั้นจะหาย (แต่ไม่มีผลกับ pod อื่น)
+  - ถ้าต้องการรวม log ทั้งระบบ ให้ใช้ log shipper หรือ job รวมไฟล์จากทุก pod
+
+- **Use a PersistentVolume (PVC) for logs in Kubernetes** to ensure durability (ถ้าไม่ใช้ emptyDir)
 - Adjust the replay interval as needed for your environment.
 - Monitor logs for replay errors or failures.
 - The replay script is safe: it only deletes the offline log if RabbitMQ is healthy and all events are sent.
+
+---
+
+## 🕒 Example: Linux CronJob for Replay (Non-Kubernetes)
+
+ถ้าใช้บน VM หรือเครื่อง Linux ปกติ (เช่น Docker Compose, Bare Metal) สามารถตั้ง cronjob ให้ replay log อัตโนมัติได้ เช่น:
+
+1. เปิด crontab:
+   ```bash
+   crontab -e
+   ```
+2. เพิ่มบรรทัดนี้ (รันทุก 5 นาที):
+   ```bash
+   */5 * * * * cd /path/to/aegisx && npx ts-node scripts/replay-audit-offline.ts >> logs/replay-cron.log 2>&1
+   ```
+   - หรือถ้าใช้ per-pod/per-container log:
+   ```bash
+   */5 * * * * cd /path/to/aegisx && for f in logs/audit-offline-*.jsonl; do [ -e "$f" ] && npx ts-node scripts/replay-audit-offline.ts $f; done >> logs/replay-cron.log 2>&1
+   ```
+
+**ข้อดี:**
+- ไม่ต้องแก้ business logic
+- เหมาะกับ Docker Compose, bare metal, หรือ dev server
+- สามารถ monitor log การ replay ได้จาก `logs/replay-cron.log`
+
+---
 
 ---
 
