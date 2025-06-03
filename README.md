@@ -201,7 +201,7 @@ npm run commit
 
 ### Git Workflow
 
-This project uses [Conventional Commits](https://www.conventionalcommits.org/) with Husky hooks:
+This project uses [Conventional Commits](https://www.conventionalcommits.org/) with Husky hooks and [Semantic Release](https://semantic-release.gitbook.io/):
 
 ```bash
 # Use commitizen for interactive commit
@@ -211,19 +211,36 @@ npm run commit
 git commit -m "feat: add new authentication feature"
 git commit -m "fix: resolve Redis connection issue"
 git commit -m "docs: update API documentation"
+
+# Test release locally (dry run)
+npm run release:dry
+
+# Automated releases happen on push to main branch
 ```
 
 **Available commit types:**
-- `feat`: New features
-- `fix`: Bug fixes
+
+- `feat`: New features → Minor version bump
+- `fix`: Bug fixes → Patch version bump  
+- `perf`: Performance improvements → Patch version bump
 - `docs`: Documentation updates
 - `style`: Code style changes
-- `refactor`: Code refactoring
-- `perf`: Performance improvements
+- `refactor`: Code refactoring → Patch version bump
 - `test`: Adding tests
 - `chore`: Maintenance tasks
 - `build`: Build system changes
 - `ci`: CI/CD changes
+
+**Breaking Changes:** Add `BREAKING CHANGE:` in commit body → Major version bump
+
+### Automated Releases
+
+Releases are automated using semantic-release:
+
+- **Push to `main`** → Automatic release to production
+- **Push to `beta`** → Beta pre-release  
+- **Push to `alpha`** → Alpha pre-release
+- **Dry run locally**: `npm run release:dry`
 
 ## 🐳 Docker Support
 

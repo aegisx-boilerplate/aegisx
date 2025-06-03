@@ -21,6 +21,8 @@
     "type-check": "tsc --noEmit",
     "clean": "rm -rf dist",
     "check": "npm run lint && npm run type-check && npm run build",
+    "release": "semantic-release",
+    "release:dry": "semantic-release --dry-run",
     "prepare": "husky"
   },
   "dependencies": {
@@ -48,6 +50,10 @@
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.3",
+    "@semantic-release/npm": "^12.0.1",
     "@swc/cli": "^0.7.7",
     "@swc/core": "^1.11.29",
     "@types/amqplib": "^0.10.7",
@@ -59,6 +65,7 @@
     "eslint-config-prettier": "^9.1.0",
     "husky": "^9.1.7",
     "prettier": "^3.5.3",
+    "semantic-release": "^24.2.5",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.4.5"

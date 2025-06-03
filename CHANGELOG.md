@@ -56,7 +56,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Comprehensive configuration management
   - Git hooks with Husky for code quality
   - Conventional commits with Commitizen
+  - Automated releases with semantic-release
   - Pre-commit linting and type checking
+  - GitHub Actions CI/CD workflows
 
 - **Security Features**
   - Helmet.js for security headers
@@ -83,3 +85,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Documentation**: Swagger/OpenAPI
 - **Build Tool**: SWC (Super-fast TypeScript/JavaScript compiler)
 - **Code Quality**: ESLint + Prettier + Husky + Commitizen
+- **Release Management**: Semantic Release with automated versioning
