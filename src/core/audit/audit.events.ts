@@ -11,28 +11,32 @@ export const auditEvents = {
       userAgent?: string;
       reason?: string;
     }) {
-      await EventPublisher.auditLog({
-        userId: data.userId,
-        action: data.success ? 'login.success' : 'login.failed',
-        resource: 'auth',
-        resourceId: 'session',
-        details: { reason: data.reason },
-        timestamp: new Date().toISOString(),
-        ip: data.ip,
-        userAgent: data.userAgent,
-      });
+      try {
+        await EventPublisher.auditLog({
+          userId: data.userId,
+          action: data.success ? 'login.success' : 'login.failed',
+          resource: 'auth',
+          resourceId: 'session',
+          details: { reason: data.reason },
+          timestamp: new Date().toISOString(),
+          ip: data.ip,
+          userAgent: data.userAgent,
+        });
+      } catch (err) { /* noop */ }
     },
 
     async recordLogout(data: { userId: string; ip?: string; userAgent?: string }) {
-      await EventPublisher.auditLog({
-        userId: data.userId,
-        action: 'logout',
-        resource: 'auth',
-        resourceId: 'session',
-        timestamp: new Date().toISOString(),
-        ip: data.ip,
-        userAgent: data.userAgent,
-      });
+      try {
+        await EventPublisher.auditLog({
+          userId: data.userId,
+          action: 'logout',
+          resource: 'auth',
+          resourceId: 'session',
+          timestamp: new Date().toISOString(),
+          ip: data.ip,
+          userAgent: data.userAgent,
+        });
+      } catch (err) { /* noop */ }
     },
   },
 
@@ -46,16 +50,18 @@ export const auditEvents = {
       ip?: string;
       userAgent?: string;
     }) {
-      await EventPublisher.auditLog({
-        userId: data.actorId,
-        action: 'user.created',
-        resource: 'user',
-        resourceId: data.userId,
-        details: { username: data.username, email: data.email },
-        timestamp: new Date().toISOString(),
-        ip: data.ip,
-        userAgent: data.userAgent,
-      });
+      try {
+        await EventPublisher.auditLog({
+          userId: data.actorId,
+          action: 'user.created',
+          resource: 'user',
+          resourceId: data.userId,
+          details: { username: data.username, email: data.email },
+          timestamp: new Date().toISOString(),
+          ip: data.ip,
+          userAgent: data.userAgent,
+        });
+      } catch (err) { /* noop */ }
     },
 
     async recordUpdated(data: {
@@ -65,16 +71,18 @@ export const auditEvents = {
       ip?: string;
       userAgent?: string;
     }) {
-      await EventPublisher.auditLog({
-        userId: data.actorId,
-        action: 'user.updated',
-        resource: 'user',
-        resourceId: data.userId,
-        details: { changes: data.changes },
-        timestamp: new Date().toISOString(),
-        ip: data.ip,
-        userAgent: data.userAgent,
-      });
+      try {
+        await EventPublisher.auditLog({
+          userId: data.actorId,
+          action: 'user.updated',
+          resource: 'user',
+          resourceId: data.userId,
+          details: { changes: data.changes },
+          timestamp: new Date().toISOString(),
+          ip: data.ip,
+          userAgent: data.userAgent,
+        });
+      } catch (err) { /* noop */ }
     },
 
     async recordDeleted(data: {
@@ -84,16 +92,18 @@ export const auditEvents = {
       ip?: string;
       userAgent?: string;
     }) {
-      await EventPublisher.auditLog({
-        userId: data.actorId,
-        action: 'user.deleted',
-        resource: 'user',
-        resourceId: data.userId,
-        details: { username: data.username },
-        timestamp: new Date().toISOString(),
-        ip: data.ip,
-        userAgent: data.userAgent,
-      });
+      try {
+        await EventPublisher.auditLog({
+          userId: data.actorId,
+          action: 'user.deleted',
+          resource: 'user',
+          resourceId: data.userId,
+          details: { username: data.username },
+          timestamp: new Date().toISOString(),
+          ip: data.ip,
+          userAgent: data.userAgent,
+        });
+      } catch (err) { /* noop */ }
     },
   },
 
@@ -107,16 +117,18 @@ export const auditEvents = {
       ip?: string;
       userAgent?: string;
     }) {
-      await EventPublisher.auditLog({
-        userId: data.actorId,
-        action: 'api_key.created',
-        resource: 'api_key',
-        resourceId: data.keyId,
-        details: { name: data.name, scopes: data.scopes },
-        timestamp: new Date().toISOString(),
-        ip: data.ip,
-        userAgent: data.userAgent,
-      });
+      try {
+        await EventPublisher.auditLog({
+          userId: data.actorId,
+          action: 'api_key.created',
+          resource: 'api_key',
+          resourceId: data.keyId,
+          details: { name: data.name, scopes: data.scopes },
+          timestamp: new Date().toISOString(),
+          ip: data.ip,
+          userAgent: data.userAgent,
+        });
+      } catch (err) { /* noop */ }
     },
 
     async recordRevoked(data: {
@@ -126,16 +138,18 @@ export const auditEvents = {
       ip?: string;
       userAgent?: string;
     }) {
-      await EventPublisher.auditLog({
-        userId: data.actorId,
-        action: 'api_key.revoked',
-        resource: 'api_key',
-        resourceId: data.keyId,
-        details: { name: data.name },
-        timestamp: new Date().toISOString(),
-        ip: data.ip,
-        userAgent: data.userAgent,
-      });
+      try {
+        await EventPublisher.auditLog({
+          userId: data.actorId,
+          action: 'api_key.revoked',
+          resource: 'api_key',
+          resourceId: data.keyId,
+          details: { name: data.name },
+          timestamp: new Date().toISOString(),
+          ip: data.ip,
+          userAgent: data.userAgent,
+        });
+      } catch (err) { /* noop */ }
     },
   },
 
@@ -149,16 +163,18 @@ export const auditEvents = {
       ip?: string;
       userAgent?: string;
     }) {
-      await EventPublisher.auditLog({
-        userId: data.actorId,
-        action: 'role.assigned',
-        resource: 'user',
-        resourceId: data.userId,
-        details: { roleId: data.roleId, roleName: data.roleName },
-        timestamp: new Date().toISOString(),
-        ip: data.ip,
-        userAgent: data.userAgent,
-      });
+      try {
+        await EventPublisher.auditLog({
+          userId: data.actorId,
+          action: 'role.assigned',
+          resource: 'user',
+          resourceId: data.userId,
+          details: { roleId: data.roleId, roleName: data.roleName },
+          timestamp: new Date().toISOString(),
+          ip: data.ip,
+          userAgent: data.userAgent,
+        });
+      } catch (err) { /* noop */ }
     },
 
     async recordPermissionGranted(data: {
@@ -168,16 +184,18 @@ export const auditEvents = {
       ip?: string;
       userAgent?: string;
     }) {
-      await EventPublisher.auditLog({
-        userId: data.actorId,
-        action: 'permission.granted',
-        resource: 'user',
-        resourceId: data.userId,
-        details: { permission: data.permission },
-        timestamp: new Date().toISOString(),
-        ip: data.ip,
-        userAgent: data.userAgent,
-      });
+      try {
+        await EventPublisher.auditLog({
+          userId: data.actorId,
+          action: 'permission.granted',
+          resource: 'user',
+          resourceId: data.userId,
+          details: { permission: data.permission },
+          timestamp: new Date().toISOString(),
+          ip: data.ip,
+          userAgent: data.userAgent,
+        });
+      } catch (err) { /* noop */ }
     },
   },
 

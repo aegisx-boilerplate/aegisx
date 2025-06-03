@@ -25,6 +25,7 @@ export async function auditRoutes(fastify: FastifyInstance) {
         tags: ['Audit'],
         summary: 'Get audit logs',
         description: 'Retrieve audit logs with optional filtering and pagination',
+        security: [{ bearerAuth: [] }],
       },
     },
     AuditController.getAuditLogs
@@ -43,6 +44,7 @@ export async function auditRoutes(fastify: FastifyInstance) {
         tags: ['Audit'],
         summary: 'Get audit statistics',
         description: 'Retrieve audit log statistics and analytics',
+        security: [{ bearerAuth: [] }],
       },
     },
     AuditController.getAuditStats
@@ -61,6 +63,7 @@ export async function auditRoutes(fastify: FastifyInstance) {
         tags: ['Audit'],
         summary: 'Get audit log by ID',
         description: 'Retrieve detailed audit log information by ID',
+        security: [{ bearerAuth: [] }],
       },
     },
     AuditController.getAuditLogById

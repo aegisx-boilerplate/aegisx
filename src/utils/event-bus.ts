@@ -278,10 +278,26 @@ export class EventPublisher {
    * Publish audit log event
    */
   static async auditLog(event: AuditLogEvent): Promise<void> {
-    await eventBus.publishEvent(QUEUES.AUDIT_LOG, {
+    const fullEvent = {
       ...event,
       timestamp: event.timestamp || new Date().toISOString(),
-    });
+    };
+    try {
+      await eventBus.publishEvent(QUEUES.AUDIT_LOG, fullEvent);
+    } catch (err) {
+      // Fallback: write to durable offline log
+      const fs = await import('fs');
+      const path = await import('path');
+      const logDir = path.resolve(__dirname, '../../logs');
+      const logFile = path.join(logDir, 'audit-offline.jsonl');
+      try {
+        if (!fs.existsSync(logDir)) fs.mkdirSync(logDir);
+        fs.appendFileSync(logFile, JSON.stringify(fullEvent) + '\n');
+        console.error('[AUDIT] RabbitMQ unavailable, event written to offline log:', logFile);
+      } catch (fileErr) {
+        console.error('[AUDIT] Failed to write offline audit log:', fileErr);
+      }
+    }
   }
 
   /**
