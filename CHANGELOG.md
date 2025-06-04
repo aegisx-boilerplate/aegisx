@@ -1,3 +1,8 @@
+## <small>2.3.1 (2025-06-04)</small>
+
+* Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([5f2d674](https://github.com/aegisx-boilerplate/aegisx/commit/5f2d674))
+* refactor: cleanup unused files after audit system refactoring ([cf2152a](https://github.com/aegisx-boilerplate/aegisx/commit/cf2152a))
+
 ## 2.3.0 (2025-06-04)
 
 * feat: complete audit system refactoring to unified event-driven architecture ([12ab422](https://github.com/aegisx-boilerplate/aegisx/commit/12ab422))
