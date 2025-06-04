@@ -1,3 +1,8 @@
+## <small>2.2.2 (2025-06-04)</small>
+
+* Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([d9d4741](https://github.com/aegisx-boilerplate/aegisx/commit/d9d4741))
+* fix(ci): reorder workflow steps and add version-based Docker tagging ([b5fa319](https://github.com/aegisx-boilerplate/aegisx/commit/b5fa319))
+
 ## <small>2.2.1 (2025-06-04)</small>
 
 * Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([c4f5b5a](https://github.com/aegisx-boilerplate/aegisx/commit/c4f5b5a))
