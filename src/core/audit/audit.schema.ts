@@ -4,6 +4,8 @@ export const AuditLogQuerySchema = Type.Object({
   actor: Type.Optional(Type.String()),
   action: Type.Optional(Type.String()),
   target: Type.Optional(Type.String()),
+  ip_address: Type.Optional(Type.String()),
+  user_agent: Type.Optional(Type.String()),
   from: Type.Optional(Type.String({ format: 'date-time' })),
   to: Type.Optional(Type.String({ format: 'date-time' })),
   page: Type.Optional(Type.Integer({ minimum: 1, default: 1 })),
@@ -29,6 +31,8 @@ export const AuditLogResponseSchema = Type.Object({
         action: Type.String(),
         target: Type.Optional(Type.String()),
         details: Type.Optional(Type.Any()),
+        ip_address: Type.Optional(Type.String()),
+        user_agent: Type.Optional(Type.String()),
         created_at: Type.String({ format: 'date-time' }),
       })
     ),
@@ -73,6 +77,8 @@ export const AuditLogDetailResponseSchema = Type.Object({
     action: Type.String(),
     target: Type.Optional(Type.String()),
     details: Type.Optional(Type.Any()),
+    ip_address: Type.Optional(Type.String()),
+    user_agent: Type.Optional(Type.String()),
     created_at: Type.String({ format: 'date-time' }),
   }),
 });

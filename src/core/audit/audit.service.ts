@@ -10,7 +10,9 @@ export class AuditService {
     actor: string,
     action: string,
     target: string,
-    details?: Record<string, any>
+    details?: Record<string, any>,
+    ip_address?: string,
+    user_agent?: string
   ): Promise<AuditLog> {
     const timestamp = new Date().toISOString();
 
@@ -20,15 +22,14 @@ export class AuditService {
         actor,
         action,
         target,
-        details: details ? JSON.stringify(details) : null,
+        details: details || null,
+        ip_address: ip_address || null,
+        user_agent: user_agent || null,
         created_at: timestamp,
       })
       .returning('*');
 
-    return {
-      ...auditLog,
-      details: auditLog.details ? JSON.parse(auditLog.details) : null,
-    };
+    return auditLog;
   }
 
   /**
@@ -38,7 +39,9 @@ export class AuditService {
     actor: string,
     action: string,
     target: string,
-    details?: Record<string, any>
+    details?: Record<string, any>,
+    ip_address?: string,
+    user_agent?: string
   ): Promise<AuditLog> {
     const timestamp = new Date().toISOString();
 
@@ -48,7 +51,9 @@ export class AuditService {
         actor,
         action,
         target,
-        details: details ? JSON.stringify(details) : null,
+        details: details || null,
+        ip_address: ip_address || null,
+        user_agent: user_agent || null,
         created_at: timestamp,
       })
       .returning('*');
@@ -78,12 +83,14 @@ export class AuditService {
     actor?: string;
     action?: string;
     target?: string;
+    ip_address?: string;
+    user_agent?: string;
     from?: string;
     to?: string;
     page?: number;
     limit?: number;
   }) {
-    const { actor, action, target, from, to, page = 1, limit = 20 } = filters;
+    const { actor, action, target, ip_address, user_agent, from, to, page = 1, limit = 20 } = filters;
 
     let query = knex('audit_logs').select('*');
 
@@ -91,6 +98,8 @@ export class AuditService {
     if (actor) query = query.where('actor', 'ilike', `%${actor}%`);
     if (action) query = query.where('action', 'ilike', `%${action}%`);
     if (target) query = query.where('target', 'ilike', `%${target}%`);
+    if (ip_address) query = query.where('ip_address', 'ilike', `%${ip_address}%`);
+    if (user_agent) query = query.where('user_agent', 'ilike', `%${user_agent}%`);
     if (from) query = query.where('created_at', '>=', from);
     if (to) query = query.where('created_at', '<=', to);
 
@@ -104,10 +113,7 @@ export class AuditService {
     const logs = await query.orderBy('created_at', 'desc').limit(limit).offset(offset);
 
     return {
-      logs: logs.map((log) => ({
-        ...log,
-        details: log.details ? JSON.parse(log.details) : null,
-      })),
+      logs: logs,
       pagination: {
         page,
         limit,
@@ -122,10 +128,7 @@ export class AuditService {
 
     if (!log) return null;
 
-    return {
-      ...log,
-      details: log.details ? JSON.parse(log.details) : null,
-    };
+    return log;
   }
 
   static async getStats(filters: { from?: string; to?: string }) {

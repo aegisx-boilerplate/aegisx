@@ -126,7 +126,7 @@ class EventBus {
 
       const result = this.channel.publish(this.config.exchange!, queue, message, publishOptions);
 
-      console.log(`Event published to queue "${queue}":`, data);
+      // console.log(`Event published to queue "${queue}":`, data);
       return result;
     } catch (error) {
       console.error(`Failed to publish event to queue "${queue}":`, error);
@@ -185,7 +185,6 @@ class EventBus {
 
           try {
             const data = JSON.parse(msg.content.toString()) as T;
-            console.log(`Received event from queue "${queue}":`, data);
 
             await handler(data);
 

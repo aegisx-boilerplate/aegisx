@@ -15,7 +15,7 @@ npm run generate:module <module-name>
 Feature modules should use the `AuditEventBuilder` pattern for complex audit scenarios:
 
 ```typescript
-import { AuditEventBuilder } from '../../core/audit/audit.events';
+import { AuditLogger, AuditEventBuilder } from '../../utils/audit-logger';
 
 // Example usage in your feature module
 await AuditEventBuilder.create()

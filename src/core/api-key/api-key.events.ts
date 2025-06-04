@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import { EventPublisher } from '../../utils/event-bus';
+import { AuditLogger } from '../../utils/audit-logger';
 
 interface ApiKeyRequestBody {
   name?: string;
@@ -159,19 +160,15 @@ async function publishApiKeyEvents(
 
     // For critical actions, also publish to audit log
     if (action === 'create' || action === 'revoke') {
-      await EventPublisher.auditLog({
-        userId: userId || 'system',
+      await AuditLogger.logApiKey({
+        actorId: userId || 'system',
         action: `api_key.${action}`,
-        resource: 'api_key',
+        keyId: apiKeyId || 'unknown',
         details: {
           success: isSuccess,
-          apiKeyId,
           name,
-          ip,
-          userAgent,
           statusCode,
         },
-        timestamp: new Date().toISOString(),
         ip,
         userAgent,
       });

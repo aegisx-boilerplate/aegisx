@@ -3,7 +3,7 @@ import { env } from '../../config/env';
 import Redis from 'ioredis';
 import bcrypt from 'bcryptjs';
 import { FastifyInstance } from 'fastify';
-import { auditEvents } from '../audit/audit.events';
+import { AuditLogger } from '../../utils/audit-logger';
 
 const redis = new Redis(env.REDIS_URL);
 
@@ -27,9 +27,9 @@ export class AuthService {
 
     if (!user) {
       // Log failed login attempt
-      await auditEvents.recordLogin({
+      await AuditLogger.logAuth({
         userId: usernameOrEmail,
-        success: false,
+        action: 'login.failed',
         reason: 'user_not_found',
         ip: metadata?.ip,
         userAgent: metadata?.userAgent,
@@ -39,9 +39,9 @@ export class AuthService {
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) {
       // Log failed login attempt
-      await auditEvents.recordLogin({
+      await AuditLogger.logAuth({
         userId: user.id,
-        success: false,
+        action: 'login.failed',
         reason: 'invalid_password',
         ip: metadata?.ip,
         userAgent: metadata?.userAgent,
@@ -63,9 +63,9 @@ export class AuthService {
     await redis.set(`user:${user.id}:session`, JSON.stringify(user));
 
     // Log successful login
-    await auditEvents.recordLogin({
+    await AuditLogger.logAuth({
       userId: user.id,
-      success: true,
+      action: 'login.success',
       ip: metadata?.ip,
       userAgent: metadata?.userAgent,
     });

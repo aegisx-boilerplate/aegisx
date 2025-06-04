@@ -2,6 +2,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginAsync } fro
 import fp from 'fastify-plugin';
 import { EventPublisher } from '../../utils/event-bus';
 import { EventAnalyticsService } from '../../utils/event-analytics';
+import { AuditLogger } from '../../utils/audit-logger';
 
 interface UserRequestBody {
   username?: string;
@@ -206,21 +207,18 @@ async function publishUserEvents(eventData: UserEventData, request: FastifyReque
 
     // For critical actions, also publish to audit log
     if (['create', 'update', 'delete', 'role_change'].includes(action)) {
-      await EventPublisher.auditLog({
+      await AuditLogger.log({
         userId: (request as any).user?.id || 'system',
         action: `user.${action}`,
         resource: 'user',
+        resourceId: userId,
         details: {
           success: isSuccess,
-          targetUserId: userId,
           targetUsername: username,
           email,
           roleId,
-          ip,
-          userAgent,
           statusCode,
         },
-        timestamp: new Date().toISOString(),
         ip,
         userAgent,
       });

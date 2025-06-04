@@ -9,7 +9,7 @@ import {
 export async function apiKeyRoutes(fastify: FastifyInstance) {
   fastify.post('/api-keys', {
     schema: {
-      tags: ['api-key'] as ['api-key'],
+      tags: ['ApiKey'] as ['ApiKey'],
       body: ApiKeyCreateSchema,
       response: { 201: ApiKeyResponseSchema },
       security: [{ bearerAuth: [] }],
@@ -21,14 +21,14 @@ export async function apiKeyRoutes(fastify: FastifyInstance) {
     },
   });
   fastify.get('/api-keys', {
-    schema: { tags: ['api-key'] as ['api-key'], response: { 200: ApiKeyListResponseSchema }, security: [{ bearerAuth: [] }], description: 'List all API keys (requires authentication)' },
+    schema: { tags: ['ApiKey'] as ['ApiKey'], response: { 200: ApiKeyListResponseSchema }, security: [{ bearerAuth: [] }], description: 'List all API keys (requires authentication)' },
     handler: async (request, reply) => {
       const keys = await ApiKeyService.list();
       reply.send(keys);
     },
   });
   fastify.delete('/api-keys/:id', {
-    schema: { tags: ['api-key'] as ['api-key'], security: [{ bearerAuth: [] }], description: 'Revoke API key (requires authentication)' },
+    schema: { tags: ['ApiKey'] as ['ApiKey'], security: [{ bearerAuth: [] }], description: 'Revoke API key (requires authentication)' },
     handler: async (request, reply) => {
       const { id } = request.params as any;
       const apiKey = await ApiKeyService.revoke(id);

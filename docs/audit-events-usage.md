@@ -21,12 +21,12 @@ The audit system is designed with two distinct approaches for different types of
 Core modules use simple, predefined methods for common audit scenarios:
 
 ```typescript
-import { auditEvents } from '../../core/audit/audit.events';
+import { AuditLogger } from '../../utils/audit-logger';
 
 // Authentication events
-await auditEvents.recordLogin({
+await AuditLogger.logAuth({
   userId: 'user123',
-  success: true,
+  action: 'login',
   ip: req.ip,
   userAgent: req.headers['user-agent']
 });
@@ -78,7 +78,7 @@ await auditEvents.rbac.recordPermissionGranted(data);
 Feature modules use `AuditEventBuilder` for complex, flexible audit scenarios:
 
 ```typescript
-import { AuditEventBuilder } from '../../core/audit/audit.events';
+import { AuditEventBuilder } from '../../utils/audit-logger';
 
 // Simple usage
 await AuditEventBuilder.create()

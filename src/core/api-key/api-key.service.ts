@@ -2,7 +2,7 @@ import { knex } from '../../db/knex';
 import { generateApiKey } from '../../utils/generate-api-key';
 import Redis from 'ioredis';
 import { env } from '../../config/env';
-import { auditEvents } from '../audit/audit.events';
+import { AuditLogger } from '../../utils/audit-logger';
 
 const redis = new Redis(env.REDIS_URL);
 
@@ -33,11 +33,14 @@ export class ApiKeyService {
     await redis.set(`api-key:${key}`, JSON.stringify(apiKey));
 
     // Log API key creation
-    await auditEvents.recordApiKeyCreated({
+    await AuditLogger.logApiKey({
       actorId: actorId || 'system',
+      action: 'api_key.created',
       keyId: apiKey.id,
-      name,
-      scopes,
+      details: {
+        name,
+        scopes,
+      },
       ip: metadata?.ip,
       userAgent: metadata?.userAgent,
     });
@@ -61,10 +64,13 @@ export class ApiKeyService {
     if (apiKey) await redis.del(`api-key:${apiKey.key}`);
 
     // Log API key revocation
-    await auditEvents.recordApiKeyRevoked({
+    await AuditLogger.logApiKey({
       actorId: actorId || 'system',
+      action: 'api_key.revoked',
       keyId: id,
-      name: existingKey?.name,
+      details: {
+        name: existingKey?.name,
+      },
       ip: metadata?.ip,
       userAgent: metadata?.userAgent,
     });

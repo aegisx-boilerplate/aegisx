@@ -2,7 +2,7 @@ import { knex } from '../../db/knex';
 import Redis from 'ioredis';
 import { env } from '../../config/env';
 import bcrypt from 'bcryptjs';
-import { auditEvents } from '../audit/audit.events';
+import { AuditLogger } from '../../utils/audit-logger';
 
 const redis = new Redis(env.REDIS_URL);
 
@@ -35,11 +35,14 @@ export class UserService {
         await redis.del('users:all');
 
         // Log user creation
-        await auditEvents.recordUserCreated({
+        await AuditLogger.logUserManagement({
             actorId: actorId || 'system',
-            userId: user.id,
-            username: user.username,
-            email: user.email,
+            action: 'user.created',
+            targetUserId: user.id,
+            details: {
+                username: user.username,
+                email: user.email,
+            },
             ip: metadata?.ip,
             userAgent: metadata?.userAgent,
         });
@@ -67,10 +70,13 @@ export class UserService {
         await redis.del('users:all');
 
         // Log user update
-        await auditEvents.recordUserUpdated({
+        await AuditLogger.logUserManagement({
             actorId: actorId || 'system',
-            userId: id,
-            changes: Object.keys(updateData),
+            action: 'user.updated',
+            targetUserId: id,
+            details: {
+                changes: Object.keys(updateData),
+            },
             ip: metadata?.ip,
             userAgent: metadata?.userAgent,
         });
@@ -88,10 +94,13 @@ export class UserService {
         await redis.del('users:all');
 
         // Log user deletion
-        await auditEvents.recordUserDeleted({
+        await AuditLogger.logUserManagement({
             actorId: actorId || 'system',
-            userId: id,
-            username: user?.username,
+            action: 'user.deleted',
+            targetUserId: id,
+            details: {
+                username: user?.username,
+            },
             ip: metadata?.ip,
             userAgent: metadata?.userAgent,
         });

@@ -164,19 +164,27 @@ Authorization: Api-Key <api-key>
 ### Audit Events
 
 ```typescript
-// Automatic audit logging (built-in)
-import { auditEvents } from './core/audit/audit.events';
+// Use unified AuditLogger for all audit events
+import { AuditLogger, AuditEventBuilder } from './utils/audit-logger';
 
-await auditEvents.recordLogin({ 
+// Convenience methods for common events
+await AuditLogger.logAuth({ 
   userId: '123', 
-  success: true, 
+  action: 'login',
   ip: req.ip, 
   userAgent: req.headers['user-agent'] 
 });
 
-// Custom audit events
-import { AuditEventBuilder } from './core/audit/audit.events';
+await AuditLogger.logUserManagement({
+  actorId: req.user.id,
+  action: 'created',
+  targetUserId: 'new-user-123',
+  details: { username: 'john.doe' },
+  ip: req.ip,
+  userAgent: req.headers['user-agent'],
+});
 
+// Complex audit events using builder pattern
 await AuditEventBuilder.create()
   .actor('user123')
   .action('document.approved')

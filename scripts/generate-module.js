@@ -158,7 +158,7 @@ export class ${capitalizeFirst(moduleName)}Service {
 }
 `,
 
-    events: `import { AuditEventBuilder } from '../../core/audit/audit.events';
+    events: `import { AuditLogger, AuditEventBuilder } from '../../utils/audit-logger';
 
 export class ${capitalizeFirst(moduleName)}Events {
     /**

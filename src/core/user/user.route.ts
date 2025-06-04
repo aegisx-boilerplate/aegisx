@@ -8,7 +8,7 @@ export async function userRoutes(fastify: FastifyInstance) {
     fastify.get('/users', {
         preHandler: [authenticate],
         schema: {
-            tags: ['user'] as ['user'],
+            tags: ['User'] as ['User'],
             security: [{ bearerAuth: [] }],
             description: 'Get all users (requires authentication)'
         },
@@ -17,7 +17,7 @@ export async function userRoutes(fastify: FastifyInstance) {
     fastify.get('/users/:id', {
         preHandler: [authenticate],
         schema: {
-            tags: ['user'] as ['user'],
+            tags: ['User'] as ['User'],
             params: UserIdParamSchema,
             security: [{ bearerAuth: [] }],
             description: 'Get user by ID (requires authentication)'
@@ -26,7 +26,7 @@ export async function userRoutes(fastify: FastifyInstance) {
     });
     fastify.post('/users', {
         schema: {
-            tags: ['user'] as ['user'],
+            tags: ['User'] as ['User'],
             body: UserCreateSchema,
             description: 'Create new user (public endpoint for registration)'
         },
@@ -35,7 +35,7 @@ export async function userRoutes(fastify: FastifyInstance) {
     fastify.put('/users/:id', {
         preHandler: [authenticate, authorize('user:manage')],
         schema: {
-            tags: ['user'] as ['user'],
+            tags: ['User'] as ['User'],
             params: UserIdParamSchema,
             body: UserUpdateSchema,
             security: [{ bearerAuth: [] }],
@@ -46,7 +46,7 @@ export async function userRoutes(fastify: FastifyInstance) {
     fastify.delete('/users/:id', {
         preHandler: [authenticate, authorize('user:manage')],
         schema: {
-            tags: ['user'] as ['user'],
+            tags: ['User'] as ['User'],
             params: UserIdParamSchema,
             security: [{ bearerAuth: [] }],
             description: 'Delete user (requires authentication and user:manage permission)'

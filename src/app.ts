@@ -16,11 +16,12 @@ import jwtPlugin from './plugins/jwt';
 import redisPlugin from './plugins/redis';
 import eventBusPlugin from './plugins/event-bus';
 import eventsPlugin from './plugins/events';
-import swagger from '@fastify/swagger';
-import swaggerUi from '@fastify/swagger-ui';
 import fastifyHelmet from '@fastify/helmet';
 import fastifyCors from '@fastify/cors';
 import fastifyRateLimit from '@fastify/rate-limit';
+import { swaggerConfig, swaggerUiConfig } from './config/swagger';
+import swagger from '@fastify/swagger';
+import swaggerUi from '@fastify/swagger-ui';
 
 app.register(fastifyHelmet);
 app.register(fastifyCors, { origin: true });
@@ -29,37 +30,10 @@ app.register(jwtPlugin);
 app.register(redisPlugin);
 app.register(eventBusPlugin);
 app.register(eventsPlugin); // Register all event plugins
-app.register(swagger, {
-  openapi: {
-    info: {
-      title: 'AegisX Boilerplate API',
-      version: '1.0.0',
-      description: 'AegisX API boilerplate with Fastify, TypeBox, Knex, Redis',
-    },
-    servers: [{ url: '/' }],
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
-        },
-        apiKey: {
-          type: 'apiKey',
-          in: 'header',
-          name: 'x-api-key',
-        },
-      },
-    },
-  },
-});
-app.register(swaggerUi, {
-  routePrefix: '/docs',
-  uiConfig: {
-    docExpansion: 'full',
-    deepLinking: false,
-  },
-});
+
+// Register Swagger documentation
+app.register(swagger, swaggerConfig as any);
+app.register(swaggerUi, swaggerUiConfig);
 
 // Register core routes
 import { authRoutes } from './core/auth/auth.route';
@@ -68,7 +42,7 @@ import { roleRoutes } from './core/rbac/role.route';
 import { permissionRoutes } from './core/rbac/permission.route';
 import { apiKeyRoutes } from './core/api-key/api-key.route';
 import { auditRoutes } from './core/audit/audit.route';
-import { AuditConsumer } from './core/audit/audit.consumer';
+import { AuditConsumerManager } from './core/audit/audit.consumer';
 import { registerEventAnalyticsRoutes } from './utils/event-analytics';
 
 app.register(authRoutes);
@@ -81,12 +55,13 @@ app.register(auditRoutes);
 // Register event analytics routes
 app.register(registerEventAnalyticsRoutes);
 
-// Start audit consumer to process audit events from message queue
+// Start all audit consumers to process audit events from message queue
 app.ready(async () => {
   try {
-    await AuditConsumer.start();
+    await AuditConsumerManager.startAll();
+    app.log.info('All audit consumers started successfully');
   } catch (error) {
-    app.log.error('Failed to start audit consumer:', error);
+    app.log.error('Failed to start audit consumers:', error);
   }
 });
 

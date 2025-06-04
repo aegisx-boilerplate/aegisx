@@ -7,7 +7,7 @@ export async function authRoutes(fastify: FastifyInstance) {
     '/auth/login',
     {
       schema: {
-        tags: ['auth'],
+        tags: ['Auth'],
         body: LoginSchema,
         response: { 200: AuthResponseSchema },
       },

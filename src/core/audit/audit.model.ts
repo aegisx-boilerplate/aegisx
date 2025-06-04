@@ -6,6 +6,8 @@ export const AuditLogModel = Type.Object({
   action: Type.String(),
   target: Type.Optional(Type.String()),
   details: Type.Optional(Type.Any()),
+  ip_address: Type.Optional(Type.String()),
+  user_agent: Type.Optional(Type.String()),
   created_at: Type.String({ format: 'date-time' }),
 });
 

@@ -12,9 +12,9 @@ const moduleName = process.argv[2];
 console.log('📋 Module name:', moduleName);
 
 if (!moduleName) {
-  console.error('❌ Please provide a module name');
-  console.log('Usage: npm run generate:module <module-name>');
-  process.exit(1);
+    console.error('❌ Please provide a module name');
+    console.log('Usage: npm run generate:module <module-name>');
+    process.exit(1);
 }
 
 console.log('✅ Module name validated');
@@ -23,8 +23,8 @@ console.log('📁 Target directory:', moduleDir);
 
 // Check if module already exists
 if (fs.existsSync(moduleDir)) {
-  console.error(`❌ Module "${moduleName}" already exists`);
-  process.exit(1);
+    console.error(`❌ Module "${moduleName}" already exists`);
+    process.exit(1);
 }
 
 console.log('✅ Module does not exist, proceeding...');
@@ -34,12 +34,12 @@ fs.mkdirSync(moduleDir, { recursive: true });
 console.log('📁 Created module directory');
 
 function capitalizeFirst(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+    return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 // Template files
 const templates = {
-  model: `import { Type } from '@sinclair/typebox';
+    model: `import { Type } from '@sinclair/typebox';
 
 export const ${capitalizeFirst(moduleName)}Model = Type.Object({
     id: Type.String({ format: 'uuid' }),
@@ -56,7 +56,7 @@ export const ${capitalizeFirst(moduleName)}Model = Type.Object({
 export type ${capitalizeFirst(moduleName)} = typeof ${capitalizeFirst(moduleName)}Model.static;
 `,
 
-  schema: `import { Type } from '@sinclair/typebox';
+    schema: `import { Type } from '@sinclair/typebox';
 import { BaseResponseSchema, PaginationSchema } from '../../schemas/base.schema';
 
 export const Create${capitalizeFirst(moduleName)}Schema = Type.Object({
@@ -84,7 +84,7 @@ export const ${capitalizeFirst(moduleName)}ListResponseSchema = BaseResponseSche
 }));
 `,
 
-  service: `import { knex } from '../../db/knex';
+    service: `import { knex } from '../../db/knex';
 import { ${capitalizeFirst(moduleName)} } from './${moduleName}.model';
 
 export class ${capitalizeFirst(moduleName)}Service {
@@ -160,7 +160,7 @@ export class ${capitalizeFirst(moduleName)}Service {
 }
 `,
 
-  events: `import { AuditEventBuilder } from '../../core/audit/audit.events';
+    events: `import { AuditLogger, AuditEventBuilder } from '../../utils/audit-logger';
 
 export class ${capitalizeFirst(moduleName)}Events {
     /**
@@ -239,7 +239,7 @@ export class ${capitalizeFirst(moduleName)}Events {
 }
 `,
 
-  controller: `import { FastifyRequest, FastifyReply } from 'fastify';
+    controller: `import { FastifyRequest, FastifyReply } from 'fastify';
 import { ${capitalizeFirst(moduleName)}Service } from './${moduleName}.service';
 import { ${capitalizeFirst(moduleName)}Events } from './${moduleName}.events';
 
@@ -410,7 +410,7 @@ export class ${capitalizeFirst(moduleName)}Controller {
 }
 `,
 
-  route: `import { FastifyInstance } from 'fastify';
+    route: `import { FastifyInstance } from 'fastify';
 import { ${capitalizeFirst(moduleName)}Controller } from './${moduleName}.controller';
 import { authenticate } from '../../middlewares/authenticate';
 import { authorize } from '../../middlewares/authorize';
@@ -504,7 +504,7 @@ export async function ${moduleName}Routes(fastify: FastifyInstance) {
 }
 `,
 
-  test: `import tap from 'tap';
+    test: `import tap from 'tap';
 import { ${capitalizeFirst(moduleName)}Service } from './${moduleName}.service';
 
 tap.test('${capitalizeFirst(moduleName)}Service', async (t) => {
@@ -540,9 +540,9 @@ console.log('📝 Templates created, writing files...');
 
 // Create files
 Object.entries(templates).forEach(([type, content]) => {
-  const filename = `${moduleName}.${type}.ts`;
-  console.log(`📄 Writing ${filename}...`);
-  fs.writeFileSync(path.join(moduleDir, filename), content);
+    const filename = `${moduleName}.${type}.ts`;
+    console.log(`📄 Writing ${filename}...`);
+    fs.writeFileSync(path.join(moduleDir, filename), content);
 });
 
 console.log(`✅ Module "${moduleName}" generated successfully!`);

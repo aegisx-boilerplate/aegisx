@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import { EventPublisher } from '../../utils/event-bus';
+import { AuditLogger } from '../../utils/audit-logger';
 
 interface RbacRequestBody {
   name?: string;
@@ -186,22 +187,18 @@ async function publishRbacEvents(eventData: RbacEventData, request: FastifyReque
 
   try {
     // RBAC events are always security-critical, so always publish to audit log
-    await EventPublisher.auditLog({
-      userId: (request as any).user?.id || 'system',
+    await AuditLogger.logRBAC({
+      actorId: (request as any).user?.id || 'system',
       action: `${resourceType}.${action}`,
-      resource: 'rbac',
+      targetUserId: resourceId,
       details: {
         success: isSuccess,
         resourceType,
-        resourceId,
         name,
         description,
         permissions,
-        ip,
-        userAgent,
         statusCode,
       },
-      timestamp: new Date().toISOString(),
       ip,
       userAgent,
     });

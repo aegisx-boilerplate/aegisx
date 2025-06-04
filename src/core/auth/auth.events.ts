@@ -2,6 +2,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginAsync } fro
 import fp from 'fastify-plugin';
 import { EventPublisher } from '../../utils/event-bus';
 import { EventAnalyticsService } from '../../utils/event-analytics';
+import { AuditLogger } from '../../utils/audit-logger';
 
 interface AuthRequestBody {
   username?: string;
@@ -132,16 +133,9 @@ async function publishAuthenticationEvents(
         }),
 
         // Audit log queue - for security monitoring
-        EventPublisher.auditLog({
+        AuditLogger.logAuth({
           userId: username,
           action: 'user.login',
-          resource: 'auth',
-          details: {
-            success: true,
-            ip,
-            userAgent,
-          },
-          timestamp: new Date().toISOString(),
           ip,
           userAgent,
         }),
@@ -159,19 +153,12 @@ async function publishAuthenticationEvents(
       );
     } else {
       // Failed login attempt - audit log only
-      await EventPublisher.auditLog({
+      await AuditLogger.logAuth({
+        userId: username,
         action: 'user.login.failed',
-        resource: 'auth',
-        details: {
-          success: false,
-          ip,
-          userAgent,
-          attemptedUsername: username,
-          statusCode,
-        },
-        timestamp: new Date().toISOString(),
         ip,
         userAgent,
+        reason: `Failed login attempt, status: ${statusCode}`,
       });
 
       // Record failed attempt in analytics service
