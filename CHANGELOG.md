@@ -1,3 +1,12 @@
+## 2.2.0 (2025-06-03)
+
+* feat: docker infrastructure overhaul and environment consolidation ([3d96317](https://github.com/aegisx-boilerplate/aegisx/commit/3d96317))
+* docs: add MIT license and fix README syntax ([4603c07](https://github.com/aegisx-boilerplate/aegisx/commit/4603c07))
+* docs(audit): add Linux cronjob example for audit log replay automation (non-Kubernetes) ([7df2797](https://github.com/aegisx-boilerplate/aegisx/commit/7df2797))
+* docs(audit): update README with audit log durability, replay, and per-pod/per-container log support ([ceac539](https://github.com/aegisx-boilerplate/aegisx/commit/ceac539))
+* Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([6b855e3](https://github.com/aegisx-boilerplate/aegisx/commit/6b855e3))
+* chore(logs): remove audit-offline.jsonl from repo and ensure logs/ is gitignored ([7ab10dd](https://github.com/aegisx-boilerplate/aegisx/commit/7ab10dd))
+
 ## 2.1.0 (2025-06-03)
 
 * chore(audit): support per-container audit log replay for Docker Compose and K8s ([0713553](https://github.com/aegisx-boilerplate/aegisx/commit/0713553))
