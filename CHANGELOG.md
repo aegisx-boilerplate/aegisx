@@ -1,3 +1,8 @@
+## <small>2.2.1 (2025-06-04)</small>
+
+* Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([c4f5b5a](https://github.com/aegisx-boilerplate/aegisx/commit/c4f5b5a))
+* fix: update docker workflow to use artifact upload only ([724e9cc](https://github.com/aegisx-boilerplate/aegisx/commit/724e9cc))
+
 ## 2.2.0 (2025-06-03)
 
 * feat: docker infrastructure overhaul and environment consolidation ([3d96317](https://github.com/aegisx-boilerplate/aegisx/commit/3d96317))
