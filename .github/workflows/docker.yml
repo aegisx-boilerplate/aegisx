@@ -59,6 +59,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get package version
+        id: package_version
+        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -71,6 +75,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
             type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=v${{ steps.package_version.outputs.version }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -99,6 +104,14 @@ jobs:
           name: trivy-security-scan
           path: 'trivy-results.json'
           retention-days: 30
+
+      - name: Display build summary
+        if: github.event_name != 'pull_request'
+        run: |
+          echo "🚀 Docker Build Complete!"
+          echo "📦 Package Version: v${{ steps.package_version.outputs.version }}"
+          echo "🏷️ Docker Tags: ${{ steps.meta.outputs.tags }}"
+          echo "📍 Registry: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
 
       - name: Display scan summary
         if: github.event_name != 'pull_request'
