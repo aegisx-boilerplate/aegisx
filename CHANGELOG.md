@@ -1,3 +1,12 @@
+## 2.7.0 (2025-06-05)
+
+* docs: เพิ่มเอกสารและสคริปต์ทดสอบสำหรับ auth module ([1b8bf0a](https://github.com/aegisx-boilerplate/aegisx/commit/1b8bf0a))
+* feat: implement per-pod/per-container support for audit offline logging ([2d3102f](https://github.com/aegisx-boilerplate/aegisx/commit/2d3102f))
+* feat: ปรับปรุง auth module เพิ่มเติมและอัพเดท environment configuration ([98df51a](https://github.com/aegisx-boilerplate/aegisx/commit/98df51a))
+* refactor: rename events folder to event-analytics for better clarity ([d97aa0c](https://github.com/aegisx-boilerplate/aegisx/commit/d97aa0c))
+* refactor: ย้าย api-key module ไปรวมกับ auth module และแก้ไข TypeScript errors ([68ead3a](https://github.com/aegisx-boilerplate/aegisx/commit/68ead3a))
+* fix: resolve eslint warnings in test-per-pod-audit.ts ([89563ee](https://github.com/aegisx-boilerplate/aegisx/commit/89563ee))
+
 ## 2.6.0 (2025-06-05)
 
 * Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([7c2f069](https://github.com/aegisx-boilerplate/aegisx/commit/7c2f069))
