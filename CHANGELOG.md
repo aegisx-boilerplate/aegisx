@@ -1,3 +1,8 @@
+## <small>3.0.2 (2025-06-05)</small>
+
+* Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([f599917](https://github.com/aegisx-boilerplate/aegisx/commit/f599917))
+* fix: trigger correct release after rollback ([98d079f](https://github.com/aegisx-boilerplate/aegisx/commit/98d079f))
+
 ## <small>3.0.1 (2025-06-05)</small>
 
 * fix(release): update config semantic release remove breaking: true ([9e74a26](https://github.com/aegisx-boilerplate/aegisx/commit/9e74a26))
