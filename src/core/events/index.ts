@@ -1,6 +1,6 @@
 /**
  * Events Core Module
- * 
+ *
  * ระบบ Event Analytics และ Storage Adapters สำหรับ AegisX
  * ย้ายจาก utils มาเป็น core module เพื่อแสดงความสำคัญของ event system
  */
