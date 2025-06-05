@@ -1,5 +1,15 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { EventPublisher } from '../utils/event-bus';
+import { authenticate } from '../middlewares/authenticate';
+import { authorize } from '../middlewares/authorize';
+import {
+  EventMetricsQuerySchema,
+  UserEventStatsParamsSchema,
+  EventExportQuerySchema,
+  EventMetricsResponseSchema,
+  UserEventStatsResponseSchema,
+  EventHealthResponseSchema,
+  EventAnalyticsErrorSchema,
+} from './event-analytics.schema';
 
 interface EventMetrics {
   totalEvents: number;
@@ -234,60 +244,194 @@ export class EventAnalyticsService {
  */
 export async function registerEventAnalyticsRoutes(fastify: FastifyInstance): Promise<void> {
   // Event metrics endpoint
-  fastify.get('/events/metrics', async (request: FastifyRequest, reply: FastifyReply) => {
-    const query = request.query as { period?: '1h' | '24h' | '7d' | '30d' };
-    const metrics = EventAnalyticsService.getEventMetrics({ period: query.period });
+  fastify.get(
+    '/events/metrics',
+    {
+      preHandler: [authenticate, authorize('events:read')],
+      schema: {
+        tags: ['Events'],
+        summary: 'Get event system metrics',
+        description:
+          'Retrieve comprehensive event system metrics and analytics for a specified time period',
+        querystring: EventMetricsQuerySchema,
+        response: {
+          200: EventMetricsResponseSchema,
+          400: EventAnalyticsErrorSchema,
+          401: EventAnalyticsErrorSchema,
+          403: EventAnalyticsErrorSchema,
+          500: EventAnalyticsErrorSchema,
+        },
+        security: [{ bearerAuth: [] }],
+      },
+    },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const query = request.query as {
+          period?: '1h' | '24h' | '7d' | '30d';
+          start?: string;
+          end?: string;
+        };
+        const metrics = EventAnalyticsService.getEventMetrics({
+          period: query.period,
+          start: query.start,
+          end: query.end,
+        });
 
-    return {
-      success: true,
-      data: metrics,
-      timestamp: new Date().toISOString(),
-    };
-  });
+        return reply.send({
+          success: true,
+          data: metrics,
+          timestamp: new Date().toISOString(),
+        });
+      } catch (error: any) {
+        return reply.code(500).send({
+          success: false,
+          error: error.message || 'Failed to retrieve event metrics',
+          timestamp: new Date().toISOString(),
+        });
+      }
+    }
+  );
 
   // User-specific event stats
   fastify.get(
-    '/events/users/:userId/stats',
-    async (request: FastifyRequest, reply: FastifyReply) => {
-      const { userId } = request.params as { userId: string };
-      const query = request.query as { period?: '1h' | '24h' | '7d' | '30d' };
-
-      const stats = EventAnalyticsService.getUserEventStats(userId, { period: query.period });
-
-      return {
-        success: true,
-        data: {
-          userId,
-          ...stats,
+    '/events/user/:userId/stats',
+    {
+      preHandler: [authenticate, authorize('events:read')],
+      schema: {
+        tags: ['Events'],
+        summary: 'Get user-specific event statistics',
+        description: 'Retrieve event statistics and recent activity for a specific user',
+        params: UserEventStatsParamsSchema,
+        querystring: EventMetricsQuerySchema,
+        response: {
+          200: UserEventStatsResponseSchema,
+          400: EventAnalyticsErrorSchema,
+          401: EventAnalyticsErrorSchema,
+          403: EventAnalyticsErrorSchema,
+          404: EventAnalyticsErrorSchema,
+          500: EventAnalyticsErrorSchema,
         },
-        timestamp: new Date().toISOString(),
-      };
+        security: [{ bearerAuth: [] }],
+      },
+    },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const { userId } = request.params as { userId: string };
+        const query = request.query as {
+          period?: '1h' | '24h' | '7d' | '30d';
+          start?: string;
+          end?: string;
+        };
+
+        if (!userId) {
+          return reply.code(400).send({
+            success: false,
+            error: 'User ID is required',
+            timestamp: new Date().toISOString(),
+          });
+        }
+
+        const stats = EventAnalyticsService.getUserEventStats(userId, {
+          period: query.period,
+          start: query.start,
+          end: query.end,
+        });
+
+        return reply.send({
+          success: true,
+          data: {
+            userId,
+            ...stats,
+          },
+          timestamp: new Date().toISOString(),
+        });
+      } catch (error: any) {
+        return reply.code(500).send({
+          success: false,
+          error: error.message || 'Failed to retrieve user event statistics',
+          timestamp: new Date().toISOString(),
+        });
+      }
     }
   );
 
   // Export event data
-  fastify.get('/events/export', async (request: FastifyRequest, reply: FastifyReply) => {
-    const query = request.query as { format?: 'json' | 'csv' };
-    const format = query.format || 'json';
+  fastify.get(
+    '/events/export',
+    {
+      preHandler: [authenticate, authorize('events:export')],
+      schema: {
+        tags: ['Events'],
+        summary: 'Export event data',
+        description: 'Export event history data in JSON or CSV format for backup or analysis',
+        querystring: EventExportQuerySchema,
+        response: {
+          400: EventAnalyticsErrorSchema,
+          401: EventAnalyticsErrorSchema,
+          403: EventAnalyticsErrorSchema,
+          500: EventAnalyticsErrorSchema,
+        },
+        security: [{ bearerAuth: [] }],
+      },
+    },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const query = request.query as { format?: 'json' | 'csv' };
+        const format = query.format || 'json';
 
-    const data = EventAnalyticsService.exportEventData(format);
+        const data = EventAnalyticsService.exportEventData(format);
 
-    reply.header('Content-Type', format === 'json' ? 'application/json' : 'text/csv');
-    reply.header('Content-Disposition', `attachment; filename="events.${format}"`);
+        reply.header('Content-Type', format === 'json' ? 'application/json' : 'text/csv');
+        reply.header('Content-Disposition', `attachment; filename="events.${format}"`);
 
-    return data;
-  });
+        // Return raw data without schema validation for successful responses
+        return reply.send(data);
+      } catch (error: any) {
+        return reply.code(500).send({
+          success: false,
+          error: error.message || 'Failed to export event data',
+          timestamp: new Date().toISOString(),
+        });
+      }
+    }
+  );
 
   // System health check
-  fastify.get('/events/health', async (request: FastifyRequest, reply: FastifyReply) => {
-    const metrics = EventAnalyticsService.getEventMetrics();
+  fastify.get(
+    '/events/health',
+    {
+      preHandler: [authenticate, authorize('events:read')],
+      schema: {
+        tags: ['Events'],
+        summary: 'Check event system health',
+        description: 'Get current health status and diagnostics of the event system',
+        response: {
+          200: EventHealthResponseSchema,
+          401: EventAnalyticsErrorSchema,
+          403: EventAnalyticsErrorSchema,
+          500: EventAnalyticsErrorSchema,
+        },
+        security: [{ bearerAuth: [] }],
+      },
+    },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const metrics = EventAnalyticsService.getEventMetrics();
 
-    return {
-      success: true,
-      health: metrics.systemHealth,
-      timestamp: new Date().toISOString(),
-    };
-  });
+        return reply.send({
+          success: true,
+          health: metrics.systemHealth,
+          timestamp: new Date().toISOString(),
+        });
+      } catch (error: any) {
+        return reply.code(500).send({
+          success: false,
+          error: error.message || 'Failed to check event system health',
+          timestamp: new Date().toISOString(),
+        });
+      }
+    }
+  );
 
-  fastify.log.info('📊 Event analytics routes registered');
+  fastify.log.info('📊 Event analytics routes registered with comprehensive schemas');
 }

@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 
 exports.seed = async function (knex) {
     // Delete all
+    await knex('user_roles').del();
     await knex('users').del();
     await knex('role_permissions').del();
     await knex('permissions').del();
@@ -23,6 +24,8 @@ exports.seed = async function (knex) {
         'budget:read',
         'budget:update',
         'api-key:manage',
+        'events:read',
+        'events:export',
     ];
     const permissionRows = await knex('permissions').insert(
         permissions.map(name => ({ name }))
@@ -35,11 +38,16 @@ exports.seed = async function (knex) {
 
     // Create admin user
     const passwordHash = await bcrypt.hash('admin1', 10);
-    await knex('users').insert({
+    const [adminUser] = await knex('users').insert({
         username: 'admin1',
         password_hash: passwordHash,
         name: 'Admin One',
-        role_id: adminRole.id,
         is_active: true
+    }).returning('*');
+
+    // Assign admin role to admin user using user_roles table
+    await knex('user_roles').insert({
+        user_id: adminUser.id,
+        role_id: adminRole.id
     });
 };
