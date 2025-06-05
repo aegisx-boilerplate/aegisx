@@ -1,3 +1,7 @@
+## 2.5.0 (2025-06-05)
+
+* feat: migrate EventBus from utils to core with Universal design ([2c1c403](https://github.com/aegisx-boilerplate/aegisx/commit/2c1c403))
+
 ## <small>2.4.3 (2025-06-05)</small>
 
 * fix: trigger correct release after removing v3 ([3186f71](https://github.com/aegisx-boilerplate/aegisx/commit/3186f71))
