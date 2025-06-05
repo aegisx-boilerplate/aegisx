@@ -3,7 +3,6 @@ export interface AuthUser {
     id: string;
     username: string;
     email: string;
-    role_id: string;
     permissions?: string[];
     created_at: Date;
     updated_at: Date;
@@ -19,8 +18,6 @@ export interface RegisterRequest {
     username: string;
     email: string;
     password: string;
-    firstName?: string;
-    lastName?: string;
 }
 
 export interface ForgotPasswordRequest {
@@ -82,7 +79,6 @@ export interface JwtPayload {
     id: string;
     username: string;
     email: string;
-    role_id: string;
     permissions: string[];
     iat: number;
     exp: number;

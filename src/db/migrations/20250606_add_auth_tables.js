@@ -46,7 +46,7 @@ exports.up = async function (knex) {
             table.uuid('user_id').notNullable().references('id').inTable('users').onDelete('CASCADE');
             table.string('token').notNullable().unique();
             table.timestamp('expires_at').notNullable();
-            table.boolean('used').notNullable().defaultTo(false);
+            table.boolean('revoked').notNullable().defaultTo(false);
             table.timestamp('created_at').notNullable().defaultTo(knex.fn.now());
 
             // Indexes
@@ -70,21 +70,8 @@ exports.up = async function (knex) {
         });
     }
 
-    // Add missing columns to users table if needed
-    const usersTableExists = await knex.schema.hasTable('users');
-    if (usersTableExists) {
-        const hasFirstName = await knex.schema.hasColumn('users', 'first_name');
-        const hasLastName = await knex.schema.hasColumn('users', 'last_name');
-
-        await knex.schema.alterTable('users', table => {
-            if (!hasFirstName) {
-                table.string('first_name').nullable();
-            }
-            if (!hasLastName) {
-                table.string('last_name').nullable();
-            }
-        });
-    }
+    // Note: Removed first_name and last_name columns from users table
+    // These will be handled by a separate profile system
 };
 
 exports.down = async function (knex) {
@@ -109,19 +96,5 @@ exports.down = async function (knex) {
         });
     }
 
-    // Remove added columns from users
-    const usersTableExists = await knex.schema.hasTable('users');
-    if (usersTableExists) {
-        const hasFirstName = await knex.schema.hasColumn('users', 'first_name');
-        const hasLastName = await knex.schema.hasColumn('users', 'last_name');
-
-        await knex.schema.alterTable('users', table => {
-            if (hasFirstName) {
-                table.dropColumn('first_name');
-            }
-            if (hasLastName) {
-                table.dropColumn('last_name');
-            }
-        });
-    }
+    // Note: first_name and last_name columns are not used in this migration
 };

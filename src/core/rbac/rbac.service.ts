@@ -48,4 +48,29 @@ export class RbacService {
     await redis.set(`user:${userId}:permissions`, JSON.stringify(permissions));
     return permissions;
   }
+
+  /**
+   * Get user's primary role name
+   */
+  static async getUserRole(userId: string): Promise<string | null> {
+    const userRole = await knex('user_roles')
+      .join('roles', 'user_roles.role_id', 'roles.id')
+      .where('user_roles.user_id', userId)
+      .select('roles.name')
+      .first();
+
+    return userRole ? userRole.name : null;
+  }
+
+  /**
+   * Get all user roles
+   */
+  static async getUserRoles(userId: string): Promise<string[]> {
+    const userRoles = await knex('user_roles')
+      .join('roles', 'user_roles.role_id', 'roles.id')
+      .where('user_roles.user_id', userId)
+      .select('roles.name');
+
+    return userRoles.map((r: any) => r.name);
+  }
 }

@@ -1,4 +1,3 @@
-
 import { FastifyInstance } from 'fastify';
 import { knex } from '../../db/knex';
 import { JwtPayload, RefreshToken } from './types';
@@ -12,8 +11,8 @@ export function setFastifyInstance(instance: FastifyInstance) {
 }
 
 export class JwtService {
-    static ACCESS_TOKEN_EXPIRY = env.JWT_ACCESS_EXPIRY || '1h';
-    static REFRESH_TOKEN_EXPIRY = env.JWT_REFRESH_EXPIRY || '7d';
+    static ACCESS_TOKEN_EXPIRY = env.JWT_ACCESS_TOKEN_EXPIRY;
+    static REFRESH_TOKEN_EXPIRY = env.JWT_REFRESH_TOKEN_EXPIRY;
 
     /**
      * Sign an access token
@@ -65,6 +64,19 @@ export class JwtService {
         } catch (error: any) {
             throw new Error(`Invalid token: ${error.message}`);
         }
+    }
+
+    /**
+     * Verify an access token specifically
+     */
+    static async verifyAccessToken(token: string): Promise<JwtPayload> {
+        const payload = await this.verifyToken(token);
+
+        if (payload.type !== 'access') {
+            throw new Error('Invalid token type. Expected access token.');
+        }
+
+        return payload;
     }
 
     /**

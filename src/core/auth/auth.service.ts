@@ -5,6 +5,7 @@ import { AuditLogger } from '../../utils/audit-logger';
 import { JwtService, setFastifyInstance } from './jwt.service';
 import { PasswordService } from './password.service';
 import { EmailService } from '../../services/email.service';
+import { RbacService } from '../rbac/rbac.service';
 import {
   AuthUser,
   RegisterRequest,
@@ -70,7 +71,6 @@ export class AuthService {
       id: user.id,
       username: user.username,
       email: user.email,
-      role_id: user.role_id,
       permissions,
     };
 
@@ -134,9 +134,6 @@ export class AuthService {
         username: data.username,
         email: data.email,
         password_hash: passwordHash,
-        first_name: data.firstName,
-        last_name: data.lastName,
-        role_id: process.env.DEFAULT_USER_ROLE_ID || null,
         created_at: new Date(),
         updated_at: new Date(),
       })
@@ -144,6 +141,19 @@ export class AuthService {
 
     // Store password in history
     await PasswordService.storePasswordHistory(user.id, passwordHash);
+
+    // Assign default USER role
+    try {
+      const defaultRole = await knex('roles').where({ name: 'USER' }).first();
+      if (defaultRole) {
+        await RbacService.assignRole(user.id, defaultRole.id);
+      } else {
+        console.warn('Default USER role not found. User registered without role.');
+      }
+    } catch (roleError) {
+      console.error('Failed to assign default role:', roleError);
+      // Don't fail registration if role assignment fails
+    }
 
     // Send welcome email (optional, don't fail registration if email fails)
     try {
@@ -395,7 +405,7 @@ export class AuthService {
   static async getCurrentUser(userId: string): Promise<AuthUser> {
     const user = await knex('users')
       .where({ id: userId })
-      .select('id', 'username', 'email', 'role_id', 'created_at', 'updated_at')
+      .select('id', 'username', 'email', 'created_at', 'updated_at')
       .first();
 
     if (!user) {

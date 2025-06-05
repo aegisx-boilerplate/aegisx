@@ -28,8 +28,6 @@ export const RegisterSchema = Type.Object({
   username: Type.String({ description: 'Unique username' }),
   email: Type.String({ format: 'email', description: 'Email address' }),
   password: Type.String({ minLength: 8, description: 'Password (min 8 characters)' }),
-  firstName: Type.Optional(Type.String({ description: 'First name' })),
-  lastName: Type.Optional(Type.String({ description: 'Last name' })),
 });
 
 // Refresh Token Schemas
@@ -64,7 +62,6 @@ export const UserInfoSchema = Type.Object({
     id: Type.String(),
     username: Type.String(),
     email: Type.String(),
-    role_id: Type.String(),
     permissions: Type.Array(Type.String()),
     created_at: Type.String({ format: 'date-time' }),
     updated_at: Type.String({ format: 'date-time' }),
@@ -75,7 +72,7 @@ export const UserInfoSchema = Type.Object({
 export const ApiKeyCreateSchema = Type.Object({
   name: Type.String({ description: 'API key name/description' }),
   scopes: Type.Array(Type.String(), { description: 'Allowed scopes/permissions' }),
-  ipWhitelist: Type.Optional(Type.Array(Type.String()), { description: 'Allowed IP addresses' }),
+  ipWhitelist: Type.Optional(Type.Array(Type.String(), { description: 'Allowed IP addresses' })),
   expiresAt: Type.Optional(Type.String({ format: 'date-time', description: 'Expiry date' })),
 });
 

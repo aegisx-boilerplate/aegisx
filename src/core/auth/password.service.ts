@@ -6,10 +6,10 @@ import { PasswordResetToken } from './types';
 import { env } from '../../config/env';
 
 export class PasswordService {
-    static SALT_ROUNDS = parseInt(env.BCRYPT_SALT_ROUNDS || '12');
-    static MIN_PASSWORD_LENGTH = parseInt(env.PASSWORD_MIN_LENGTH || '8');
-    static REQUIRE_SPECIAL_CHARS = env.PASSWORD_REQUIRE_SPECIAL_CHARS === 'true';
-    static RESET_TOKEN_EXPIRY_HOURS = parseInt(env.PASSWORD_RESET_EXPIRY_HOURS || '24');
+    static SALT_ROUNDS = env.BCRYPT_ROUNDS;
+    static MIN_PASSWORD_LENGTH = env.PASSWORD_MIN_LENGTH;
+    static REQUIRE_SPECIAL_CHARS = env.PASSWORD_REQUIRE_SYMBOLS;
+    static RESET_TOKEN_EXPIRY_HOURS = 24;
 
     /**
      * Hash a password using bcrypt

@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { AuthService } from './auth.service';
-import { ApiKeyService } from '../api-key/api-key.service';
+import { ApiKeyService } from './api-key.service';
 import { updateRateLimit } from '../../middlewares/rate-limit';
 import {
   LoginRequest,
