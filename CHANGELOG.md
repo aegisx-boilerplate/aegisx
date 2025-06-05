@@ -1,3 +1,7 @@
+## 2.4.0 (2025-06-05)
+
+* feat: improve event analytics routes with comprehensive TypeBox schemas ([bd7ca96](https://github.com/aegisx-boilerplate/aegisx/commit/bd7ca96))
+
 ## <small>2.3.2 (2025-06-05)</small>
 
 * refactor: remove redundant Docker Compose files and update references ([5b10348](https://github.com/aegisx-boilerplate/aegisx/commit/5b10348))
