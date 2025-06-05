@@ -30,7 +30,7 @@ test_setup_method() {
     
     # Clean up first
     echo "🧹 Cleaning up..."
-    docker-compose -f docker-compose.dev.yml down -v --remove-orphans 2>/dev/null
+    docker-compose -f docker-compose.services.yml down -v --remove-orphans 2>/dev/null
     docker stop aegisx-postgres aegisx-redis aegisx-rabbitmq 2>/dev/null
     docker rm aegisx-postgres aegisx-redis aegisx-rabbitmq 2>/dev/null
     
@@ -69,7 +69,7 @@ test_setup_method() {
 echo "Starting tests..."
 
 # Test 1: Docker Compose
-test_setup_method "Docker Compose (Recommended)" "docker-compose -f docker-compose.dev.yml up -d"
+test_setup_method "Docker Compose (Recommended)" "docker-compose -f docker-compose.services.yml up -d"
 
 # Test 2: Makefile
 test_setup_method "Makefile" "make setup"
@@ -94,7 +94,7 @@ echo "💡 Recommendation: Use 'make setup-full' for best experience"
 # Cleanup
 echo ""
 echo "🧹 Final cleanup..."
-docker-compose -f docker-compose.dev.yml down -v --remove-orphans 2>/dev/null
+docker-compose -f docker-compose.services.yml down -v --remove-orphans 2>/dev/null
 docker stop aegisx-postgres aegisx-redis aegisx-rabbitmq 2>/dev/null
 docker rm aegisx-postgres aegisx-redis aegisx-rabbitmq 2>/dev/null
 
