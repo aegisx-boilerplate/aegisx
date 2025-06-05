@@ -1,3 +1,11 @@
+## <small>2.3.2 (2025-06-05)</small>
+
+* refactor: remove redundant Docker Compose files and update references ([5b10348](https://github.com/aegisx-boilerplate/aegisx/commit/5b10348))
+* docs: consolidate and reorganize documentation structure ([3c7adef](https://github.com/aegisx-boilerplate/aegisx/commit/3c7adef))
+* docs: organize Universal Core documents into roadmap folder ([be9489b](https://github.com/aegisx-boilerplate/aegisx/commit/be9489b))
+* Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([8720181](https://github.com/aegisx-boilerplate/aegisx/commit/8720181))
+* chore(release): 2.3.1 ([347e5a6](https://github.com/aegisx-boilerplate/aegisx/commit/347e5a6))
+
 ## <small>2.3.1 (2025-06-04)</small>
 
 * Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([5f2d674](https://github.com/aegisx-boilerplate/aegisx/commit/5f2d674))
