@@ -1,3 +1,17 @@
+## 3.0.0 (2025-06-05)
+
+* docs: comprehensive update to events core module README ([148d457](https://github.com/aegisx-boilerplate/aegisx/commit/148d457))
+* docs(events): add comprehensive Event Analytics documentation ([4cae807](https://github.com/aegisx-boilerplate/aegisx/commit/4cae807))
+* Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([24520a3](https://github.com/aegisx-boilerplate/aegisx/commit/24520a3))
+* style: remove trailing whitespace in events index.ts ([e23d810](https://github.com/aegisx-boilerplate/aegisx/commit/e23d810))
+
+
+### BREAKING CHANGE
+
+* None
+Fixes: Documentation gap for Event Analytics system
+Closes: #documentation-request
+
 ## <small>2.4.2 (2025-06-05)</small>
 
 * fix: remove unused variable in monitor-events script ([f296b9e](https://github.com/aegisx-boilerplate/aegisx/commit/f296b9e))
