@@ -10,6 +10,8 @@ import {
   EventHealthResponseSchema,
   EventAnalyticsErrorSchema,
 } from './event-analytics.schema';
+import { IEventStorageAdapter } from './adapters/event-storage.adapter';
+import { EventStorageAdapterFactory } from './adapters/event-storage.factory';
 
 interface EventMetrics {
   totalEvents: number;
@@ -35,44 +37,73 @@ interface TimeRange {
 }
 
 /**
- * Event Analytics Service
+ * Event Analytics Service - Enhanced with Storage Adapter Pattern
  *
  * ให้ข้อมูล analytics และ metrics ของ event system
  * รวมถึง real-time monitoring และ historical data
+ * พร้อม pluggable storage adapters (memory, database, hybrid)
  */
 export class EventAnalyticsService {
-  private static eventHistory: Array<{
-    type: string;
-    queue: string;
-    timestamp: Date;
-    userId?: string;
-    data?: any;
-  }> = [];
-
-  private static maxHistorySize = 1000; // เก็บ events ล่าสุด 1000 รายการ
+  private static storageAdapter: IEventStorageAdapter;
+  private static isInitialized = false;
 
   /**
-   * บันทึก event เข้า history สำหรับ analytics
+   * Initialize service with storage adapter
    */
-  static recordEvent(type: string, queue: string, userId?: string, data?: any): void {
-    this.eventHistory.unshift({
-      type,
-      queue,
-      timestamp: new Date(),
-      userId,
-      data,
-    });
+  static async initialize(adapter?: IEventStorageAdapter): Promise<void> {
+    if (this.isInitialized && this.storageAdapter) return;
 
-    // ควบคุมขนาด history
-    if (this.eventHistory.length > this.maxHistorySize) {
-      this.eventHistory = this.eventHistory.slice(0, this.maxHistorySize);
+    try {
+      // Create adapter from environment if not provided
+      this.storageAdapter = adapter || EventStorageAdapterFactory.createFromEnv();
+
+      // Initialize the adapter
+      await this.storageAdapter.initialize();
+
+      this.isInitialized = true;
+      console.log('📊 Event Analytics Service initialized with storage adapter');
+    } catch (error) {
+      console.error('Failed to initialize Event Analytics Service:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * บันทึก event ผ่าน storage adapter
+   */
+  static async recordEvent(
+    type: string,
+    queue: string,
+    userId?: string,
+    data?: any
+  ): Promise<void> {
+    try {
+      // Ensure service is initialized
+      await this.initialize();
+
+      // Store event using adapter
+      await this.storageAdapter.storeEvent({
+        type,
+        queue,
+        userId,
+        data,
+        timestamp: new Date(),
+      });
+
+      console.log(`📝 Event recorded: ${type} in ${queue}`);
+    } catch (error) {
+      console.error('Failed to record event:', error);
+      throw error;
     }
   }
 
   /**
    * รับ event metrics สำหรับช่วงเวลาที่กำหนด
    */
-  static getEventMetrics(timeRange?: TimeRange): EventMetrics {
+  static async getEventMetrics(timeRange?: TimeRange): Promise<EventMetrics> {
+    // Ensure service is initialized
+    await this.initialize();
+
     const now = new Date();
     let startDate: Date;
 
@@ -101,63 +132,148 @@ export class EventAnalyticsService {
 
     const endDate = timeRange?.end ? new Date(timeRange.end) : now;
 
-    // Filter events by time range
-    const filteredEvents = this.eventHistory.filter(
-      (event) => event.timestamp >= startDate && event.timestamp <= endDate
-    );
+    // Get data from storage adapter
+    const [totalEvents, eventsByType, eventsByQueue, recentEvents, storageHealth] =
+      await Promise.all([
+        this.storageAdapter.getEventCount({
+          timeRange: { start: startDate, end: endDate },
+        }),
+        this.storageAdapter.getEventsByType({
+          timeRange: { start: startDate, end: endDate },
+        }),
+        this.storageAdapter.getEventsByQueue({
+          timeRange: { start: startDate, end: endDate },
+        }),
+        this.storageAdapter.getEvents({
+          timeRange: { start: startDate, end: endDate },
+          limit: 10,
+        }),
+        this.storageAdapter.getHealthStatus(),
+      ]);
 
-    // Calculate metrics
-    const eventsByType: Record<string, number> = {};
-    const eventsByQueue: Record<string, number> = {};
-
-    filteredEvents.forEach((event) => {
-      eventsByType[event.type] = (eventsByType[event.type] || 0) + 1;
-      eventsByQueue[event.queue] = (eventsByQueue[event.queue] || 0) + 1;
-    });
-
-    // Get recent events (last 10)
-    const recentEvents = filteredEvents.slice(0, 10).map((event) => ({
+    // Convert recent events to required format
+    const formattedRecentEvents = recentEvents.map((event) => ({
       type: event.type,
       queue: event.queue,
       timestamp: event.timestamp.toISOString(),
       userId: event.userId,
     }));
 
-    // System health check
-    const systemHealth = this.getSystemHealth();
+    // Combine storage health with system health
+    const systemHealth = this.combineHealthStatus(storageHealth);
 
     return {
-      totalEvents: filteredEvents.length,
+      totalEvents,
       eventsByType,
       eventsByQueue,
-      recentEvents,
+      recentEvents: formattedRecentEvents,
       systemHealth,
     };
   }
 
   /**
-   * ตรวจสอบสุขภาพของ event system
+   * รับสถิติ events ตาม user
    */
-  private static getSystemHealth(): EventMetrics['systemHealth'] {
+  static async getUserEventStats(
+    userId: string,
+    timeRange?: TimeRange
+  ): Promise<{
+    totalEvents: number;
+    eventsByType: Record<string, number>;
+    recentActivity: Array<{
+      type: string;
+      queue: string;
+      timestamp: string;
+    }>;
+  }> {
+    // Ensure service is initialized
+    await this.initialize();
+
+    const now = new Date();
+    const startDate = timeRange?.start
+      ? new Date(timeRange.start)
+      : new Date(now.getTime() - 24 * 60 * 60 * 1000); // Default: last 24h
+
+    const endDate = timeRange?.end ? new Date(timeRange.end) : now;
+
+    // Get user-specific data from storage adapter
+    const [totalEvents, eventsByType, recentEvents] = await Promise.all([
+      this.storageAdapter.getEventCount({
+        userId,
+        timeRange: { start: startDate, end: endDate },
+      }),
+      this.storageAdapter.getEventsByType({
+        userId,
+        timeRange: { start: startDate, end: endDate },
+      }),
+      this.storageAdapter.getEvents({
+        userId,
+        timeRange: { start: startDate, end: endDate },
+        limit: 5,
+      }),
+    ]);
+
+    const recentActivity = recentEvents.map((event) => ({
+      type: event.type,
+      queue: event.queue,
+      timestamp: event.timestamp.toISOString(),
+    }));
+
+    return {
+      totalEvents,
+      eventsByType,
+      recentActivity,
+    };
+  }
+
+  /**
+   * ล้าง event history (สำหรับ testing หรือ maintenance)
+   */
+  static async clearHistory(): Promise<void> {
+    await this.initialize();
+    await this.storageAdapter.clearEvents();
+  }
+
+  /**
+   * Export event data สำหรับ backup หรือ analysis
+   */
+  static async exportEventData(format: 'json' | 'csv' = 'json'): Promise<string> {
+    await this.initialize();
+    return await this.storageAdapter.exportEvents({ format });
+  }
+
+  /**
+   * Get storage adapter health combined with system health
+   */
+  private static combineHealthStatus(storageHealth: {
+    status: 'healthy' | 'warning' | 'error';
+    message: string;
+    details?: any;
+  }): EventMetrics['systemHealth'] {
     const uptime = process.uptime();
-    const recentEvents = this.eventHistory.slice(0, 10);
 
-    // ตรวจสอบว่ามี events ใหม่ในช่วง 5 นาทีที่ผ่านมา
-    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-    const hasRecentActivity = recentEvents.some((event) => event.timestamp > fiveMinutesAgo);
-
-    if (uptime < 60) {
+    // If storage has issues, reflect that in system health
+    if (storageHealth.status === 'error') {
       return {
-        status: 'warning',
-        message: 'System recently started',
+        status: 'error',
+        message: `Storage error: ${storageHealth.message}`,
         uptime,
       };
     }
 
-    if (!hasRecentActivity && this.eventHistory.length > 0) {
+    if (storageHealth.status === 'warning') {
       return {
         status: 'warning',
-        message: 'No recent event activity detected',
+        message: `Storage warning: ${storageHealth.message}`,
+        uptime,
+      };
+    }
+
+    // Check system-level health
+    if (uptime < 60) {
+      return {
+        status: 'warning',
+        message: 'System recently started',
         uptime,
       };
     }
@@ -170,72 +286,36 @@ export class EventAnalyticsService {
   }
 
   /**
-   * รับสถิติ events ตาม user
+   * Get current storage adapter type and health
    */
-  static getUserEventStats(
-    userId: string,
-    timeRange?: TimeRange
-  ): {
-    totalEvents: number;
-    eventsByType: Record<string, number>;
-    recentActivity: Array<{
-      type: string;
-      queue: string;
-      timestamp: string;
-    }>;
-  } {
-    const now = new Date();
-    const startDate = timeRange?.start
-      ? new Date(timeRange.start)
-      : new Date(now.getTime() - 24 * 60 * 60 * 1000); // Default: last 24h
+  static async getStorageInfo(): Promise<{
+    adapterType: string;
+    health: any;
+    isInitialized: boolean;
+  }> {
+    if (!this.isInitialized || !this.storageAdapter) {
+      return {
+        adapterType: 'none',
+        health: { status: 'error', message: 'Service not initialized' },
+        isInitialized: false,
+      };
+    }
 
-    const userEvents = this.eventHistory.filter(
-      (event) => event.userId === userId && event.timestamp >= startDate
-    );
-
-    const eventsByType: Record<string, number> = {};
-    userEvents.forEach((event) => {
-      eventsByType[event.type] = (eventsByType[event.type] || 0) + 1;
-    });
-
-    const recentActivity = userEvents.slice(0, 5).map((event) => ({
-      type: event.type,
-      queue: event.queue,
-      timestamp: event.timestamp.toISOString(),
-    }));
-
+    const health = await this.storageAdapter.getHealthStatus();
     return {
-      totalEvents: userEvents.length,
-      eventsByType,
-      recentActivity,
+      adapterType: this.storageAdapter.constructor.name,
+      health,
+      isInitialized: this.isInitialized,
     };
   }
 
   /**
-   * ล้าง event history (สำหรับ testing หรือ maintenance)
+   * Switch storage adapter (useful for testing or runtime reconfiguration)
    */
-  static clearHistory(): void {
-    this.eventHistory = [];
-  }
-
-  /**
-   * Export event data สำหรับ backup หรือ analysis
-   */
-  static exportEventData(format: 'json' | 'csv' = 'json'): string {
-    if (format === 'json') {
-      return JSON.stringify(this.eventHistory, null, 2);
-    }
-
-    // CSV format
-    const headers = ['timestamp', 'type', 'queue', 'userId'];
-    const csvRows = [
-      headers.join(','),
-      ...this.eventHistory.map((event) =>
-        [event.timestamp.toISOString(), event.type, event.queue, event.userId || ''].join(',')
-      ),
-    ];
-
-    return csvRows.join('\n');
+  static async switchAdapter(newAdapter: IEventStorageAdapter): Promise<void> {
+    await newAdapter.initialize();
+    this.storageAdapter = newAdapter;
+    console.log(`🔄 Switched to new storage adapter: ${newAdapter.constructor.name}`);
   }
 }
 
@@ -271,7 +351,7 @@ export async function registerEventAnalyticsRoutes(fastify: FastifyInstance): Pr
           start?: string;
           end?: string;
         };
-        const metrics = EventAnalyticsService.getEventMetrics({
+        const metrics = await EventAnalyticsService.getEventMetrics({
           period: query.period,
           start: query.start,
           end: query.end,
@@ -331,7 +411,7 @@ export async function registerEventAnalyticsRoutes(fastify: FastifyInstance): Pr
           });
         }
 
-        const stats = EventAnalyticsService.getUserEventStats(userId, {
+        const stats = await EventAnalyticsService.getUserEventStats(userId, {
           period: query.period,
           start: query.start,
           end: query.end,
@@ -379,7 +459,7 @@ export async function registerEventAnalyticsRoutes(fastify: FastifyInstance): Pr
         const query = request.query as { format?: 'json' | 'csv' };
         const format = query.format || 'json';
 
-        const data = EventAnalyticsService.exportEventData(format);
+        const data = await EventAnalyticsService.exportEventData(format);
 
         reply.header('Content-Type', format === 'json' ? 'application/json' : 'text/csv');
         reply.header('Content-Disposition', `attachment; filename="events.${format}"`);
@@ -416,7 +496,7 @@ export async function registerEventAnalyticsRoutes(fastify: FastifyInstance): Pr
     },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
-        const metrics = EventAnalyticsService.getEventMetrics();
+        const metrics = await EventAnalyticsService.getEventMetrics();
 
         return reply.send({
           success: true,

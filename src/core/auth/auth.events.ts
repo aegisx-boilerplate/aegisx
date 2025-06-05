@@ -3,6 +3,7 @@ import fp from 'fastify-plugin';
 import { EventPublisher } from '../../utils/event-bus';
 import { EventAnalyticsService } from '../../utils/event-analytics';
 import { AuditLogger } from '../../utils/audit-logger';
+import { knex } from '../../db/knex';
 
 interface AuthRequestBody {
   username?: string;
@@ -118,13 +119,38 @@ async function publishAuthenticationEvents(
 
   try {
     if (isSuccess) {
+      // For successful logins, we need to get the actual user ID instead of username
+      // The user ID should be stored in the request context by auth service
+      let userId = username; // fallback to username if we can't get the actual ID
+
+      // Try to get user ID from request context set by auth service
+      if ((request as any).loginUserId) {
+        userId = (request as any).loginUserId;
+        request.log.info(`[AUTH-EVENTS] Found user ID in request context: ${userId}`);
+      } else {
+        // Try to look up user by username to get the actual UUID
+        try {
+          const user = await knex('users').where({ username }).orWhere({ email: username }).first();
+
+          if (user && user.id) {
+            userId = user.id;
+            request.log.info(`[AUTH-EVENTS] Retrieved user ID from database: ${userId}`);
+          } else {
+            request.log.warn(`[AUTH-EVENTS] Could not find user ID for username: ${username}`);
+          }
+        } catch (dbError) {
+          request.log.error('[AUTH-EVENTS] Error looking up user ID:', dbError);
+        }
+      }
+
       // Successful login events - publish to both queues
       await Promise.all([
         // User events queue - for user activity tracking
         EventPublisher.userEvent({
           type: 'user.login',
-          userId: username,
+          userId: userId,
           data: {
+            username,
             ip,
             userAgent,
             timestamp: new Date().toISOString(),
@@ -134,7 +160,7 @@ async function publishAuthenticationEvents(
 
         // Audit log queue - for security monitoring
         AuditLogger.logAuth({
-          userId: username,
+          userId: userId,
           action: 'user.login',
           ip,
           userAgent,
@@ -142,17 +168,18 @@ async function publishAuthenticationEvents(
       ]);
 
       // Record event in analytics service
-      EventAnalyticsService.recordEvent('user.login', 'user.events', username, {
+      EventAnalyticsService.recordEvent('user.login', 'user.events', userId, {
+        username,
         ip,
         userAgent,
         success: true,
       });
 
       request.log.info(
-        `[AUTH-EVENTS] Successfully published successful login events for user: ${username}`
+        `[AUTH-EVENTS] Successfully published successful login events for user: ${username} (ID: ${userId})`
       );
     } else {
-      // Failed login attempt - audit log only
+      // Failed login attempt - audit log only (username is fine for failed attempts)
       await AuditLogger.logAuth({
         userId: username,
         action: 'user.login.failed',
