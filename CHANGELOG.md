@@ -1,3 +1,8 @@
+## 2.6.0 (2025-06-05)
+
+* Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([7c2f069](https://github.com/aegisx-boilerplate/aegisx/commit/7c2f069))
+* feat: implement resilient event bus with circuit breaker and analytics ([2d1c9f1](https://github.com/aegisx-boilerplate/aegisx/commit/2d1c9f1))
+
 ## 2.5.0 (2025-06-05)
 
 * feat: migrate EventBus from utils to core with Universal design ([2c1c403](https://github.com/aegisx-boilerplate/aegisx/commit/2c1c403))
