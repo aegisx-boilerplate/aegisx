@@ -1,0 +1,54 @@
+# ==============================================================================
+# Docker Compose Override for Local Development
+# This file overrides the main docker-compose.yml for local development
+# Use: docker-compose up (automatically picks up this override)
+# ==============================================================================
+
+services:
+  # ==============================================================================
+  # Disable App Service for Local Development
+  # ==============================================================================
+  app:
+    # Comment out or set to never restart so it doesn't start automatically
+    restart: 'no'
+    # You can also use:
+    # profiles: ["full"] # This would require --profile full to start
+
+  # ==============================================================================
+  # Development Overrides for Database
+  # ==============================================================================
+  db:
+    # Add any development-specific configurations here
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: aegisx
+      POSTGRES_INITDB_ARGS: '--encoding=UTF-8 --lc-collate=en_US.UTF-8 --lc-ctype=en_US.UTF-8'
+    # Enable logging for development
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+  # ==============================================================================
+  # Development Overrides for Redis
+  # ==============================================================================
+  redis:
+    # Enable logging for development
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+  # ==============================================================================
+  # Development Overrides for RabbitMQ
+  # ==============================================================================
+  rabbitmq:
+    # Enable logging for development
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'

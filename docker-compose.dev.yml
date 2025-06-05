@@ -1,55 +1,13 @@
 # ==============================================================================
-# Docker Compose for AegisX - Full Stack (Development)
-# This file includes both the application and all required services
+# Docker Compose for AegisX API Boilerplate - Local Development Services Only
+# This file starts only the required services (DB, Redis, RabbitMQ) for local dev
 # ==============================================================================
 
 services:
   # ==============================================================================
-  # AegisX API Application
-  # ==============================================================================
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: production
-    container_name: aegisx-api
-    ports:
-      - '3000:3000'
-    env_file:
-      - .env
-    environment:
-      - NODE_ENV=development
-      # Override for Docker networking
-      - DATABASE_URL=postgres://user:password@postgres:5432/aegisx
-      - REDIS_URL=redis://redis:6379
-      - RABBITMQ_URL=amqp://admin:password@rabbitmq:5672
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-    networks:
-      - aegisx-network
-    restart: unless-stopped
-    healthcheck:
-      test:
-        [
-          'CMD',
-          'node',
-          '-e',
-          "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })",
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-
-  # ==============================================================================
   # PostgreSQL Database
   # ==============================================================================
-  postgres:
+  db:
     image: postgres:15-alpine
     container_name: aegisx-postgres
     environment:

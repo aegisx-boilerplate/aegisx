@@ -2,6 +2,22 @@
 
 Enterprise-grade API boilerplate built with Fastify, TypeScript, and Event-Driven Architecture
 
+## 📋 Table of Contents
+
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [Documentation](#documentation)
+- [Core Modules](#core-modules)
+- [Usage Examples](#usage-examples)
+- [Development](#development)
+- [Production Build](#production-build)
+- [Tech Stack](#tech-stack)
+- [Security Features](#security-features)
+- [Monitoring & Analytics](#monitoring--analytics)
+- [Project Structure](#project-structure)
+- [Production Deployment](#production-deployment)
+- [Contributing](#contributing)
+
 ## ✨ Features
 
 ### 🔐 Authentication & Security
@@ -51,39 +67,79 @@ cp .env.example .env
 # Edit .env with your database and service configurations
 
 # Complete development setup (recommended)
-npm run dev:setup
+make setup-full
 
 # Start development server
-npm run dev
+make dev
 ```
+
+> 📚 **For detailed setup instructions**: See [Docker Compose Development Guide](./docs/docker-compose-development.md)
 
 ### Quick Development Workflow
 
 ```bash
-# Option 1: One command setup + start (easiest)
-npm run dev:full
+# 🎯 Option 1: Makefile (Recommended)
+make setup-full      # Complete setup with migrations & seeds
+make dev            # Start development server
 
-# Option 2: Step by step
-npm run dev:setup     # Setup services + migrate + seed
-npm run dev          # Start development server
+# 🐳 Option 2: Docker Compose (Modern approach)
+npm run setup:local:full    # Start services + migrate + seed + event bus
+npm run dev                # Start development server
 
-# Option 3: Manual Docker approach
-npm run setup:local  # Start Docker services only
-npm run db:setup     # Build + migrate + seed
-npm run dev          # Start development server
+# ⚡ Option 3: Step by step
+make setup               # Start services only
+make db-setup           # Migrate + seed
+npm run setup:eventbus  # Setup event bus
+make dev               # Start development server
+
+# 🔧 Option 4: Legacy method
+npm run dev:setup      # Legacy complete setup
+npm run dev           # Start development server
 
 # Stop services when done
-npm run stop:local
+make clean              # Clean stop with volume removal
+npm run services:down   # Stop services only
 ```
 
 ### Development Scripts
 
-- `npm run dev:setup` - Complete environment setup with health checks
-- `npm run dev:full` - Setup + start development server in one command
-- `npm run dev` - Start development server only
-- `npm run db:setup` - Build + migrate + seed database
-- `npm run setup:local` - Start Docker services only
-- `npm run stop:local` - Stop all services
+```bash
+# 🎯 Quick Start Commands
+make help                   # Show all available Makefile commands
+make setup-full            # Complete setup (services + db + event bus)
+make dev                   # Start development server
+make clean                 # Stop and clean up everything
+make fresh-start           # Clean + setup-full (full reset)
+
+# 🐳 Services Management  
+make services-up           # Start services (PostgreSQL, Redis, RabbitMQ)
+make services-down         # Stop services
+make services-logs         # View service logs
+make status               # Check service status
+
+# 🗄️ Database Operations
+make db-setup             # Run migrations + seeds
+make db-reset             # Reset database completely
+make db-migrate           # Run migrations only
+make db-seed              # Run seeds only
+
+# 📊 Event System
+npm run setup:eventbus    # Setup RabbitMQ queues
+npm run test:events       # Test event system
+
+# 🔍 Monitoring & Debug
+make services-logs        # View all service logs
+npm run services:status   # Check Docker container status
+
+# 🗄️ Database Operations
+make db-setup              # Migrate + seed with Makefile
+npm run db:setup          # Build + migrate + seed with npm
+
+# 🧹 Cleanup
+make clean                 # Stop services and remove volumes
+make clean-all            # Full cleanup including Docker system
+npm run services:down      # Stop services only
+```
 
 ## 📚 Core Modules
 
@@ -223,15 +279,22 @@ await AuditEventBuilder.create()
 ### Quick Start Development
 
 ```bash
-# Complete setup in one command (recommended for first time)
-npm run dev:full
+# 🎯 Recommended approach (complete setup in one command)
+make setup-full     # Start services + migrate + seed + event bus
+make dev           # Start development server
 
-# Or setup step by step
-npm run dev:setup    # Setup services + migrate + seed
-npm run dev         # Start development server
+# 🐳 Alternative with Docker Compose
+npm run setup:local:full  # Complete setup with npm scripts
+npm run dev              # Start development server
 
-# Daily development (when services are already running)
-npm run dev
+# ⚡ Step by step approach
+make setup          # Start services only
+make db-setup      # Run migrations + seeds  
+npm run setup:eventbus  # Setup event bus
+make dev          # Start development server
+
+# 📊 Daily development (when services are already running)
+make dev          # Just start the development server
 ```
 
 ### Advanced Development
@@ -258,12 +321,34 @@ npm run test:events    # Test event system
 
 ### Development Environment
 
-- **API Documentation**: <http://localhost:3000/docs>
+- **Development Environment**: <http://localhost:3000/docs>
 - **Health Check**: <http://localhost:3000/health>
 - **Event Status**: <http://localhost:3000/events/status>
 - **RabbitMQ Management**: <http://localhost:15672> (admin/password)
 
-For detailed development workflow, see [Development Workflow Guide](./docs/development-workflow.md).
+> 🔧 **For detailed troubleshooting**: See [Docker Compose Development Guide](./docs/docker-compose-development.md#troubleshooting)
+
+## 📚 Documentation
+
+### 🚀 Getting Started
+- **[Docker Compose Development Guide](./docs/docker-compose-development.md)** - Complete setup and development guide
+- **[Development Workflow](./docs/development-workflow.md)** - Daily development practices
+- **[Testing Guide](./docs/testing-guide.md)** - Testing approaches and best practices
+
+### 🏗️ Architecture
+- **[Event-Driven Architecture](./docs/event-driven-architecture.md)** - System architecture overview
+- **[Event Bus Documentation](./docs/event-bus.md)** - RabbitMQ integration details
+- **[Audit Logging](./docs/audit-logging.md)** - Comprehensive audit system
+
+### 🚀 Deployment
+- **[Docker Deployment](./docs/docker-deployment.md)** - Production deployment guide
+- **[Semantic Release](./docs/semantic-release.md)** - Automated versioning and releases
+
+### 📊 Analytics & Monitoring
+- **[Event Analytics](./docs/event-analytics.md)** - Analytics system overview
+- **[Event Analytics Quickstart](./docs/event-analytics-quickstart.md)** - Quick setup guide
+
+> 📖 **Full Documentation Index**: See [docs/README.md](./docs/README.md) for complete documentation catalog
 
 ## Production Build Scripts
 

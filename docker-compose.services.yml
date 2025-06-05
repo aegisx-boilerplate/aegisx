@@ -1,51 +1,9 @@
 # ==============================================================================
-# Docker Compose for AegisX - Full Stack (Development)
-# This file includes both the application and all required services
+# Docker Compose for AegisX - Services Only (Development)
+# This file contains only the required services for local development
 # ==============================================================================
 
 services:
-  # ==============================================================================
-  # AegisX API Application
-  # ==============================================================================
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: production
-    container_name: aegisx-api
-    ports:
-      - '3000:3000'
-    env_file:
-      - .env
-    environment:
-      - NODE_ENV=development
-      # Override for Docker networking
-      - DATABASE_URL=postgres://user:password@postgres:5432/aegisx
-      - REDIS_URL=redis://redis:6379
-      - RABBITMQ_URL=amqp://admin:password@rabbitmq:5672
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-    networks:
-      - aegisx-network
-    restart: unless-stopped
-    healthcheck:
-      test:
-        [
-          'CMD',
-          'node',
-          '-e',
-          "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })",
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-
   # ==============================================================================
   # PostgreSQL Database
   # ==============================================================================
@@ -71,6 +29,11 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
 
   # ==============================================================================
   # Redis Cache
@@ -91,6 +54,11 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
 
   # ==============================================================================
   # RabbitMQ Message Queue
@@ -118,6 +86,11 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
 
 # ==============================================================================
 # Networks

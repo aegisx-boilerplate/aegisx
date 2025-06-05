@@ -16,9 +16,13 @@
     "db:setup": "npm run build && npm run knex:migrate && npm run knex:seed",
     "setup:eventbus": "ts-node scripts/setup-event-bus.ts",
     "setup:local": "./scripts/start-local-services.sh",
+    "setup:local:compose": "docker-compose -f docker-compose.services.yml up -d && ./scripts/wait-for-services.sh",
+    "setup:local:full": "docker-compose -f docker-compose.services.yml up -d && ./scripts/wait-for-services.sh && npm run db:setup && npm run setup:eventbus",
     "stop:local": "./scripts/stop-local-services.sh",
+    "stop:local:compose": "docker-compose -f docker-compose.services.yml down",
     "generate:module": "node scripts/generate-module.js",
     "test:events": "echo '🚀 Testing Event System...' && curl -s http://localhost:3000/events/status | jq . && echo '✅ Event system is running!'",
+    "test:setup": "./scripts/test-setup-methods.sh",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write \"src/**/*.ts\" \"scripts/**/*.ts\"",
     "commit": "cz",
@@ -36,7 +40,12 @@
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f",
     "docker:clean": "docker-compose down -v --remove-orphans",
-    "docker:clean:full": "docker-compose down -v --remove-orphans && docker system prune -f --volumes"
+    "docker:clean:full": "docker-compose down -v --remove-orphans && docker system prune -f --volumes",
+    "services:up": "docker-compose -f docker-compose.services.yml up -d",
+    "services:down": "docker-compose -f docker-compose.services.yml down",
+    "services:logs": "docker-compose -f docker-compose.services.yml logs -f",
+    "services:clean": "docker-compose -f docker-compose.services.yml down -v --remove-orphans",
+    "services:status": "docker-compose -f docker-compose.services.yml ps"
   },
   "dependencies": {
     "@fastify/autoload": "^6.3.1",
