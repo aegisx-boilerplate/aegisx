@@ -1,3 +1,8 @@
+## <small>2.4.2 (2025-06-05)</small>
+
+* fix: remove unused variable in monitor-events script ([f296b9e](https://github.com/aegisx-boilerplate/aegisx/commit/f296b9e))
+* refactor: move event adapters to core module ([0920677](https://github.com/aegisx-boilerplate/aegisx/commit/0920677))
+
 ## <small>2.4.1 (2025-06-05)</small>
 
 * Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([79fc1a3](https://github.com/aegisx-boilerplate/aegisx/commit/79fc1a3))
