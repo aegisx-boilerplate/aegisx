@@ -7,6 +7,7 @@ import fs from 'fs';
 
 // Mock EventBus that always fails to simulate RabbitMQ being down
 class MockEventBus {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async publishEvent(queue: string, event: any): Promise<void> {
         throw new Error('RabbitMQ is unavailable (simulated)');
     }
