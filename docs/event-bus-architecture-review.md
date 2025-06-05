@@ -164,7 +164,7 @@ export const defaultEventBusConfig: EventBusConfig = {
 - `src/core/event-bus/ResilientEventBus.ts` - Enhanced event bus
 - `src/core/event-bus/health-monitor.ts` - Health monitoring
 - `src/core/event-bus/health.controller.ts` - Health endpoints
-- `src/core/events/analytics.consumer.ts` - Analytics consumer
+- `src/core/event-analytics/analytics.consumer.ts` - Analytics consumer
 
 ### Modified Files:
 - `src/core/event-bus/types.ts` - Added AnalyticsEvent type

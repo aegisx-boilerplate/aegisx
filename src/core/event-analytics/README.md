@@ -15,7 +15,7 @@ Events Core Module เป็นส่วนหัวใจของระบบ 
 ## 🏗️ **Architecture**
 
 ```
-src/core/events/
+src/core/event-analytics/
 ├── index.ts                    # Main exports และ public API
 ├── event-analytics.ts          # Event analytics service & API routes
 ├── event-analytics.schema.ts   # Fastify schemas สำหรับ validation
@@ -51,7 +51,7 @@ CREATE INDEX idx_events_user_created ON events(user_id, created_at);
 ### **Basic Usage**
 
 ```typescript
-import { EventAnalyticsService } from '../core/events';
+import { EventAnalyticsService } from '../core/event-analytics';
 
 // Auto-initialize จาก environment
 await EventAnalyticsService.recordEvent('user_login', 'auth.events', userId);
@@ -69,7 +69,7 @@ import {
   EventAnalyticsService, 
   EventStorageAdapterFactory,
   MemoryStorageAdapter 
-} from '../core/events';
+} from '../core/event-analytics';
 
 // ใช้ memory adapter สำหรับ testing
 const memoryAdapter = new MemoryStorageAdapter(500);
@@ -233,8 +233,8 @@ Events Core Module รับ events จาก:
 
 ```typescript
 // ✅ ใหม่ (core module)
-import { EventAnalyticsService } from '../core/events';
-import { EventStorageAdapterFactory } from '../core/events';
+import { EventAnalyticsService } from '../core/event-analytics';
+import { EventStorageAdapterFactory } from '../core/event-analytics';
 
 // ❌ เก่า (utils)
 import { EventAnalyticsService } from '../utils/event-analytics';
@@ -361,9 +361,9 @@ npm run db:check
 
 ## 🔄 **Migration Notes**
 
-### **จาก utils ไป core/events**
+### **จาก utils ไป core/event-analytics**
 
-การย้ายจาก `utils` ไป `core/events`:
+การย้ายจาก `utils` ไป `core/event-analytics`:
 
 1. **Import paths** - อัปเดตแล้วทั้งหมด
 2. **Functionality** - ไม่เปลี่ยนแปลง

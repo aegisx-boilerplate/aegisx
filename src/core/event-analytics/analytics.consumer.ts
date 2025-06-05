@@ -4,7 +4,7 @@
  */
 
 import { EventConsumer } from '../event-bus/EventConsumer';
-import { EventAnalyticsService } from '../events/event-analytics';
+import { EventAnalyticsService } from './event-analytics';
 import { AnalyticsEvent } from '../event-bus/types';
 
 // Use console.log for now instead of the logger import to avoid import issues

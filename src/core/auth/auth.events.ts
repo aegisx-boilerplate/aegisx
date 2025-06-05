@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import { EventPublisher } from '../event-bus';
-import { EventAnalyticsService } from '../events';
+import { EventAnalyticsService } from '../event-analytics';
 import { AuditLogger } from '../../utils/audit-logger';
 import { knex } from '../../db/knex';
 
