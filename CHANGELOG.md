@@ -1,47 +1,4 @@
-## 3.0.0 (2025-06-05)
 
-* Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([eaeaa89](https://github.com/aegisx-boilerplate/aegisx/commit/eaeaa89))
-* Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([f599917](https://github.com/aegisx-boilerplate/aegisx/commit/f599917))
-* Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([24520a3](https://github.com/aegisx-boilerplate/aegisx/commit/24520a3))
-* fix: trigger correct release after removing v3 ([3186f71](https://github.com/aegisx-boilerplate/aegisx/commit/3186f71))
-* fix: trigger correct release after rollback ([98d079f](https://github.com/aegisx-boilerplate/aegisx/commit/98d079f))
-* fix(release): update config semantic release remove breaking: true ([9e74a26](https://github.com/aegisx-boilerplate/aegisx/commit/9e74a26))
-* chore(release): 3.0.0 [skip ci] ([c36e026](https://github.com/aegisx-boilerplate/aegisx/commit/c36e026))
-* chore(release): 3.0.1 [skip ci] ([9e5fe46](https://github.com/aegisx-boilerplate/aegisx/commit/9e5fe46))
-* chore(release): 3.0.2 [skip ci] ([4d6ae4e](https://github.com/aegisx-boilerplate/aegisx/commit/4d6ae4e))
-* docs: comprehensive update to events core module README ([148d457](https://github.com/aegisx-boilerplate/aegisx/commit/148d457))
-* docs(events): add comprehensive Event Analytics documentation ([4cae807](https://github.com/aegisx-boilerplate/aegisx/commit/4cae807))
-* style: remove trailing whitespace in events index.ts ([e23d810](https://github.com/aegisx-boilerplate/aegisx/commit/e23d810))
-
-
-### BREAKING CHANGE
-
-* None
-Fixes: Documentation gap for Event Analytics system
-Closes: #documentation-request
-
-## <small>3.0.2 (2025-06-05)</small>
-
-* Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([f599917](https://github.com/aegisx-boilerplate/aegisx/commit/f599917))
-* fix: trigger correct release after rollback ([98d079f](https://github.com/aegisx-boilerplate/aegisx/commit/98d079f))
-
-## <small>3.0.1 (2025-06-05)</small>
-
-* fix(release): update config semantic release remove breaking: true ([9e74a26](https://github.com/aegisx-boilerplate/aegisx/commit/9e74a26))
-
-## 3.0.0 (2025-06-05)
-
-* docs: comprehensive update to events core module README ([148d457](https://github.com/aegisx-boilerplate/aegisx/commit/148d457))
-* docs(events): add comprehensive Event Analytics documentation ([4cae807](https://github.com/aegisx-boilerplate/aegisx/commit/4cae807))
-* Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([24520a3](https://github.com/aegisx-boilerplate/aegisx/commit/24520a3))
-* style: remove trailing whitespace in events index.ts ([e23d810](https://github.com/aegisx-boilerplate/aegisx/commit/e23d810))
-
-
-### BREAKING CHANGE
-
-* None
-Fixes: Documentation gap for Event Analytics system
-Closes: #documentation-request
 
 ## <small>2.4.2 (2025-06-05)</small>
 
