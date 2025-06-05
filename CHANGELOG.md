@@ -1,3 +1,7 @@
+## <small>3.0.1 (2025-06-05)</small>
+
+* fix(release): update config semantic release remove breaking: true ([9e74a26](https://github.com/aegisx-boilerplate/aegisx/commit/9e74a26))
+
 ## 3.0.0 (2025-06-05)
 
 * docs: comprehensive update to events core module README ([148d457](https://github.com/aegisx-boilerplate/aegisx/commit/148d457))
