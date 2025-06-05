@@ -1,4 +1,4 @@
-import { knex } from '../../db/knex';
+import { knex } from '../../../db/knex';
 
 /**
  * Event Data Interface

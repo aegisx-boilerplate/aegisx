@@ -69,6 +69,9 @@ EVENT_MEMORY_CACHE_SIZE=100     # Recent cache in hybrid adapter
 
 ### **Programmatic Configuration**
 ```typescript
+// Import จาก core events module
+import { EventStorageAdapterFactory, EventAnalyticsService } from '../core/events';
+
 // ใช้ factory pattern
 const adapter = EventStorageAdapterFactory.create({
   type: 'hybrid',

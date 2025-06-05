@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { authenticate } from '../middlewares/authenticate';
-import { authorize } from '../middlewares/authorize';
+import { authenticate } from '../../middlewares/authenticate';
+import { authorize } from '../../middlewares/authorize';
 import {
   EventMetricsQuerySchema,
   UserEventStatsParamsSchema,

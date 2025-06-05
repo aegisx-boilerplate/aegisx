@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import { EventPublisher } from '../../utils/event-bus';
-import { EventAnalyticsService } from '../../utils/event-analytics';
+import { EventAnalyticsService } from '../events';
 import { AuditLogger } from '../../utils/audit-logger';
 
 interface UserRequestBody {

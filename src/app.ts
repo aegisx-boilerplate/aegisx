@@ -43,7 +43,7 @@ import { permissionRoutes } from './core/rbac/permission.route';
 import { apiKeyRoutes } from './core/api-key/api-key.route';
 import { auditRoutes } from './core/audit/audit.route';
 import { AuditConsumerManager } from './core/audit/audit.consumer';
-import { registerEventAnalyticsRoutes } from './utils/event-analytics';
+import { registerEventAnalyticsRoutes } from './core/events';
 
 app.register(authRoutes);
 app.register(userRoutes);
