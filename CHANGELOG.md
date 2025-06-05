@@ -1,3 +1,8 @@
+## <small>2.4.1 (2025-06-05)</small>
+
+* Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([79fc1a3](https://github.com/aegisx-boilerplate/aegisx/commit/79fc1a3))
+* fix: resolve typescript errors in event storage adapter ([98a7c06](https://github.com/aegisx-boilerplate/aegisx/commit/98a7c06))
+
 ## 2.4.0 (2025-06-05)
 
 * feat: improve event analytics routes with comprehensive TypeBox schemas ([bd7ca96](https://github.com/aegisx-boilerplate/aegisx/commit/bd7ca96))
