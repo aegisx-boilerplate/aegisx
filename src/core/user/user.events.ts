@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
-import { EventPublisher } from '../../utils/event-bus';
+import { EventPublisher } from '../event-bus';
 import { EventAnalyticsService } from '../events';
 import { AuditLogger } from '../../utils/audit-logger';
 

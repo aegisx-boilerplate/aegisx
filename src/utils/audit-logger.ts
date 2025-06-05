@@ -1,4 +1,4 @@
-import { EventPublisher, AuditLogEvent } from './event-bus';
+import { EventPublisher, AuditLogEvent } from '../core/event-bus';
 
 /**
  * Unified Audit Logger - Single source of truth for all audit events

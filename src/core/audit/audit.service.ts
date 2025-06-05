@@ -1,5 +1,5 @@
 import { knex } from '../../db/knex';
-import { EventPublisher } from '../../utils/event-bus';
+import { EventPublisher } from '../event-bus';
 import { AuditLog } from './audit.model';
 
 export class AuditService {

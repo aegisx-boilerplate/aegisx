@@ -1,4 +1,4 @@
-import { EventConsumer, AuditLogEvent } from '../../utils/event-bus';
+import { EventConsumer, AuditLogEvent } from '../event-bus';
 import { knex } from '../../db/knex';
 
 /**

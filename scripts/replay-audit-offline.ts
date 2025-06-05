@@ -4,7 +4,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { EventPublisher, eventBus } from '../src/utils/event-bus';
+import { EventPublisher, eventBus } from '../src/core/event-bus';
 
 const logFile = path.resolve(__dirname, '../logs/audit-offline.jsonl');
 

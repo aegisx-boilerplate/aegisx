@@ -5,7 +5,7 @@
  * This script helps setup RabbitMQ for development
  */
 
-import { eventBus, QUEUES } from '../src/utils/event-bus';
+import { eventBus, QUEUES } from '../src/core/event-bus';
 
 async function setupEventBus() {
   try {
@@ -20,7 +20,7 @@ async function setupEventBus() {
 
     for (const queue of queuesToCreate) {
       try {
-        await eventBus.consumeEvent(queue, async () => {}, {
+        await eventBus.consumeEvent(queue, async () => { }, {
           durable: true,
           autoDelete: false,
         });
