@@ -105,6 +105,7 @@ function isAuthLoginRoute(request: FastifyRequest): boolean {
 
 /**
  * Publish authentication events ไปยัง RabbitMQ queues
+ * ปรับปรุงให้ใช้ Event Bus pattern อย่างสมบูรณ์
  */
 async function publishAuthenticationEvents(
   authData: AuthLoginData,
@@ -118,6 +119,9 @@ async function publishAuthenticationEvents(
   );
 
   try {
+    // สร้าง correlationId สำหรับ tracking events
+    const correlationId = `auth-${Date.now()}-${Math.random().toString(36)}`;
+
     if (isSuccess) {
       // For successful logins, we need to get the actual user ID instead of username
       // The user ID should be stored in the request context by auth service
@@ -143,8 +147,8 @@ async function publishAuthenticationEvents(
         }
       }
 
-      // Successful login events - publish to both queues
-      await Promise.all([
+      // Successful login events - publish through Event Bus consistently
+      const eventPromises = [
         // User events queue - for user activity tracking
         EventPublisher.userEvent({
           type: 'user.login',
@@ -156,6 +160,9 @@ async function publishAuthenticationEvents(
             timestamp: new Date().toISOString(),
           },
           timestamp: new Date().toISOString(),
+          correlationId,
+          source: 'auth-service',
+          version: '1.0'
         }),
 
         // Audit log queue - for security monitoring
@@ -165,15 +172,28 @@ async function publishAuthenticationEvents(
           ip,
           userAgent,
         }),
-      ]);
 
-      // Record event in analytics service
-      EventAnalyticsService.recordEvent('user.login', 'user.events', userId, {
-        username,
-        ip,
-        userAgent,
-        success: true,
-      });
+        // Analytics event through Event Bus (instead of direct call)
+        EventPublisher.analyticsEvent({
+          type: 'analytics.record',
+          eventType: 'user.login',
+          userId: userId,
+          queue: 'user.events',
+          data: {
+            username,
+            ip,
+            userAgent,
+            success: true,
+            timestamp: new Date().toISOString(),
+          },
+          timestamp: new Date().toISOString(),
+          correlationId,
+          source: 'auth-service',
+          version: '1.0'
+        })
+      ];
+
+      await Promise.all(eventPromises);
 
       request.log.info(
         `[AUTH-EVENTS] Successfully published successful login events for user: ${username} (ID: ${userId})`

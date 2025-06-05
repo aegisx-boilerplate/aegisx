@@ -36,8 +36,19 @@ export interface AuditLogEvent extends BaseEvent {
  * User Event
  */
 export interface UserEvent extends BaseEvent {
-    type: 'user.created' | 'user.updated' | 'user.deleted' | 'user.login' | 'user.logout';
+    type: 'user.created' | 'user.updated' | 'user.deleted' | 'user.login' | 'user.logout' | 'analytics.record';
     userId: string;
+    data?: Record<string, any>;
+}
+
+/**
+ * Analytics Event - specific interface for analytics tracking
+ */
+export interface AnalyticsEvent extends BaseEvent {
+    type: 'analytics.record';
+    eventType: string;
+    userId: string;
+    queue: string;
     data?: Record<string, any>;
 }
 

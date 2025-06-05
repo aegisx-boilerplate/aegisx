@@ -1,6 +1,6 @@
 import { EventBus } from './EventBus';
 import { QUEUES } from './queues';
-import { AuditLogEvent, UserEvent, ApiKeyEvent, RBACEvent } from './types';
+import { AuditLogEvent, UserEvent, ApiKeyEvent, RBACEvent, AnalyticsEvent } from './types';
 
 // Helper functions for common event types
 export class EventPublisher {
@@ -61,6 +61,16 @@ export class EventPublisher {
      */
     static async rbacEvent(event: RBACEvent): Promise<void> {
         await this.eventBus.publishEvent(QUEUES.RBAC_EVENTS, {
+            ...event,
+            timestamp: event.timestamp || new Date().toISOString(),
+        });
+    }
+
+    /**
+     * Publish analytics event
+     */
+    static async analyticsEvent(event: AnalyticsEvent): Promise<void> {
+        await this.eventBus.publishEvent(QUEUES.USER_EVENTS, {
             ...event,
             timestamp: event.timestamp || new Date().toISOString(),
         });
