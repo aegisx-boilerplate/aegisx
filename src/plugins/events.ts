@@ -3,7 +3,6 @@ import fp from 'fastify-plugin';
 
 // Import all event plugins
 import authEventsPlugin from '../core/auth/auth.events';
-import apiKeyEventsPlugin from '../core/api-key/api-key.events';
 import userEventsPlugin from '../core/user/user.events';
 import rbacEventsPlugin from '../core/rbac/rbac.events';
 // import budgetEventsPlugin from '../modules/budget/budget.events';
@@ -39,9 +38,6 @@ const masterEventsPlugin: FastifyPluginAsync = async (fastify: FastifyInstance) 
     await fastify.register(authEventsPlugin);
     fastify.log.info('[MASTER-EVENTS] ✓ Auth events plugin registered');
 
-    await fastify.register(apiKeyEventsPlugin);
-    fastify.log.info('[MASTER-EVENTS] ✓ API Key events plugin registered');
-
     await fastify.register(userEventsPlugin);
     fastify.log.info('[MASTER-EVENTS] ✓ User events plugin registered');
 
@@ -66,7 +62,6 @@ const masterEventsPlugin: FastifyPluginAsync = async (fastify: FastifyInstance) 
         status: 'active',
         plugins: [
           'auth-events',
-          'api-key-events',
           'user-events',
           'rbac-events',
           // 'budget-events',

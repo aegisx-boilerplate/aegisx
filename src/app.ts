@@ -40,7 +40,6 @@ import { authRoutes } from './core/auth/auth.route';
 import { userRoutes } from './core/user/user.route';
 import { roleRoutes } from './core/rbac/role.route';
 import { permissionRoutes } from './core/rbac/permission.route';
-import { apiKeyRoutes } from './core/api-key/api-key.route';
 import { auditRoutes } from './core/audit/audit.route';
 import { AuditConsumerManager } from './core/audit/audit.consumer';
 import { registerEventAnalyticsRoutes } from './core/event-analytics';
@@ -49,7 +48,6 @@ app.register(authRoutes);
 app.register(userRoutes);
 app.register(roleRoutes);
 app.register(permissionRoutes);
-app.register(apiKeyRoutes);
 app.register(auditRoutes);
 
 // Register event analytics routes

@@ -1,14 +1,17 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
+import { jwtAuthGuard, flexibleAuthGuard } from './auth-guards';
 
+/**
+ * Legacy authenticate middleware - uses JWT authentication
+ * @deprecated Use auth guards directly for better flexibility
+ */
 export async function authenticate(request: FastifyRequest, reply: FastifyReply) {
-  // Fastify JWT plugin will decorate request with jwtVerify
-  // This middleware should be used as preHandler
-  try {
-    await request.jwtVerify();
-  } catch (err: any) {
-    return reply.code(401).send({
-      success: false,
-      error: err?.message || 'Unauthorized',
-    });
-  }
+  return jwtAuthGuard(request, reply);
+}
+
+/**
+ * Flexible authentication middleware - supports both JWT and API key
+ */
+export async function authenticateFlexible(request: FastifyRequest, reply: FastifyReply) {
+  return flexibleAuthGuard(request, reply);
 }
