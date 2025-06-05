@@ -91,10 +91,6 @@
     {
       "type": "chore",
       "release": false
-    },
-    {
-      "breaking": true,
-      "release": "major"
     }
   ]
 }
