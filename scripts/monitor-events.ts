@@ -48,7 +48,7 @@ async function testAuthEvents(): Promise<void> {
   try {
     // Test successful login
     console.log('   Testing successful login...');
-    const loginResponse = await axios.post(`${API_BASE}/auth/login`, {
+    await axios.post(`${API_BASE}/auth/login`, {
       username: 'admin1',
       password: 'admin1',
     });
