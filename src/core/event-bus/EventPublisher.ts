@@ -25,7 +25,10 @@ export class EventPublisher {
             const fs = await import('fs');
             const path = await import('path');
             const logDir = path.resolve(__dirname, '../../../logs');
-            const logFile = path.join(logDir, 'audit-offline.jsonl');
+
+            // Support per-pod/container scaling with unique log files
+            const podIdentifier = process.env.HOSTNAME || process.env.POD_NAME || process.env.CONTAINER_NAME || 'default';
+            const logFile = path.join(logDir, `audit-offline-${podIdentifier}.jsonl`);
             try {
                 if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
                 fs.appendFileSync(logFile, JSON.stringify(fullEvent) + '\n');

@@ -1,9 +1,32 @@
 # Audit Log Replay Automation (RabbitMQ Recovery)
 
-This guide explains how to automate the replay of offline audit logs (`logs/audit-offline.jsonl`) to RabbitMQ when it becomes available again. Two deployment scenarios are covered:
+This guide explains how to automate the replay of offline audit logs to RabbitMQ when it becomes available again. The system now supports **per-pod/container log files** for better scaling with Docker Compose and Kubernetes.
 
-- **Docker Compose**
-- **Kubernetes**
+## Per-Pod/Container Log File Support
+
+When scaling with multiple containers or pods, each instance now creates its own audit log file:
+
+- **Single instance**: `audit-offline-default.jsonl`
+- **Docker Compose scaling**: `audit-offline-app-1.jsonl`, `audit-offline-app-2.jsonl`
+- **Kubernetes pods**: `audit-offline-aegisx-deployment-abc123.jsonl`, `audit-offline-aegisx-deployment-def456.jsonl`
+
+### Environment Variables Used
+
+The system automatically detects the container/pod identifier using:
+
+1. `HOSTNAME` (default in most containers)
+2. `POD_NAME` (Kubernetes)
+3. `CONTAINER_NAME` (Docker Compose)
+4. Falls back to `"default"` if none are set
+
+### Replay Script Enhancement
+
+The replay script now automatically:
+
+- Finds all `audit-offline-*.jsonl` files
+- Processes each file individually
+- Maintains backward compatibility with legacy `audit-offline.jsonl`
+- Provides detailed progress reporting per file
 
 ---
 
