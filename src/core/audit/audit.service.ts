@@ -1,5 +1,5 @@
 import { knex } from '../../db/knex';
-import { EventPublisher } from '../event-bus';
+import { ResilientEventBus } from '../event-bus';
 import { AuditLog } from './audit.model';
 
 export class AuditService {
@@ -41,7 +41,8 @@ export class AuditService {
     target: string,
     details?: Record<string, any>,
     ip_address?: string,
-    user_agent?: string
+    user_agent?: string,
+    eventBus?: ResilientEventBus
   ): Promise<AuditLog> {
     const timestamp = new Date().toISOString();
 
@@ -59,18 +60,20 @@ export class AuditService {
       .returning('*');
 
     // Publish event to message queue for real-time processing
-    try {
-      await EventPublisher.auditLog({
-        userId: actor,
-        action,
-        resource: target.split(':')[0] || target,
-        resourceId: target.split(':')[1],
-        details,
-        timestamp,
-      });
-    } catch (error) {
-      console.error('Failed to publish audit log event:', error);
-      // Don't throw error to avoid disrupting main flow
+    if (eventBus) {
+      try {
+        await eventBus.publishEvent('audit.log', {
+          userId: actor,
+          action,
+          resource: target.split(':')[0] || target,
+          resourceId: target.split(':')[1],
+          details,
+          timestamp,
+        });
+      } catch (error) {
+        console.error('Failed to publish audit log event:', error);
+        // Don't throw error to avoid disrupting main flow
+      }
     }
 
     return {
@@ -90,7 +93,17 @@ export class AuditService {
     page?: number;
     limit?: number;
   }) {
-    const { actor, action, target, ip_address, user_agent, from, to, page = 1, limit = 20 } = filters;
+    const {
+      actor,
+      action,
+      target,
+      ip_address,
+      user_agent,
+      from,
+      to,
+      page = 1,
+      limit = 20,
+    } = filters;
 
     let query = knex('audit_logs').select('*');
 

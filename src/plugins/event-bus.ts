@@ -1,6 +1,13 @@
 import { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
-import { eventBus, EventConsumer, AuditLogEvent, UserEvent, ApiKeyEvent } from '../core/event-bus';
+import {
+  eventBus,
+  EventConsumer,
+  AuditLogEvent,
+  UserEvent,
+  ApiKeyEvent,
+  ResilientEventBus,
+} from '../core/event-bus';
 
 const eventBusPlugin: FastifyPluginAsync = async (fastify) => {
   // Connect to RabbitMQ when the server starts
@@ -85,7 +92,7 @@ async function startEventConsumers(fastify: any) {
 // Extend Fastify type definitions
 declare module 'fastify' {
   interface FastifyInstance {
-    eventBus: typeof eventBus;
+    eventBus: ResilientEventBus;
   }
 }
 

@@ -13,17 +13,50 @@ export class UserController {
     return reply.send({ success: true, data: user });
   }
   static async create(request: FastifyRequest, reply: FastifyReply) {
-    const user = await UserService.create(request.body);
-    return reply.code(201).send({ success: true, data: user });
+    try {
+      const user = (request as any).user; // From JWT middleware for actorId
+      const metadata = {
+        ip: request.ip,
+        userAgent: request.headers['user-agent'],
+      };
+      const eventBus = (request.server as any).eventBus;
+
+      const newUser = await UserService.create(request.body, user?.id, metadata, eventBus);
+      return reply.code(201).send({ success: true, data: newUser });
+    } catch (error: any) {
+      return reply.code(400).send({ success: false, error: error.message });
+    }
   }
   static async update(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as { id: string };
-    const user = await UserService.update(id, request.body);
-    return reply.send({ success: true, data: user });
+    try {
+      const { id } = request.params as { id: string };
+      const user = (request as any).user; // From JWT middleware for actorId
+      const metadata = {
+        ip: request.ip,
+        userAgent: request.headers['user-agent'],
+      };
+      const eventBus = (request.server as any).eventBus;
+
+      const updatedUser = await UserService.update(id, request.body, user?.id, metadata, eventBus);
+      return reply.send({ success: true, data: updatedUser });
+    } catch (error: any) {
+      return reply.code(400).send({ success: false, error: error.message });
+    }
   }
   static async remove(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as { id: string };
-    await UserService.remove(id);
-    return reply.code(204).send();
+    try {
+      const { id } = request.params as { id: string };
+      const user = (request as any).user; // From JWT middleware for actorId
+      const metadata = {
+        ip: request.ip,
+        userAgent: request.headers['user-agent'],
+      };
+      const eventBus = (request.server as any).eventBus;
+
+      await UserService.remove(id, user?.id, metadata, eventBus);
+      return reply.code(204).send();
+    } catch (error: any) {
+      return reply.code(400).send({ success: false, error: error.message });
+    }
   }
 }

@@ -10,11 +10,10 @@ import {
   ChangePasswordRequest,
   RefreshTokenRequest,
   ApiKeyCreateRequest,
-  AuthMetadata
+  AuthMetadata,
 } from './types';
 
 export class AuthController {
-
   /**
    * POST /auth/login - Login with username/email and password
    */
@@ -38,7 +37,8 @@ export class AuthController {
         sessionId: request.id,
       };
 
-      const result = await AuthService.login(usernameOrEmail, password, metadata);
+      const eventBus = (request.server as any).eventBus;
+      const result = await AuthService.login(usernameOrEmail, password, metadata, eventBus);
       success = true;
 
       // Update rate limit on successful login
@@ -72,7 +72,8 @@ export class AuthController {
         sessionId: request.id,
       };
 
-      const result = await AuthService.register(body, metadata);
+      const eventBus = (request.server as any).eventBus;
+      const result = await AuthService.register(body, metadata, eventBus);
 
       return reply.code(201).send({
         success: true,
@@ -121,7 +122,8 @@ export class AuthController {
         sessionId: request.id,
       };
 
-      await AuthService.logout(user.id, body.refresh_token, metadata);
+      const eventBus = (request.server as any).eventBus;
+      await AuthService.logout(user.id, body.refresh_token, metadata, eventBus);
 
       return reply.send({
         success: true,
@@ -147,7 +149,8 @@ export class AuthController {
         userAgent: request.headers['user-agent'],
       };
 
-      await AuthService.forgotPassword(body, metadata);
+      const eventBus = (request.server as any).eventBus;
+      await AuthService.forgotPassword(body, metadata, eventBus);
 
       return reply.send({
         success: true,
@@ -173,7 +176,8 @@ export class AuthController {
         userAgent: request.headers['user-agent'],
       };
 
-      await AuthService.resetPassword(body, metadata);
+      const eventBus = (request.server as any).eventBus;
+      await AuthService.resetPassword(body, metadata, eventBus);
 
       return reply.send({
         success: true,
@@ -200,7 +204,8 @@ export class AuthController {
         userAgent: request.headers['user-agent'],
       };
 
-      await AuthService.changePassword(user.id, body, metadata);
+      const eventBus = (request.server as any).eventBus;
+      await AuthService.changePassword(user.id, body, metadata, eventBus);
 
       return reply.send({
         success: true,
@@ -247,7 +252,8 @@ export class AuthController {
         userAgent: request.headers['user-agent'],
       };
 
-      const apiKey = await ApiKeyService.create(body, user.id, metadata);
+      const eventBus = (request.server as any).eventBus;
+      const apiKey = await ApiKeyService.create(body, user.id, metadata, eventBus);
 
       return reply.code(201).send({
         success: true,
@@ -294,7 +300,8 @@ export class AuthController {
         userAgent: request.headers['user-agent'],
       };
 
-      const apiKey = await ApiKeyService.revokeUserApiKey(id, user.id, user.id, metadata);
+      const eventBus = (request.server as any).eventBus;
+      const apiKey = await ApiKeyService.revokeUserApiKey(id, user.id, user.id, metadata, eventBus);
 
       if (!apiKey) {
         return reply.code(404).send({

@@ -1,9 +1,10 @@
 import { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
-import { EventPublisher } from '../event-bus';
 import { EventAnalyticsService } from '../event-analytics';
 import { AuditLogger } from '../../utils/audit-logger';
 import { knex } from '../../db/knex';
+import { QUEUES } from '../event-bus/queues';
+import { ResilientEventBus } from '../event-bus';
 
 interface AuthRequestBody {
   username?: string;
@@ -29,8 +30,16 @@ interface AuthLoginData {
  * - Failed login events → audit.log queue
  * - IP tracking และ User Agent logging
  * - Async event publishing ไม่รบกวน authentication flow
+ * - ใช้ eventBus ผ่าน Fastify decoration pattern แทน static imports
  *
  * Location: core/auth/ เพราะเป็น auth-specific functionality
+ *
+ * สาเหตุที่ใช้ fastify.eventBus แทน static EventPublisher:
+ * - เป็น Fastify pattern ที่ถูกต้อง (dependency injection)
+ * - ง่ายต่อการ test และ mock
+ * - สามารถเข้าถึง fastify context (request, reply, logger)
+ * - ป้องกัน circular dependencies
+ * - ควบคุม lifecycle ผ่าน fastify plugins
  */
 const authEventsPlugin: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   fastify.log.info('[AUTH-EVENTS] Plugin loaded successfully');
@@ -105,7 +114,7 @@ function isAuthLoginRoute(request: FastifyRequest): boolean {
 
 /**
  * Publish authentication events ไปยัง RabbitMQ queues
- * ปรับปรุงให้ใช้ Event Bus pattern อย่างสมบูรณ์
+ * ปรับปรุงให้ใช้ Event Bus pattern อย่างสมบูรณ์ผ่าน Fastify instance
  */
 async function publishAuthenticationEvents(
   authData: AuthLoginData,
@@ -147,10 +156,18 @@ async function publishAuthenticationEvents(
         }
       }
 
+      // ใช้ eventBus ผ่าน fastify instance แทน static EventPublisher
+      const eventBus = (request.server as any).eventBus as ResilientEventBus;
+
+      if (!eventBus) {
+        request.log.error('[AUTH-EVENTS] EventBus not available on fastify instance');
+        return;
+      }
+
       // Successful login events - publish through Event Bus consistently
       const eventPromises = [
         // User events queue - for user activity tracking
-        EventPublisher.userEvent({
+        eventBus.publishEvent(QUEUES.USER_EVENTS, {
           type: 'user.login',
           userId: userId,
           data: {
@@ -162,19 +179,17 @@ async function publishAuthenticationEvents(
           timestamp: new Date().toISOString(),
           correlationId,
           source: 'auth-service',
-          version: '1.0'
+          version: '1.0',
         }),
 
         // Audit log queue - for security monitoring
-        AuditLogger.logAuth({
+        AuditLogger.logAuthFromRequest(request, {
           userId: userId,
           action: 'user.login',
-          ip,
-          userAgent,
         }),
 
         // Analytics event through Event Bus (instead of direct call)
-        EventPublisher.analyticsEvent({
+        eventBus.publishEvent(QUEUES.USER_EVENTS, {
           type: 'analytics.record',
           eventType: 'user.login',
           userId: userId,
@@ -189,8 +204,8 @@ async function publishAuthenticationEvents(
           timestamp: new Date().toISOString(),
           correlationId,
           source: 'auth-service',
-          version: '1.0'
-        })
+          version: '1.0',
+        }),
       ];
 
       await Promise.all(eventPromises);
@@ -200,11 +215,9 @@ async function publishAuthenticationEvents(
       );
     } else {
       // Failed login attempt - audit log only (username is fine for failed attempts)
-      await AuditLogger.logAuth({
+      await AuditLogger.logAuthFromRequest(request, {
         userId: username,
         action: 'user.login.failed',
-        ip,
-        userAgent,
         reason: `Failed login attempt, status: ${statusCode}`,
       });
 

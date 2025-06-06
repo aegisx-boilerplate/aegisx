@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
-import { EventPublisher } from '../event-bus';
+import { ResilientEventBus, QUEUES } from '../event-bus';
 import { EventAnalyticsService } from '../event-analytics';
 import { AuditLogger } from '../../utils/audit-logger';
 
@@ -174,8 +174,16 @@ async function publishUserEvents(eventData: UserEventData, request: FastifyReque
       | 'user.login'
       | 'user.logout';
 
+    // ใช้ eventBus ผ่าน fastify instance แทน static EventPublisher
+    const eventBus = (request.server as any).eventBus as ResilientEventBus;
+
+    if (!eventBus) {
+      request.log.error('[USER-EVENTS] EventBus not available on fastify instance');
+      return;
+    }
+
     // Always publish to user.events queue for user activity tracking
-    await EventPublisher.userEvent({
+    await eventBus.publishEvent(QUEUES.USER_EVENTS, {
       type: eventType || 'user.updated',
       userId: userId || username || 'unknown',
       data: {
@@ -188,6 +196,9 @@ async function publishUserEvents(eventData: UserEventData, request: FastifyReque
         timestamp: new Date().toISOString(),
       },
       timestamp: new Date().toISOString(),
+      correlationId: `user-${Date.now()}-${Math.random().toString(36)}`,
+      source: 'user-service',
+      version: '1.0',
     });
 
     // Record event in analytics service
@@ -207,7 +218,7 @@ async function publishUserEvents(eventData: UserEventData, request: FastifyReque
 
     // For critical actions, also publish to audit log
     if (['create', 'update', 'delete', 'role_change'].includes(action)) {
-      await AuditLogger.log({
+      await AuditLogger.logFromRequest(request, {
         userId: (request as any).user?.id || 'system',
         action: `user.${action}`,
         resource: 'user',
@@ -219,8 +230,6 @@ async function publishUserEvents(eventData: UserEventData, request: FastifyReque
           roleId,
           statusCode,
         },
-        ip,
-        userAgent,
       });
 
       // Record audit event in analytics service

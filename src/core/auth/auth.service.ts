@@ -6,6 +6,7 @@ import { JwtService, setFastifyInstance } from './jwt.service';
 import { PasswordService } from './password.service';
 import { EmailService } from '../../services/email.service';
 import { RbacService } from '../rbac/rbac.service';
+import { ResilientEventBus } from '../event-bus';
 import {
   AuthUser,
   RegisterRequest,
@@ -14,7 +15,7 @@ import {
   ForgotPasswordRequest,
   ResetPasswordRequest,
   ChangePasswordRequest,
-  RefreshTokenRequest
+  RefreshTokenRequest,
 } from './types';
 
 const redis = new Redis(env.REDIS_URL);
@@ -22,14 +23,14 @@ const redis = new Redis(env.REDIS_URL);
 export { setFastifyInstance };
 
 export class AuthService {
-
   /**
    * Login with username/email and password
    */
   static async login(
     usernameOrEmail: string,
     password: string,
-    metadata?: AuthMetadata
+    metadata?: AuthMetadata,
+    eventBus?: ResilientEventBus
   ): Promise<AuthResponse> {
     // Try to find user by username first, then by email
     let user = await knex('users').where({ username: usernameOrEmail }).first();
@@ -39,13 +40,15 @@ export class AuthService {
 
     if (!user) {
       // Log failed login attempt
-      await AuditLogger.logAuth({
-        userId: usernameOrEmail,
-        action: 'login.failed',
-        reason: 'user_not_found',
-        ip: metadata?.ip,
-        userAgent: metadata?.userAgent,
-      });
+      if (eventBus) {
+        await AuditLogger.logAuth(eventBus, {
+          userId: usernameOrEmail,
+          action: 'login.failed',
+          reason: 'user_not_found',
+          ip: metadata?.ip,
+          userAgent: metadata?.userAgent,
+        });
+      }
       throw new Error('Invalid credentials');
     }
 
@@ -53,13 +56,15 @@ export class AuthService {
     const isValidPassword = await PasswordService.verifyPassword(password, user.password_hash);
     if (!isValidPassword) {
       // Log failed login attempt
-      await AuditLogger.logAuth({
-        userId: user.id,
-        action: 'login.failed',
-        reason: 'invalid_password',
-        ip: metadata?.ip,
-        userAgent: metadata?.userAgent,
-      });
+      if (eventBus) {
+        await AuditLogger.logAuth(eventBus, {
+          userId: user.id,
+          action: 'login.failed',
+          reason: 'invalid_password',
+          ip: metadata?.ip,
+          userAgent: metadata?.userAgent,
+        });
+      }
       throw new Error('Invalid credentials');
     }
 
@@ -78,21 +83,28 @@ export class AuthService {
     const refreshToken = await JwtService.createRefreshToken(user.id);
 
     // Store session in Redis
-    await redis.set(`user:${user.id}:session`, JSON.stringify({
-      userId: user.id,
-      username: user.username,
-      email: user.email,
-      sessionId: metadata?.sessionId,
-      lastActivity: new Date(),
-    }), 'EX', JwtService.getAccessTokenExpirySeconds());
+    await redis.set(
+      `user:${user.id}:session`,
+      JSON.stringify({
+        userId: user.id,
+        username: user.username,
+        email: user.email,
+        sessionId: metadata?.sessionId,
+        lastActivity: new Date(),
+      }),
+      'EX',
+      JwtService.getAccessTokenExpirySeconds()
+    );
 
     // Log successful login
-    await AuditLogger.logAuth({
-      userId: user.id,
-      action: 'login.success',
-      ip: metadata?.ip,
-      userAgent: metadata?.userAgent,
-    });
+    if (eventBus) {
+      await AuditLogger.logAuth(eventBus, {
+        userId: user.id,
+        action: 'login.success',
+        ip: metadata?.ip,
+        userAgent: metadata?.userAgent,
+      });
+    }
 
     return {
       access_token: accessToken,
@@ -113,7 +125,8 @@ export class AuthService {
    */
   static async register(
     data: RegisterRequest,
-    metadata?: AuthMetadata
+    metadata?: AuthMetadata,
+    eventBus?: ResilientEventBus
   ): Promise<AuthResponse> {
     // Check if user already exists
     const existingUser = await knex('users')
@@ -163,15 +176,17 @@ export class AuthService {
     }
 
     // Log registration
-    await AuditLogger.logAuth({
-      userId: user.id,
-      action: 'user.registered',
-      ip: metadata?.ip,
-      userAgent: metadata?.userAgent,
-    });
+    if (eventBus) {
+      await AuditLogger.logAuth(eventBus, {
+        userId: user.id,
+        action: 'user.registered',
+        ip: metadata?.ip,
+        userAgent: metadata?.userAgent,
+      });
+    }
 
     // Auto-login after registration
-    return await this.login(data.username, data.password, metadata);
+    return await this.login(data.username, data.password, metadata, eventBus);
   }
 
   /**
@@ -224,7 +239,8 @@ export class AuthService {
   static async logout(
     userId: string,
     refreshToken?: string,
-    metadata?: AuthMetadata
+    metadata?: AuthMetadata,
+    eventBus?: ResilientEventBus
   ): Promise<void> {
     // Remove session from Redis
     await redis.del(`user:${userId}:session`);
@@ -235,12 +251,14 @@ export class AuthService {
     }
 
     // Log logout
-    await AuditLogger.logAuth({
-      userId,
-      action: 'logout.success',
-      ip: metadata?.ip,
-      userAgent: metadata?.userAgent,
-    });
+    if (eventBus) {
+      await AuditLogger.logAuth(eventBus, {
+        userId,
+        action: 'logout.success',
+        ip: metadata?.ip,
+        userAgent: metadata?.userAgent,
+      });
+    }
   }
 
   /**
@@ -248,7 +266,8 @@ export class AuthService {
    */
   static async forgotPassword(
     data: ForgotPasswordRequest,
-    metadata?: AuthMetadata
+    metadata?: AuthMetadata,
+    eventBus?: ResilientEventBus
   ): Promise<void> {
     const user = await knex('users').where({ email: data.email }).first();
 
@@ -277,17 +296,21 @@ export class AuthService {
       // In development, log the token for testing
       if (env.NODE_ENV === 'development') {
         console.log(`Password reset token for ${user.email}: ${resetToken.token}`);
-        console.log(`Reset URL: ${env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${resetToken.token}`);
+        console.log(
+          `Reset URL: ${env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${resetToken.token}`
+        );
       }
     }
 
     // Log password reset request
-    await AuditLogger.logAuth({
-      userId: user.id,
-      action: 'password.reset_requested',
-      ip: metadata?.ip,
-      userAgent: metadata?.userAgent,
-    });
+    if (eventBus) {
+      await AuditLogger.logAuth(eventBus, {
+        userId: user.id,
+        action: 'password.reset_requested',
+        ip: metadata?.ip,
+        userAgent: metadata?.userAgent,
+      });
+    }
   }
 
   /**
@@ -295,7 +318,8 @@ export class AuthService {
    */
   static async resetPassword(
     data: ResetPasswordRequest,
-    metadata?: AuthMetadata
+    metadata?: AuthMetadata,
+    eventBus?: ResilientEventBus
   ): Promise<void> {
     // Validate reset token
     const resetToken = await PasswordService.validatePasswordResetToken(data.token);
@@ -316,12 +340,10 @@ export class AuthService {
     const passwordHash = await PasswordService.hashPassword(data.newPassword);
 
     // Update password
-    await knex('users')
-      .where({ id: resetToken.userId })
-      .update({
-        password_hash: passwordHash,
-        updated_at: new Date(),
-      });
+    await knex('users').where({ id: resetToken.userId }).update({
+      password_hash: passwordHash,
+      updated_at: new Date(),
+    });
 
     // Store in password history
     await PasswordService.storePasswordHistory(resetToken.userId, passwordHash);
@@ -336,12 +358,14 @@ export class AuthService {
     await redis.del(`user:${resetToken.userId}:session`);
 
     // Log password reset
-    await AuditLogger.logAuth({
-      userId: resetToken.userId,
-      action: 'password.reset_completed',
-      ip: metadata?.ip,
-      userAgent: metadata?.userAgent,
-    });
+    if (eventBus) {
+      await AuditLogger.logAuth(eventBus, {
+        userId: resetToken.userId,
+        action: 'password.reset_completed',
+        ip: metadata?.ip,
+        userAgent: metadata?.userAgent,
+      });
+    }
   }
 
   /**
@@ -350,7 +374,8 @@ export class AuthService {
   static async changePassword(
     userId: string,
     data: ChangePasswordRequest,
-    metadata?: AuthMetadata
+    metadata?: AuthMetadata,
+    eventBus?: ResilientEventBus
   ): Promise<void> {
     // Get user
     const user = await knex('users').where({ id: userId }).first();
@@ -368,10 +393,7 @@ export class AuthService {
     }
 
     // Check if new password was recently used
-    const isRecentlyUsed = await PasswordService.isPasswordRecentlyUsed(
-      userId,
-      data.newPassword
-    );
+    const isRecentlyUsed = await PasswordService.isPasswordRecentlyUsed(userId, data.newPassword);
     if (isRecentlyUsed) {
       throw new Error('Cannot reuse a recently used password');
     }
@@ -380,23 +402,23 @@ export class AuthService {
     const passwordHash = await PasswordService.hashPassword(data.newPassword);
 
     // Update password
-    await knex('users')
-      .where({ id: userId })
-      .update({
-        password_hash: passwordHash,
-        updated_at: new Date(),
-      });
+    await knex('users').where({ id: userId }).update({
+      password_hash: passwordHash,
+      updated_at: new Date(),
+    });
 
     // Store in password history
     await PasswordService.storePasswordHistory(userId, passwordHash);
 
     // Log password change
-    await AuditLogger.logAuth({
-      userId,
-      action: 'password.changed',
-      ip: metadata?.ip,
-      userAgent: metadata?.userAgent,
-    });
+    if (eventBus) {
+      await AuditLogger.logAuth(eventBus, {
+        userId,
+        action: 'password.changed',
+        ip: metadata?.ip,
+        userAgent: metadata?.userAgent,
+      });
+    }
   }
 
   /**

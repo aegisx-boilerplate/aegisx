@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
-import { EventPublisher } from '../event-bus';
+import { ResilientEventBus, QUEUES } from '../event-bus';
 import { AuditLogger } from '../../utils/audit-logger';
 
 interface RbacRequestBody {
@@ -187,7 +187,7 @@ async function publishRbacEvents(eventData: RbacEventData, request: FastifyReque
 
   try {
     // RBAC events are always security-critical, so always publish to audit log
-    await AuditLogger.logRBAC({
+    await AuditLogger.logRBACFromRequest(request, {
       actorId: (request as any).user?.id || 'system',
       action: `${resourceType}.${action}`,
       targetUserId: resourceId,
@@ -199,16 +199,22 @@ async function publishRbacEvents(eventData: RbacEventData, request: FastifyReque
         permissions,
         statusCode,
       },
-      ip,
-      userAgent,
     });
+
+    // ใช้ eventBus ผ่าน fastify instance แทน static EventPublisher
+    const eventBus = (request.server as any).eventBus as ResilientEventBus;
+
+    if (!eventBus) {
+      request.log.error('[RBAC-EVENTS] EventBus not available on fastify instance');
+      return;
+    }
 
     // For role assignments/revocations, also publish to user events
     if ((action === 'assign' || action === 'revoke') && resourceType === 'role') {
       // Try to extract user ID from URL or request body
       const targetUserId = extractTargetUserIdFromRequest(request);
       if (targetUserId) {
-        await EventPublisher.rbacEvent({
+        await eventBus.publishEvent(QUEUES.RBAC_EVENTS, {
           type: `user.role.${action}` as 'user.role.assign' | 'user.role.revoke',
           userId: targetUserId,
           roleId: resourceId,
@@ -222,6 +228,9 @@ async function publishRbacEvents(eventData: RbacEventData, request: FastifyReque
             timestamp: new Date().toISOString(),
           },
           timestamp: new Date().toISOString(),
+          correlationId: `rbac-${Date.now()}-${Math.random().toString(36)}`,
+          source: 'rbac-service',
+          version: '1.0',
         });
       }
     }
