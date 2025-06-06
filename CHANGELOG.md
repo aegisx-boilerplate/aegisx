@@ -1,3 +1,8 @@
+## <small>2.7.4 (2025-06-06)</small>
+
+* Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([a163dbf](https://github.com/aegisx-boilerplate/aegisx/commit/a163dbf))
+* refactor: complete event system dependency injection pattern ([c20bc24](https://github.com/aegisx-boilerplate/aegisx/commit/c20bc24))
+
 ## <small>2.7.3 (2025-06-06)</small>
 
 * refactor: improve Swagger configuration formatting and cleanup ([5d7023d](https://github.com/aegisx-boilerplate/aegisx/commit/5d7023d))
