@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Test database schema and basic functionality
-const { knex } = require('./dist/src/db/knex.js');
+const { knex } = require('../dist/src/db/knex.js');
 
 async function testDatabaseSetup() {
     console.log('🧪 Testing Database Setup and Schema...\n');

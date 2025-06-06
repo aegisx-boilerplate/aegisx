@@ -21,11 +21,19 @@ Welcome to the AegisX documentation center. Here you'll find comprehensive guide
 - **[Event Analytics](./event-analytics.md)** - Analytics and monitoring system
 
 ### Detailed Guides
+
 - **[Audit Logging](./audit-logging.md)** - Comprehensive audit system
 - **[Audit Log Replay Automation](./audit-log-replay-automation.md)** - Offline audit log handling
 - **[Event Analytics Quickstart](./event-analytics-quickstart.md)** - Quick setup for analytics
 
+### 🔐 Authentication & Security
+
+- **[Auth Testing Guide](./auth-testing-guide.md)** - Comprehensive auth system testing
+- **[Auth Enhancement Summary](./auth/AUTH_ENHANCEMENT_SUMMARY.md)** - Complete auth module enhancement details
+- **[Auth Routes Testing Guide](./auth/AUTH_ROUTES_TESTING.md)** - Testing authentication endpoints
+
 ## 🗺️ Roadmap & Planning
+
 - **[Migration Strategy](./roadmap/migration-strategy.md)** - Migration planning and execution
 - **[Universal Core Roadmap](./roadmap/UNIVERSAL_CORE_ROADMAP.md)** - Future architecture plans
 - **[Universal Core Implementation](./roadmap/universal-core-implementation.md)** - Implementation details

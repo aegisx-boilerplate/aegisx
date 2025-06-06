@@ -336,15 +336,24 @@ npm run test:events    # Test event system
 - **[Testing Guide](./docs/testing-guide.md)** - Testing approaches and best practices
 
 ### 🏗️ Architecture
+
 - **[Event-Driven Architecture](./docs/event-driven-architecture.md)** - System architecture overview
 - **[Event Bus Documentation](./docs/event-bus.md)** - RabbitMQ integration details
 - **[Audit Logging](./docs/audit-logging.md)** - Comprehensive audit system
 
+### 🔐 Authentication & Testing
+
+- **[Auth Enhancement Summary](./docs/auth/AUTH_ENHANCEMENT_SUMMARY.md)** - Complete auth module enhancement details
+- **[Auth Routes Testing Guide](./docs/auth/AUTH_ROUTES_TESTING.md)** - Testing authentication endpoints
+- **[Auth Testing Guide](./docs/auth-testing-guide.md)** - Comprehensive auth testing guide
+
 ### 🚀 Deployment
+
 - **[Docker Deployment](./docs/docker-deployment.md)** - Production deployment guide
 - **[Semantic Release](./docs/semantic-release.md)** - Automated versioning and releases
 
 ### 📊 Analytics & Monitoring
+
 - **[Event Analytics](./docs/event-analytics.md)** - Analytics system overview
 - **[Event Analytics Quickstart](./docs/event-analytics-quickstart.md)** - Quick setup guide
 

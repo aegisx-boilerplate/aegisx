@@ -6,7 +6,12 @@
 
 1. `scripts/test-auth-routes.js` - ทดสอบ auth routes พื้นฐานทั้งหมด
 2. `scripts/test-api-key-auth.js` - ทดสอบการยืนยันตัวตนด้วย API key แบบละเอียด
-3. `test-auth.sh` - script หลักสำหรับรันการทดสอบทั้งหมด
+3. `scripts/quick-auth-test.mjs` - ทดสอบ auth endpoints หลักอย่างรวดเร็ว (ไม่รวม email dependencies)
+4. `scripts/test-db.cjs` - ทดสอบ database schema และการเชื่อมต่อ
+5. `scripts/test-logic.cjs` - ทดสอบ auth service logic
+6. `scripts/test-registration.cjs` - ทดสอบ registration endpoint โดยเฉพาะ
+7. `test-auth.sh` - script หลักสำหรับรันการทดสอบทั้งหมด
+8. `test-auth-manual.sh` - script สำหรับทดสอบ manual auth endpoints
 
 ## ขั้นตอนการใช้งาน
 
@@ -28,6 +33,18 @@ API_URL=http://localhost:3000 node --experimental-vm-modules ./scripts/test-auth
 
 # ทดสอบเฉพาะการยืนยันตัวตนด้วย API key
 API_URL=http://localhost:3000 node --experimental-vm-modules ./scripts/test-api-key-auth.js
+
+# ทดสอบ auth endpoints หลักอย่างรวดเร็ว (แนะนำสำหรับการทดสอบเบื้องต้น)
+node ./scripts/quick-auth-test.mjs
+
+# ทดสอบ database schema และการเชื่อมต่อ
+node ./scripts/test-db.cjs
+
+# ทดสอบ auth service logic
+node ./scripts/test-logic.cjs
+
+# ทดสอบ registration endpoint
+node ./scripts/test-registration.cjs
 
 # เปิดโหมด debug เพื่อแสดงข้อมูลโต้ตอบ (responses) ทั้งหมด
 DEBUG=true API_URL=http://localhost:3000 node --experimental-vm-modules ./scripts/test-auth-routes.js

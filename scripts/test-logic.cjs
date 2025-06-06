@@ -8,7 +8,7 @@ async function testRegistrationLogic() {
 
     try {
         // Try to load and verify our auth service has the proper structure
-        const authServicePath = path.join(__dirname, 'dist/src/core/auth/auth.service.js');
+        const authServicePath = path.join(__dirname, '../dist/src/core/auth/auth.service.js');
         const authService = require(authServicePath);
 
         console.log('✅ Auth service loaded successfully');
@@ -28,7 +28,7 @@ async function testRegistrationLogic() {
         }
 
         // Try to load RbacService
-        const rbacServicePath = path.join(__dirname, 'dist/src/core/rbac/rbac.service.js');
+        const rbacServicePath = path.join(__dirname, '../dist/src/core/rbac/rbac.service.js');
         const rbacService = require(rbacServicePath);
 
         if (rbacService.RbacService) {
