@@ -1,3 +1,7 @@
+## <small>2.7.2 (2025-06-06)</small>
+
+* fix(compose): remove docker compose file ([714caa7](https://github.com/aegisx-boilerplate/aegisx/commit/714caa7))
+
 ## <small>2.7.1 (2025-06-06)</small>
 
 * fix: update auth test scripts to use ES modules compatibility ([cc60b9a](https://github.com/aegisx-boilerplate/aegisx/commit/cc60b9a))
