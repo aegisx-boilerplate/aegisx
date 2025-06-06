@@ -85,8 +85,8 @@ done
 
 # Test 5: Email Service Configuration Test
 echo "📧 Testing email service configuration..."
-node -e "
-const { EmailService } = require('./dist/src/services/email.service.js');
+node --input-type=module -e "
+import { EmailService } from './dist/src/services/email.service.js';
 console.log('Email service loaded successfully');
 "
 

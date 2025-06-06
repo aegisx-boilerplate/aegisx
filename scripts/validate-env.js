@@ -5,8 +5,8 @@
  * This script validates that all required environment variables are set correctly
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 // Colors for console output
 const colors = {
@@ -24,7 +24,7 @@ function log(message, color = colors.reset) {
 
 function loadEnvFile() {
   const envPath = path.join(process.cwd(), '.env');
-  
+
   if (!fs.existsSync(envPath)) {
     log('❌ .env file not found!', colors.red);
     log('💡 Run: cp .env.example .env', colors.yellow);
@@ -34,7 +34,7 @@ function loadEnvFile() {
   // Load .env file manually for validation
   const envContent = fs.readFileSync(envPath, 'utf8');
   const envVars = {};
-  
+
   envContent.split('\n').forEach(line => {
     const cleanLine = line.trim();
     if (cleanLine && !cleanLine.startsWith('#')) {
@@ -50,10 +50,10 @@ function loadEnvFile() {
 
 function validateRequired(envVars) {
   log('\n📋 Validating Required Environment Variables:', colors.bold);
-  
+
   const required = [
     'NODE_ENV',
-    'PORT', 
+    'PORT',
     'DATABASE_URL',
     'REDIS_URL',
     'RABBITMQ_URL',
@@ -61,7 +61,7 @@ function validateRequired(envVars) {
   ];
 
   let allValid = true;
-  
+
   required.forEach(key => {
     if (envVars[key] && envVars[key].trim() !== '') {
       log(`✅ ${key}: Set`, colors.green);
@@ -76,9 +76,9 @@ function validateRequired(envVars) {
 
 function validateJWT(envVars) {
   log('\n🔐 Validating JWT Configuration:', colors.bold);
-  
+
   let valid = true;
-  
+
   // JWT Secret validation
   const jwtSecret = envVars['JWT_SECRET'];
   if (!jwtSecret) {
@@ -86,8 +86,8 @@ function validateJWT(envVars) {
     valid = false;
   } else if (jwtSecret.length < 32) {
     log(`⚠️  JWT_SECRET: Too short (${jwtSecret.length} chars, minimum 32)`, colors.yellow);
-  } else if (jwtSecret === 'your-secret-key-change-in-production' || 
-             jwtSecret === 'your-secret-key-change-in-production-minimum-32-characters') {
+  } else if (jwtSecret === 'your-secret-key-change-in-production' ||
+    jwtSecret === 'your-secret-key-change-in-production-minimum-32-characters') {
     log('⚠️  JWT_SECRET: Still using default value', colors.yellow);
   } else {
     log('✅ JWT_SECRET: Properly configured', colors.green);
@@ -96,7 +96,7 @@ function validateJWT(envVars) {
   // Token expiry validation
   const accessExpiry = envVars['JWT_ACCESS_TOKEN_EXPIRY'] || '15m';
   const refreshExpiry = envVars['JWT_REFRESH_TOKEN_EXPIRY'] || '7d';
-  
+
   log(`✅ JWT_ACCESS_TOKEN_EXPIRY: ${accessExpiry}`, colors.green);
   log(`✅ JWT_REFRESH_TOKEN_EXPIRY: ${refreshExpiry}`, colors.green);
 
@@ -105,12 +105,12 @@ function validateJWT(envVars) {
 
 function validatePasswords(envVars) {
   log('\n🔒 Validating Password Configuration:', colors.bold);
-  
+
   const minLength = parseInt(envVars['PASSWORD_MIN_LENGTH']) || 8;
   const bcryptRounds = parseInt(envVars['BCRYPT_ROUNDS']) || 12;
-  
+
   log(`✅ Password minimum length: ${minLength}`, colors.green);
-  
+
   if (bcryptRounds < 10) {
     log(`⚠️  BCRYPT_ROUNDS: ${bcryptRounds} (consider 10-15 for security)`, colors.yellow);
   } else if (bcryptRounds > 15) {
@@ -122,11 +122,11 @@ function validatePasswords(envVars) {
   // Password policy
   const policies = [
     'PASSWORD_REQUIRE_UPPERCASE',
-    'PASSWORD_REQUIRE_LOWERCASE', 
+    'PASSWORD_REQUIRE_LOWERCASE',
     'PASSWORD_REQUIRE_NUMBERS',
     'PASSWORD_REQUIRE_SYMBOLS'
   ];
-  
+
   policies.forEach(policy => {
     const value = envVars[policy];
     if (value === 'true') {
@@ -139,7 +139,7 @@ function validatePasswords(envVars) {
 
 function validateDatabase(envVars) {
   log('\n🗄️ Validating Database Configuration:', colors.bold);
-  
+
   const dbUrl = envVars['DATABASE_URL'];
   if (!dbUrl) {
     log('❌ DATABASE_URL: Not set', colors.red);
@@ -148,7 +148,7 @@ function validateDatabase(envVars) {
 
   try {
     const url = new URL(dbUrl);
-    
+
     if (url.protocol !== 'postgres:' && url.protocol !== 'postgresql:') {
       log(`⚠️  DATABASE_URL: Protocol should be postgres:// (found: ${url.protocol})`, colors.yellow);
     } else {
@@ -163,7 +163,7 @@ function validateDatabase(envVars) {
 
     log(`✅ Database host: ${url.hostname}:${url.port}`, colors.green);
     log(`✅ Database name: ${url.pathname.substring(1)}`, colors.green);
-    
+
     return true;
   } catch (error) {
     log(`❌ DATABASE_URL: Invalid format (${error.message})`, colors.red);
@@ -173,10 +173,10 @@ function validateDatabase(envVars) {
 
 function validateEmail(envVars) {
   log('\n📧 Validating Email Configuration:', colors.bold);
-  
+
   const required = ['SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'EMAIL_FROM'];
   let configured = 0;
-  
+
   required.forEach(key => {
     if (envVars[key] && envVars[key].trim() !== '') {
       configured++;
@@ -205,11 +205,11 @@ function validateEmail(envVars) {
 
 function validateRateLimit(envVars) {
   log('\n🚦 Validating Rate Limiting Configuration:', colors.bold);
-  
+
   const windowMs = parseInt(envVars['RATE_LIMIT_AUTH_WINDOW_MS']) || 900000;
   const maxAttempts = parseInt(envVars['RATE_LIMIT_AUTH_MAX_ATTEMPTS']) || 5;
   const blockDuration = parseInt(envVars['RATE_LIMIT_AUTH_BLOCK_DURATION_MS']) || 1800000;
-  
+
   log(`✅ Auth window: ${windowMs / 1000 / 60} minutes`, colors.green);
   log(`✅ Max attempts: ${maxAttempts}`, colors.green);
   log(`✅ Block duration: ${blockDuration / 1000 / 60} minutes`, colors.green);
@@ -221,28 +221,28 @@ function validateRateLimit(envVars) {
 
 function validateSecurity(envVars) {
   log('\n🛡️ Security Recommendations:', colors.bold);
-  
+
   const nodeEnv = envVars['NODE_ENV'];
-  
+
   if (nodeEnv === 'production') {
     let securityIssues = 0;
-    
+
     // Check for default values in production
     if (envVars['JWT_SECRET'] && envVars['JWT_SECRET'].includes('your-secret-key')) {
       log('🚨 CRITICAL: Using default JWT secret in production!', colors.red);
       securityIssues++;
     }
-    
+
     if (envVars['DATABASE_URL'] && envVars['DATABASE_URL'].includes('user:password@localhost')) {
       log('🚨 WARNING: Using default database credentials in production!', colors.red);
       securityIssues++;
     }
-    
+
     if (envVars['RABBITMQ_URL'] && envVars['RABBITMQ_URL'].includes('admin:password@localhost')) {
       log('🚨 WARNING: Using default RabbitMQ credentials in production!', colors.red);
       securityIssues++;
     }
-    
+
     if (securityIssues === 0) {
       log('✅ No obvious security issues found', colors.green);
     }
@@ -256,7 +256,7 @@ function generateSecretSuggestion() {
   log('Generate a secure JWT secret using one of these methods:', colors.blue);
   log('');
   log('Node.js:', colors.yellow);
-  log('  require("crypto").randomBytes(64).toString("hex")', colors.blue);
+  log('  import crypto from "crypto"; crypto.randomBytes(64).toString("hex")', colors.blue);
   log('');
   log('OpenSSL:', colors.yellow);
   log('  openssl rand -hex 64', colors.blue);
@@ -268,11 +268,11 @@ function generateSecretSuggestion() {
 function main() {
   log('🔍 AegisX Environment Variables Validation', colors.bold);
   log('=========================================\n');
-  
+
   const envVars = loadEnvFile();
-  
+
   let allValid = true;
-  
+
   allValid &= validateRequired(envVars);
   allValid &= validateJWT(envVars);
   validatePasswords(envVars);
@@ -280,9 +280,9 @@ function main() {
   validateEmail(envVars);
   validateRateLimit(envVars);
   validateSecurity(envVars);
-  
+
   log('\n' + '='.repeat(50));
-  
+
   if (allValid) {
     log('\n🎉 Environment validation completed successfully!', colors.green);
     log('Your .env file is properly configured.', colors.green);
@@ -291,7 +291,7 @@ function main() {
     log('Please fix the issues above before running the application.', colors.yellow);
     generateSecretSuggestion();
   }
-  
+
   log('\n💡 Quick Start Commands:', colors.bold);
   log('  npm run services:up     # Start services');
   log('  npm run db:setup        # Setup database');
@@ -299,8 +299,10 @@ function main() {
   log('  ./test-auth-manual.sh   # Test authentication');
 }
 
-if (require.main === module) {
+// In ESM, check if this file is being run directly
+if (import.meta.url === `file://${process.argv[1]}`) {
   main();
 }
 
-module.exports = { loadEnvFile, validateRequired, validateJWT };
+// ESM exports
+export { loadEnvFile, validateRequired, validateJWT };

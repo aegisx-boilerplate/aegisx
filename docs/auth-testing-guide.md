@@ -18,7 +18,24 @@ npm run dev
 ### 2. Run Automated Tests
 
 ```bash
-# Run the manual test script
+# Run the comprehensive auth testing script
+./test-auth.sh
+
+# หรือรันเฉพาะ script ที่ต้องการ
+node --experimental-vm-modules ./scripts/test-auth-routes.js       # ทดสอบ auth routes พื้นฐาน
+node --experimental-vm-modules ./scripts/test-api-key-auth.js      # ทดสอบ API key authentication
+
+# รันพร้อมโหมด debug เพื่อแสดงข้อมูลเพิ่มเติม
+DEBUG=true ./test-auth.sh
+```
+
+### 3. Scripts ที่มีให้ใช้งาน
+
+เพิ่ม Scripts ต่อไปนี้สำหรับทดสอบ Auth Routes ทั้งหมด:
+
+- **test-auth.sh**: Script หลักสำหรับรันทั้งหมด
+- **scripts/test-auth-routes.js**: ทดสอบ auth routes พื้นฐาน (register, login, me, change-password, logout, refresh, forgot-password, reset-password)
+- **scripts/test-api-key-auth.js**: ทดสอบ API key authentication แบบละเอียด รวมถึง scopes และ IP whitelist
 ./test-auth-manual.sh
 ```
 

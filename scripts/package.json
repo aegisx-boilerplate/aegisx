@@ -1,0 +1,12 @@
+{
+  "name": "auth-test-scripts",
+  "version": "1.0.0",
+  "description": "Test scripts for AegisX auth routes",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "axios": "^1.6.2",
+    "chalk": "^5.3.0",
+    "uuid": "^9.0.1"
+  }
+}
