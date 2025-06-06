@@ -1,3 +1,14 @@
+## <small>2.7.3 (2025-06-06)</small>
+
+* refactor: improve Swagger configuration formatting and cleanup ([5d7023d](https://github.com/aegisx-boilerplate/aegisx/commit/5d7023d))
+* refactor: reorganize project structure and enhance auth testing ([ef7996e](https://github.com/aegisx-boilerplate/aegisx/commit/ef7996e))
+
+
+### BREAKING CHANGE
+
+* None - all functionality preserved
+Closes: File organization and auth testing requirements
+
 ## <small>2.7.2 (2025-06-06)</small>
 
 * fix(compose): remove docker compose file ([714caa7](https://github.com/aegisx-boilerplate/aegisx/commit/714caa7))
