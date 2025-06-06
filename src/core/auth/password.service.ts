@@ -3,12 +3,12 @@ import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { knex } from '../../db/knex';
 import { PasswordResetToken } from './types';
-import { env } from '../../config/env';
+import { config } from '../../config/config';
 
 export class PasswordService {
-    static SALT_ROUNDS = env.BCRYPT_ROUNDS;
-    static MIN_PASSWORD_LENGTH = env.PASSWORD_MIN_LENGTH;
-    static REQUIRE_SPECIAL_CHARS = env.PASSWORD_REQUIRE_SYMBOLS;
+    static SALT_ROUNDS = config.security.bcryptRounds;
+    static MIN_PASSWORD_LENGTH = config.passwordPolicy.minLength;
+    static REQUIRE_SPECIAL_CHARS = config.passwordPolicy.requireSymbols;
     static RESET_TOKEN_EXPIRY_HOURS = 24;
 
     /**

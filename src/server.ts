@@ -1,7 +1,7 @@
 import app from './app';
-import { env } from './config/env';
+import { config } from './config/config';
 
-const port = env.PORT || 3000;
+const port = config.PORT || 3000;
 
 app
   .listen({ port, host: '0.0.0.0' })

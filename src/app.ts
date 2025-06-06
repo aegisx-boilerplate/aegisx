@@ -1,6 +1,6 @@
 import fastify from 'fastify';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
-import { env } from './config/env';
+import { config } from './config/config';
 import { setFastifyInstance } from './core/auth/auth.service';
 import autoload from '@fastify/autoload';
 import path from 'path';
@@ -77,15 +77,15 @@ if (fs.existsSync(modulesDir)) {
 import { ErrorResponse } from './schemas/error.schema';
 app.setErrorHandler((error, request, reply) => {
   const statusCode = error.statusCode || 500;
-  if (env.NODE_ENV !== 'production') {
+  if (!config.isProduction) {
     app.log.error(error);
   }
   reply.status(statusCode).send({
     statusCode,
     error: error.name || 'InternalServerError',
     message:
-      env.NODE_ENV === 'production' ? 'Unexpected error' : error.message || 'Unexpected error',
-    stack: env.NODE_ENV === 'production' ? undefined : error.stack,
+      config.isProduction ? 'Unexpected error' : error.message || 'Unexpected error',
+    stack: config.isProduction ? undefined : error.stack,
   } as unknown as typeof ErrorResponse);
 });
 

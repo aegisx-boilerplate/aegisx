@@ -5,7 +5,8 @@
  * Demonstrates the new type-safe configuration system
  */
 
-import { config, validateEnvironment } from '../src/config/config.js';
+import pkg from '../dist/src/config/config.js';
+const { config, validateEnvironment } = pkg;
 
 console.log('🎯 AegisX Configuration System Demo\n');
 

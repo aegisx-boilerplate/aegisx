@@ -14,7 +14,7 @@ console.log('🎯 Final Configuration System Validation\n');
 console.log('📋 Test 1: Configuration Files Structure');
 
 const requiredFiles = [
-  'src/config/env-schema.ts',
+  'src/config/schema.ts',
   'src/config/config.ts', 
   'src/config/env.ts'
 ];
@@ -35,9 +35,9 @@ requiredFiles.forEach(file => {
 // Test 2: Content Analysis
 console.log('\n🔍 Test 2: Configuration Content Analysis');
 
-// Check env-schema.ts
+// Check schema.ts
 try {
-  const schemaContent = fs.readFileSync(path.join(__dirname, '..', 'src/config/env-schema.ts'), 'utf8');
+  const schemaContent = fs.readFileSync(path.join(__dirname, '..', 'src/config/schema.ts'), 'utf8');
   const hasZodValidation = schemaContent.includes('z.object(') && schemaContent.includes('z.string()');
   const hasTypeConversion = schemaContent.includes('.transform(') && schemaContent.includes('Number(');
   const hasProductionValidation = schemaContent.includes('enhancedEnvSchema') && schemaContent.includes('production');
@@ -46,7 +46,7 @@ try {
   console.log(`   ${hasTypeConversion ? '✅' : '❌'} Type conversion support`);
   console.log(`   ${hasProductionValidation ? '✅' : '❌'} Production-specific validation`);
 } catch (error) {
-  console.log('   ❌ Error analyzing env-schema.ts');
+  console.log('   ❌ Error analyzing schema.ts');
 }
 
 // Check config.ts

@@ -44,7 +44,7 @@ function runFunctionalTests() {
   
   // Test file existence and structure
   const configFiles = [
-    { file: 'src/config/env-schema.ts', description: 'Zod validation schemas' },
+    { file: 'src/config/schema.ts', description: 'Zod validation schemas' },
     { file: 'src/config/config.ts', description: 'Type-safe configuration loader' },
     { file: 'src/config/env.ts', description: 'Backward compatibility layer' }
   ];
@@ -56,7 +56,7 @@ function runFunctionalTests() {
       
       // Check for key patterns
       let hasRequiredPatterns = false;
-      if (file.includes('env-schema.ts')) {
+      if (file.includes('schema.ts')) {
         hasRequiredPatterns = content.includes('z.object(') && content.includes('enhancedEnvSchema');
       } else if (file.includes('config.ts')) {
         hasRequiredPatterns = content.includes('validateEnvironment') && content.includes('export const config');
@@ -105,9 +105,9 @@ function runFunctionalTests() {
     { pattern: 'Backward compatibility', found: false }
   ];
   
-  // Check env-schema.ts for modern patterns
+  // Check schema.ts for modern patterns
   try {
-    const schemaContent = fs.readFileSync(path.join(__dirname, '..', 'src/config/env-schema.ts'), 'utf8');
+    const schemaContent = fs.readFileSync(path.join(__dirname, '..', 'src/config/schema.ts'), 'utf8');
     if (schemaContent.includes('z.object') && schemaContent.includes('safeParse')) {
       modernFeatures[0].found = true; // Zod validation
     }

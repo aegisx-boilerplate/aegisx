@@ -1,6 +1,7 @@
 /**
- * Environment Configuration Schema
- * Type-safe environment variable validation using Zod
+ * Configuration Schema
+ * Type-safe configuration validation using Zod
+ * Validates environment variables and transforms them into structured config
  */
 
 import { z } from 'zod';
@@ -28,8 +29,8 @@ const durationSchema = z
   .string()
   .regex(/^\d+[smhd]$/, 'Invalid duration format (e.g., 15m, 1h, 7d)');
 
-// Main environment schema
-export const envSchema = z.object({
+// Main configuration schema
+export const configSchema = z.object({
   // Core Application
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: numberFromString.default(3000),
@@ -94,10 +95,10 @@ export const envSchema = z.object({
 });
 
 // Type inference for the validated config
-export type EnvConfig = z.infer<typeof envSchema>;
+export type ConfigType = z.infer<typeof configSchema>;
 
 // Environment-specific validation rules
-const productionRefinements = (data: EnvConfig) => {
+const productionRefinements = (data: ConfigType) => {
   const errors: string[] = [];
 
   if (data.NODE_ENV === 'production') {
@@ -125,7 +126,7 @@ const productionRefinements = (data: EnvConfig) => {
 };
 
 // Enhanced schema with production validation
-export const enhancedEnvSchema = envSchema.refine(
+export const enhancedConfigSchema = configSchema.refine(
   (data) => {
     const errors = productionRefinements(data);
     return errors.length === 0;

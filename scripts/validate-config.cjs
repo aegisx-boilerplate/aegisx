@@ -8,7 +8,7 @@ console.log('🧪 Testing AegisX Configuration System...\n');
 
 // Check that all required files exist
 const configFiles = [
-  'src/config/env-schema.ts',
+  'src/config/schema.ts',
   'src/config/config.ts', 
   'src/config/env.ts'
 ];
@@ -33,8 +33,8 @@ if (!allFilesExist) {
 // Check content of key files
 console.log('\n🔍 Analyzing configuration structure:');
 
-// Check env-schema.ts for Zod schemas
-const envSchemaContent = fs.readFileSync(path.join(__dirname, '..', 'src/config/env-schema.ts'), 'utf8');
+// Check schema.ts for Zod schemas
+const envSchemaContent = fs.readFileSync(path.join(__dirname, '..', 'src/config/schema.ts'), 'utf8');
 if (envSchemaContent.includes('z.object(') && envSchemaContent.includes('enhancedEnvSchema')) {
   console.log('   ✅ Zod validation schemas present');
 } else {

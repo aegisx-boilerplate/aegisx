@@ -1,9 +1,9 @@
 import Knex from 'knex';
-import { env } from '../config/env';
+import { config } from '../config/config';
 
 const knex = Knex({
   client: 'pg',
-  connection: env.DATABASE_URL,
+  connection: config.database.url,
   pool: { min: 2, max: 10 },
   migrations: {
     directory: __dirname + '/migrations',

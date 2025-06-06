@@ -1,11 +1,11 @@
 import { knex } from '../../db/knex';
 import { generateApiKey } from '../../utils/generate-api-key';
 import Redis from 'ioredis';
-import { env } from '../../config/env';
+import { config } from '../../config/config';
 import { AuditLogger } from '../../utils/audit-logger';
 import { ResilientEventBus } from '../event-bus';
 
-const redis = new Redis(env.REDIS_URL);
+const redis = new Redis(config.redis.url);
 
 export class ApiKeyService {
   static async create(

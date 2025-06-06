@@ -1,9 +1,9 @@
-import { env } from '../../config/env';
+import { config } from '../../config/config';
 
 /**
  * Generate queue names with configurable prefix
  */
-export const getQueues = (prefix: string = env.EVENT_BUS_QUEUE_PREFIX || 'aegisx') => ({
+export const getQueues = (prefix: string = config.eventBus.queuePrefix) => ({
     AUDIT_LOG: `${prefix}.audit.log`,
     USER_EVENTS: `${prefix}.user.events`,
     API_KEY_EVENTS: `${prefix}.api_key.events`,

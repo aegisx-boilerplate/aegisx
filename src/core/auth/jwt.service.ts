@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { knex } from '../../db/knex';
 import { JwtPayload, RefreshToken } from './types';
-import { env } from '../../config/env';
+import { config } from '../../config/config';
 import crypto from 'crypto';
 
 let fastifyInstance: FastifyInstance | null = null;
@@ -11,8 +11,8 @@ export function setFastifyInstance(instance: FastifyInstance) {
 }
 
 export class JwtService {
-    static ACCESS_TOKEN_EXPIRY = env.JWT_ACCESS_TOKEN_EXPIRY;
-    static REFRESH_TOKEN_EXPIRY = env.JWT_REFRESH_TOKEN_EXPIRY;
+    static ACCESS_TOKEN_EXPIRY = config.jwt.accessTokenExpiry;
+    static REFRESH_TOKEN_EXPIRY = config.jwt.refreshTokenExpiry;
 
     /**
      * Sign an access token

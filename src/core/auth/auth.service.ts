@@ -1,5 +1,5 @@
 import { knex } from '../../db/knex';
-import { env } from '../../config/env';
+import { config } from '../../config/config';
 import Redis from 'ioredis';
 import { AuditLogger } from '../../utils/audit-logger';
 import { JwtService, setFastifyInstance } from './jwt.service';
@@ -18,7 +18,7 @@ import {
   RefreshTokenRequest,
 } from './types';
 
-const redis = new Redis(env.REDIS_URL);
+const redis = new Redis(config.redis.url);
 
 export { setFastifyInstance };
 
@@ -281,7 +281,7 @@ export class AuthService {
 
     // Send password reset email
     try {
-      const resetUrl = `${env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${resetToken.token}`;
+      const resetUrl = `${config.frontend.url || 'http://localhost:3000'}/reset-password?token=${resetToken.token}`;
 
       await EmailService.sendPasswordResetEmail({
         to: user.email,
@@ -294,10 +294,10 @@ export class AuthService {
       console.error('Failed to send password reset email:', emailError);
 
       // In development, log the token for testing
-      if (env.NODE_ENV === 'development') {
+      if (config.isDevelopment) {
         console.log(`Password reset token for ${user.email}: ${resetToken.token}`);
         console.log(
-          `Reset URL: ${env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${resetToken.token}`
+          `Reset URL: ${config.frontend.url || 'http://localhost:3000'}/reset-password?token=${resetToken.token}`
         );
       }
     }

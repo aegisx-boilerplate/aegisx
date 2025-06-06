@@ -1,8 +1,8 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import Redis from 'ioredis';
-import { env } from '../config/env';
+import { config } from '../config/config';
 
-const redis = new Redis(env.REDIS_URL);
+const redis = new Redis(config.redis.url);
 
 interface RateLimitConfig {
     windowMs: number; // Time window in milliseconds
@@ -173,9 +173,9 @@ export async function resetRateLimit(key: string): Promise<void> {
 export const RateLimitConfigs = {
     // Strict rate limiting for authentication endpoints
     auth: {
-        windowMs: 15 * 60 * 1000, // 15 minutes
-        maxAttempts: 5, // 5 attempts per window
-        blockDurationMs: 30 * 60 * 1000, // Block for 30 minutes
+        windowMs: config.rateLimiting.auth.windowMs,
+        maxAttempts: config.rateLimiting.auth.maxAttempts,
+        blockDurationMs: config.rateLimiting.auth.blockDurationMs,
         keyGenerator: (request: FastifyRequest) => `auth_rate_limit:${request.ip}`,
         skipSuccessfulRequests: true, // Only count failed login attempts
     },
@@ -190,8 +190,8 @@ export const RateLimitConfigs = {
 
     // API rate limiting
     api: {
-        windowMs: 60 * 1000, // 1 minute
-        maxAttempts: 100, // 100 requests per minute
+        windowMs: config.rateLimiting.api.windowMs,
+        maxAttempts: config.rateLimiting.api.maxRequests,
         blockDurationMs: 5 * 60 * 1000, // Block for 5 minutes
         keyGenerator: (request: FastifyRequest) => {
             // Use API key if available, otherwise IP

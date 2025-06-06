@@ -4,7 +4,7 @@
  */
 
 import dotenv from 'dotenv';
-import { envSchema, enhancedEnvSchema, type EnvConfig } from './env-schema';
+import { configSchema, enhancedConfigSchema, type ConfigType } from './schema';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -14,9 +14,9 @@ dotenv.config();
  * @param strict - Whether to use enhanced validation (includes production checks)
  * @returns Validated configuration object
  */
-function loadConfig(strict: boolean = true): EnvConfig {
+function loadConfig(strict: boolean = true): ConfigType {
   try {
-    const schema = strict ? enhancedEnvSchema : envSchema;
+    const schema = strict ? enhancedConfigSchema : configSchema;
     const config = schema.parse(process.env);
 
     // Log successful validation in development
@@ -51,8 +51,8 @@ function loadConfig(strict: boolean = true): EnvConfig {
   }
 }
 
-// Load and export the validated configuration
-export const env = loadConfig();
+// Load the validated configuration
+const env = loadConfig();
 
 // Export derived configuration for convenience
 export const config = {
@@ -159,5 +159,5 @@ export function getConfigForEnvironment(environment: string) {
 
 // Validation utility that can be used standalone
 export function validateEnvironment(variables: Record<string, string | undefined>) {
-  return envSchema.safeParse(variables);
+  return configSchema.safeParse(variables);
 }

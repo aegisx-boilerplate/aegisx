@@ -1,5 +1,5 @@
 import type { Knex } from 'knex';
-import { env } from '../config/env';
+import { config } from '../config/config';
 
 // Parse DATABASE_URL or use individual components
 const parseDbConnection = (url: string) => {
@@ -29,10 +29,10 @@ const parseDbConnection = (url: string) => {
   };
 };
 
-const config: { [key: string]: Knex.Config } = {
+const knexConfig: { [key: string]: Knex.Config } = {
   development: {
     client: 'pg',
-    connection: parseDbConnection(env.DATABASE_URL),
+    connection: parseDbConnection(config.database.url),
     pool: { min: 2, max: 10 },
     migrations: {
       directory: './migrations',
@@ -46,7 +46,7 @@ const config: { [key: string]: Knex.Config } = {
   },
   production: {
     client: 'pg',
-    connection: parseDbConnection(env.DATABASE_URL),
+    connection: parseDbConnection(config.database.url),
     pool: { min: 2, max: 10 },
     migrations: {
       directory: './migrations',
@@ -60,4 +60,4 @@ const config: { [key: string]: Knex.Config } = {
   },
 };
 
-export default config;
+export default knexConfig;

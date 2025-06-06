@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import { env } from '../config/env';
+import { config } from '../config/config';
 import { logger } from '../utils/logger';
 
 export interface EmailOptions {
@@ -25,15 +25,15 @@ export class EmailService {
   private static getTransporter(): nodemailer.Transporter {
     if (!this.transporter) {
       this.transporter = nodemailer.createTransport({
-        host: env.SMTP_HOST,
-        port: env.SMTP_PORT,
-        secure: env.SMTP_PORT === 465, // true for 465, false for other ports
+        host: config.email.smtp.host,
+        port: config.email.smtp.port,
+        secure: config.email.smtp.port === 465, // true for 465, false for other ports
         auth: {
-          user: env.SMTP_USER,
-          pass: env.SMTP_PASSWORD,
+          user: config.email.smtp.user,
+          pass: config.email.smtp.password,
         },
         // For development with services like Mailtrap or MailHog
-        ...(env.NODE_ENV === 'development' && {
+        ...(config.isDevelopment && {
           ignoreTLS: true,
           requireTLS: false,
         }),
@@ -47,7 +47,7 @@ export class EmailService {
    */
   static async sendEmail(options: EmailOptions): Promise<void> {
     try {
-      if (!env.SMTP_HOST || !env.SMTP_USER) {
+      if (!config.email.smtp.host || !config.email.smtp.user) {
         logger.warn('SMTP not configured, skipping email send');
         console.log(`[EMAIL] Would send to ${options.to}: ${options.subject}`);
         return;
@@ -56,7 +56,7 @@ export class EmailService {
       const transporter = this.getTransporter();
 
       const mailOptions = {
-        from: env.FROM_EMAIL,
+        from: config.email.fromEmail,
         to: options.to,
         subject: options.subject,
         text: options.text,
@@ -227,7 +227,7 @@ AegisX Team
    */
   static async verifyConfiguration(): Promise<boolean> {
     try {
-      if (!env.SMTP_HOST || !env.SMTP_USER) {
+      if (!config.email.smtp.host || !config.email.smtp.user) {
         return false;
       }
 
