@@ -1,3 +1,7 @@
+## <small>2.7.1 (2025-06-06)</small>
+
+* fix: update auth test scripts to use ES modules compatibility ([cc60b9a](https://github.com/aegisx-boilerplate/aegisx/commit/cc60b9a))
+
 ## 2.7.0 (2025-06-05)
 
 * docs: เพิ่มเอกสารและสคริปต์ทดสอบสำหรับ auth module ([1b8bf0a](https://github.com/aegisx-boilerplate/aegisx/commit/1b8bf0a))
