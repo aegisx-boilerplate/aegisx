@@ -1,3 +1,8 @@
+## 2.8.0 (2025-06-06)
+
+* Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([1174f3c](https://github.com/aegisx-boilerplate/aegisx/commit/1174f3c))
+* feat: implement modern type-safe configuration system ([3e3c778](https://github.com/aegisx-boilerplate/aegisx/commit/3e3c778))
+
 ## <small>2.7.4 (2025-06-06)</small>
 
 * Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([a163dbf](https://github.com/aegisx-boilerplate/aegisx/commit/a163dbf))
