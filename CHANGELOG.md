@@ -1,3 +1,9 @@
+## 2.9.0 (2025-06-07)
+
+* Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([617e5b6](https://github.com/aegisx-boilerplate/aegisx/commit/617e5b6))
+* feat: add code coverage thresholds to jest configuration ([ce4eeda](https://github.com/aegisx-boilerplate/aegisx/commit/ce4eeda))
+* feat: setup jest unit testing framework with configuration tests ([e20c1fd](https://github.com/aegisx-boilerplate/aegisx/commit/e20c1fd))
+
 ## <small>2.8.2 (2025-06-07)</small>
 
 * Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([698ef10](https://github.com/aegisx-boilerplate/aegisx/commit/698ef10))
