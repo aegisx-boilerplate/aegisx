@@ -19,9 +19,9 @@ try {
   const { exec } = require('child_process');
   const { promisify } = require('util');
   const execAsync = promisify(exec);
-  
+
   console.log('   ⏳ Compiling TypeScript configuration files...');
-  
+
   // Build the configuration files
   execAsync('npx tsc --noEmit src/config/*.ts')
     .then(() => {
@@ -33,7 +33,7 @@ try {
       console.log(`   ${error.message}`);
       runFunctionalTests(); // Continue with other tests
     });
-    
+
 } catch (error) {
   console.log('   ❌ Error during compilation test:', error.message);
   runFunctionalTests();
@@ -41,19 +41,19 @@ try {
 
 function runFunctionalTests() {
   console.log('\n🔧 Test 2: Configuration Structure Validation');
-  
+
   // Test file existence and structure
   const configFiles = [
     { file: 'src/config/schema.ts', description: 'Zod validation schemas' },
     { file: 'src/config/config.ts', description: 'Type-safe configuration loader' },
     { file: 'src/config/env.ts', description: 'Backward compatibility layer' }
   ];
-  
+
   let allValid = true;
   configFiles.forEach(({ file, description }) => {
     try {
       const content = fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
-      
+
       // Check for key patterns
       let hasRequiredPatterns = false;
       if (file.includes('schema.ts')) {
@@ -63,7 +63,7 @@ function runFunctionalTests() {
       } else if (file.includes('env.ts')) {
         hasRequiredPatterns = content.includes('export const env') && content.includes('config.');
       }
-      
+
       if (hasRequiredPatterns) {
         console.log(`   ✅ ${file} - ${description}`);
       } else {
@@ -75,9 +75,9 @@ function runFunctionalTests() {
       allValid = false;
     }
   });
-  
+
   console.log('\n📊 Test 3: Environment Variable Processing');
-  
+
   // Test environment variable processing
   const testEnvVars = {
     NODE_ENV: process.env.NODE_ENV || 'development',
@@ -85,17 +85,17 @@ function runFunctionalTests() {
     DATABASE_URL: process.env.DATABASE_URL || 'postgresql://localhost:5432/test',
     JWT_SECRET: process.env.JWT_SECRET || 'test-secret-key-that-is-long-enough',
   };
-  
+
   console.log('   📋 Environment variables loaded:');
   Object.entries(testEnvVars).forEach(([key, value]) => {
-    const maskedValue = key.includes('SECRET') || key.includes('PASSWORD') 
+    const maskedValue = key.includes('SECRET') || key.includes('PASSWORD')
       ? `${value.substring(0, 4)}***${value.substring(value.length - 4)}`
       : value;
     console.log(`   • ${key}: ${maskedValue}`);
   });
-  
+
   console.log('\n🏗️  Test 4: Configuration System Architecture');
-  
+
   // Check for modern configuration patterns
   const modernFeatures = [
     { pattern: 'Zod validation', found: false },
@@ -104,7 +104,7 @@ function runFunctionalTests() {
     { pattern: 'Structured configuration', found: false },
     { pattern: 'Backward compatibility', found: false }
   ];
-  
+
   // Check schema.ts for modern patterns
   try {
     const schemaContent = fs.readFileSync(path.join(__dirname, '..', 'src/config/schema.ts'), 'utf8');
@@ -120,7 +120,7 @@ function runFunctionalTests() {
   } catch (error) {
     console.log('   ❌ Could not analyze schema file');
   }
-  
+
   // Check config.ts for structured configuration
   try {
     const configContent = fs.readFileSync(path.join(__dirname, '..', 'src/config/config.ts'), 'utf8');
@@ -130,7 +130,7 @@ function runFunctionalTests() {
   } catch (error) {
     console.log('   ❌ Could not analyze config file');
   }
-  
+
   // Check env.ts for backward compatibility
   try {
     const envContent = fs.readFileSync(path.join(__dirname, '..', 'src/config/env.ts'), 'utf8');
@@ -140,19 +140,19 @@ function runFunctionalTests() {
   } catch (error) {
     console.log('   ❌ Could not analyze env file');
   }
-  
+
   modernFeatures.forEach(({ pattern, found }) => {
     console.log(`   ${found ? '✅' : '❌'} ${pattern}`);
   });
-  
+
   console.log('\n🎯 Final Assessment');
-  
+
   const foundFeatures = modernFeatures.filter(f => f.found).length;
   const totalFeatures = modernFeatures.length;
   const completionPercentage = Math.round((foundFeatures / totalFeatures) * 100);
-  
+
   console.log(`✅ Configuration System Completion: ${completionPercentage}% (${foundFeatures}/${totalFeatures})`);
-  
+
   if (allValid && completionPercentage >= 80) {
     console.log('🚀 Configuration system is production-ready!');
   } else if (completionPercentage >= 60) {
@@ -160,12 +160,12 @@ function runFunctionalTests() {
   } else {
     console.log('❌ Configuration system needs significant improvements');
   }
-  
+
   console.log('\n📚 Resources:');
   console.log('   • Migration Guide: docs/config-migration-guide.md');
   console.log('   • Assessment: docs/config-loader-assessment.md');
   console.log('   • Enhancement Summary: docs/config-enhancement-complete.md');
-  
+
   console.log('\n💡 Next Steps:');
   console.log('   1. Update existing code to use structured config');
   console.log('   2. Set up production environment variables');

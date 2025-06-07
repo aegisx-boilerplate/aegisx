@@ -5,6 +5,7 @@ A modern, type-safe configuration system for AegisX built with TypeScript and Zo
 ## Overview
 
 This configuration system provides:
+
 - 🔒 **Type Safety**: Full TypeScript support with structured configuration objects
 - ✅ **Runtime Validation**: Comprehensive validation using Zod schemas
 - 🏗️ **Organized Structure**: Grouped configuration sections for better maintainability
@@ -270,26 +271,38 @@ const testEnv = {
 const result = validateEnvironment(testEnv);
 ```
 
-## Migration from Legacy System
+## Advanced Usage
 
-If migrating from the old `env` system:
-
-### Before (Legacy)
-```typescript
-import { env } from './config/env';
-
-const dbUrl = env.DATABASE_URL;
-const jwtSecret = env.JWT_SECRET;
-const isProduction = env.NODE_ENV === 'production';
-```
-
-### After (New System)
+### Configuration with Destructuring
 ```typescript
 import { config } from './config/config';
 
-const dbUrl = config.database.url;
-const jwtSecret = config.jwt.secret;
-const isProduction = config.isProduction;
+// Destructure commonly used config groups
+const { database, jwt, email, passwordPolicy } = config;
+
+// Use in your application
+const db = new Database(database.url, {
+  min: database.poolMin,
+  max: database.poolMax
+});
+
+const jwtService = new JWTService({
+  secret: jwt.secret,
+  expiresIn: jwt.accessTokenExpiry
+});
+```
+
+### Type-Safe Configuration Access
+```typescript
+import { config, type ConfigType } from './config/config';
+
+// Use type for function parameters
+function createEmailService(emailConfig: ConfigType['email']) {
+  return new EmailService(emailConfig.smtp, emailConfig.from);
+}
+
+// Call with type-safe config
+const emailService = createEmailService(config.email);
 ```
 
 ## Error Handling
@@ -372,4 +385,4 @@ Set `NODE_ENV=development` for additional logging and less strict validation.
 
 ---
 
-For more detailed examples and migration guides, see the [documentation](../../docs/) folder.
+For more detailed examples and usage guides, see the [documentation](../../docs/) folder.

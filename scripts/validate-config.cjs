@@ -9,7 +9,7 @@ console.log('🧪 Testing AegisX Configuration System...\n');
 // Check that all required files exist
 const configFiles = [
   'src/config/schema.ts',
-  'src/config/config.ts', 
+  'src/config/config.ts',
   'src/config/env.ts'
 ];
 

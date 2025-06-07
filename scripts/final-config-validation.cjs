@@ -15,7 +15,7 @@ console.log('📋 Test 1: Configuration Files Structure');
 
 const requiredFiles = [
   'src/config/schema.ts',
-  'src/config/config.ts', 
+  'src/config/config.ts',
   'src/config/env.ts'
 ];
 
@@ -41,7 +41,7 @@ try {
   const hasZodValidation = schemaContent.includes('z.object(') && schemaContent.includes('z.string()');
   const hasTypeConversion = schemaContent.includes('.transform(') && schemaContent.includes('Number(');
   const hasProductionValidation = schemaContent.includes('enhancedEnvSchema') && schemaContent.includes('production');
-  
+
   console.log(`   ${hasZodValidation ? '✅' : '❌'} Zod validation schemas`);
   console.log(`   ${hasTypeConversion ? '✅' : '❌'} Type conversion support`);
   console.log(`   ${hasProductionValidation ? '✅' : '❌'} Production-specific validation`);
@@ -55,7 +55,7 @@ try {
   const hasTypeLoader = configContent.includes('validateEnvironment') && configContent.includes('export const config');
   const hasStructuredConfig = configContent.includes('jwt:') && configContent.includes('database:');
   const hasErrorHandling = configContent.includes('safeParse') && (configContent.includes('error.issues') || configContent.includes('ZodError'));
-  
+
   console.log(`   ${hasTypeLoader ? '✅' : '❌'} Type-safe configuration loader`);
   console.log(`   ${hasStructuredConfig ? '✅' : '❌'} Structured configuration groups`);
   console.log(`   ${hasErrorHandling ? '✅' : '❌'} Comprehensive error handling`);
@@ -68,7 +68,7 @@ try {
   const envContent = fs.readFileSync(path.join(__dirname, '..', 'src/config/env.ts'), 'utf8');
   const hasBackwardCompat = envContent.includes('export const env') && envContent.includes('config.');
   const hasDeprecationWarning = envContent.includes('deprecated') || envContent.includes('⚠️');
-  
+
   console.log(`   ${hasBackwardCompat ? '✅' : '❌'} Backward compatibility layer`);
   console.log(`   ${hasDeprecationWarning ? '✅' : '❌'} Deprecation warnings`);
 } catch (error) {
@@ -83,8 +83,8 @@ try {
   const eventBusPath = path.join(__dirname, '..', 'src/core/event-bus/EventBus.ts');
   if (fs.existsSync(eventBusPath)) {
     const eventBusContent = fs.readFileSync(eventBusPath, 'utf8');
-    const usesNewConfig = eventBusContent.includes("from '../../config/config.js'") && 
-                         eventBusContent.includes('config.eventBus') || eventBusContent.includes('config.rabbitmq');
+    const usesNewConfig = eventBusContent.includes("from '../../config/config.js'") &&
+      eventBusContent.includes('config.eventBus') || eventBusContent.includes('config.rabbitmq');
     console.log(`   ${usesNewConfig ? '✅' : '❌'} EventBus integration updated`);
   } else {
     console.log('   ⚠️  EventBus.ts not found - skipping integration check');
@@ -123,13 +123,13 @@ try {
     packageJson.scripts['config:validate'] ||
     packageJson.scripts['config:test']
   );
-  
+
   console.log(`   ${hasConfigScripts ? '✅' : '❌'} Configuration scripts in package.json`);
-  
+
   // Check if dependencies include Zod
   const hasZodDep = packageJson.dependencies && packageJson.dependencies['zod'];
   console.log(`   ${hasZodDep ? '✅' : '❌'} Zod dependency available`);
-  
+
 } catch (error) {
   console.log('   ❌ Error checking package.json');
 }
@@ -146,17 +146,17 @@ if (structureValid) {
   console.log('   • Organized configuration structure (jwt, database, etc.)');
   console.log('   • Backward compatibility with existing code');
   console.log('   • Comprehensive documentation and migration guides');
-  
+
   console.log('\n🎉 Enhancement Complete!');
   console.log('\n💡 Quick Start:');
   console.log('   import { config } from "./src/config/config";');
   console.log('   const { jwt, database, passwordPolicy } = config;');
-  
+
   console.log('\n📖 Resources:');
   console.log('   • Migration: docs/config-migration-guide.md');
   console.log('   • Assessment: docs/config-loader-assessment.md');
   console.log('   • Summary: docs/config-enhancement-complete.md');
-  
+
 } else {
   console.log('❌ Configuration System: INCOMPLETE');
   console.log('   Some required files are missing. Please check the setup.');
