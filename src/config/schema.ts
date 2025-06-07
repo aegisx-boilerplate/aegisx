@@ -29,6 +29,11 @@ const durationSchema = z
   .string()
   .regex(/^\d+[smhd]$/, 'Invalid duration format (e.g., 15m, 1h, 7d)');
 
+// PostgreSQL URL validation schema
+const postgresUrlSchema = z
+  .string()
+  .regex(/^postgresql:\/\//, 'Database URL must start with postgresql://');
+
 // Main configuration schema
 export const configSchema = z.object({
   // Core Application
@@ -36,7 +41,7 @@ export const configSchema = z.object({
   PORT: numberFromString.default(3000),
 
   // Database Configuration
-  DATABASE_URL: z.string().min(1, 'Database URL is required'),
+  DATABASE_URL: postgresUrlSchema,
   REDIS_URL: z.string().min(1, 'Redis URL is required'),
   RABBITMQ_URL: z.string().min(1, 'RabbitMQ URL is required'),
 
@@ -92,7 +97,13 @@ export const configSchema = z.object({
 
   // Frontend
   FRONTEND_URL: urlSchema.default('http://localhost:3000'),
-});
+}).transform((data) => ({
+  ...data,
+  // Environment flags
+  isDevelopment: data.NODE_ENV === 'development',
+  isProduction: data.NODE_ENV === 'production',
+  isTest: data.NODE_ENV === 'test',
+}));
 
 // Type inference for the validated config
 export type ConfigType = z.infer<typeof configSchema>;
