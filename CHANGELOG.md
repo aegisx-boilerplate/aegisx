@@ -1,3 +1,8 @@
+## <small>2.8.2 (2025-06-07)</small>
+
+* Merge branch 'main' of github.com:aegisx-boilerplate/aegisx ([698ef10](https://github.com/aegisx-boilerplate/aegisx/commit/698ef10))
+* docs: update config documentation to focus on current system ([91c3706](https://github.com/aegisx-boilerplate/aegisx/commit/91c3706))
+
 ## <small>2.8.1 (2025-06-07)</small>
 
 * refactor: migrate from legacy env to type-safe config system ([9a2f9f9](https://github.com/aegisx-boilerplate/aegisx/commit/9a2f9f9))
