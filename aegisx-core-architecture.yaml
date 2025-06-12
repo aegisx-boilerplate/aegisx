@@ -1250,6 +1250,157 @@ deployment_architecture:
       - "Scalability per application needs"
       - "Different caching strategies"
 
+multi_tenant_architecture:
+  core_api_role:
+    purpose: "Central Identity & Access Management Hub for multiple applications"
+    responsibilities:
+      - "Single Sign-On (SSO) for all connected applications"
+      - "Centralized user management and profile services"
+      - "Role-Based Access Control (RBAC) engine"
+      - "Permission management across applications"
+      - "Tenant/Organization management"
+      - "API gateway and service discovery"
+      - "Centralized audit logging and compliance"
+
+  tenant_isolation:
+    database_strategy: "Schema-per-tenant with shared infrastructure"
+    data_partitioning:
+      - "Tenant-specific data isolation"
+      - "Shared reference data (roles, permissions)"
+      - "Cross-tenant analytics with data anonymization"
+    security_boundaries:
+      - "Tenant-specific encryption keys"
+      - "Network isolation per tenant"
+      - "Rate limiting per tenant"
+
+  application_registration:
+    app_onboarding:
+      - "Application registration in Core API"
+      - "OAuth 2.0 client credentials generation"
+      - "Scope and permission mapping"
+      - "Callback URL configuration"
+    service_discovery:
+      - "Dynamic service registration"
+      - "Health check monitoring"
+      - "Load balancing configuration"
+      - "Circuit breaker patterns"
+
+  cross_app_integration:
+    sso_implementation:
+      flow: "Authorization Code with PKCE"
+      tokens: "JWT access tokens + refresh tokens"
+      session_management: "Centralized session store in Redis"
+      logout: "Single logout across all applications"
+
+    user_profile_federation:
+      standard_claims:
+        ["sub", "email", "name", "roles", "permissions", "tenant"]
+      custom_claims: "Application-specific user attributes"
+      profile_sync: "Real-time profile updates across apps"
+
+    permission_propagation:
+      pattern: "Event-driven permission updates"
+      implementation:
+        - "Core API publishes permission change events"
+        - "Applications subscribe to relevant permission events"
+        - "Cache invalidation on permission changes"
+        - "Graceful degradation on Core API unavailability"
+
+application_architecture_patterns:
+  microservice_communication:
+    service_mesh: "Istio for service-to-service communication"
+    api_gateway: "Kong/Envoy for external traffic"
+    message_broker: "RabbitMQ for async communication"
+    event_streaming: "Apache Kafka for real-time events"
+
+  frontend_integration:
+    authentication_sdk:
+      implementation: "TypeScript SDK for all frontend frameworks"
+      features:
+        - "Automatic token refresh"
+        - "Session management"
+        - "Permission-based UI rendering"
+        - "Multi-tenant context switching"
+
+    state_management:
+      pattern: "Federated state with Core API as source of truth"
+      implementation:
+        - "User state managed by Core API"
+        - "Application state managed locally"
+        - "Real-time state sync via WebSocket"
+
+  backend_integration:
+    middleware_pattern:
+      authentication: "JWT validation middleware"
+      authorization: "RBAC enforcement middleware"
+      tenant_context: "Automatic tenant resolution"
+      audit_logging: "Request/response audit trails"
+
+    database_strategy:
+      primary_data: "Application-specific databases"
+      user_data: "Centralized in Core API"
+      shared_data: "Reference data from Core API"
+      caching: "Distributed cache with Redis"
+
+deployment_strategy:
+  core_api_deployment:
+    high_availability: "Multi-region deployment with failover"
+    scaling: "Horizontal scaling with load balancing"
+    monitoring: "Comprehensive health checks and metrics"
+    backup: "Automated backup and disaster recovery"
+
+  application_deployment:
+    independence: "Each application deployed independently"
+    environment_parity: "Consistent environments across apps"
+    blue_green: "Zero-downtime deployments"
+    feature_flags: "Gradual rollout capabilities"
+
+  infrastructure_requirements:
+    kubernetes_cluster: "Shared cluster with namespace isolation"
+    service_mesh: "Cross-service communication and security"
+    observability: "Centralized logging and monitoring"
+    secrets_management: "HashiCorp Vault for credentials"
+
+security_architecture:
+  zero_trust_model:
+    implementation: "Never trust, always verify"
+    principles:
+      - "Identity verification for every request"
+      - "Least privilege access control"
+      - "Continuous security monitoring"
+      - "Encrypted communication everywhere"
+
+  api_security:
+    authentication: "OAuth 2.0 + OpenID Connect"
+    authorization: "Fine-grained RBAC/ABAC"
+    rate_limiting: "Per-user and per-application limits"
+    input_validation: "Schema-based validation at gateway"
+
+  data_protection:
+    encryption_at_rest: "AES-256 encryption for all databases"
+    encryption_in_transit: "TLS 1.3 for all communications"
+    key_management: "Hardware Security Modules (HSM)"
+    data_masking: "PII protection in non-prod environments"
+
+governance_compliance:
+  api_governance:
+    standards: "OpenAPI 3.0 specifications for all APIs"
+    versioning: "Semantic versioning with backward compatibility"
+    lifecycle_management: "API deprecation and sunset policies"
+    documentation: "Automated API documentation generation"
+
+  compliance_framework:
+    gdpr_compliance: "Data portability and right to be forgotten"
+    audit_requirements: "Comprehensive audit trails"
+    data_retention: "Configurable retention policies"
+    privacy_controls: "Consent management and privacy settings"
+
+  monitoring_governance:
+    sla_monitoring: "Service Level Agreement tracking"
+    performance_baselines: "Application performance standards"
+    error_budgets: "Error rate and latency targets"
+    incident_management: "Automated incident response workflows"
+
 implementation_notes:
   ai_instruction_purpose: >
     This document serves as comprehensive architectural guidance for AI code generation.
@@ -1266,3 +1417,164 @@ implementation_notes:
     - "Document all APIs with OpenAPI specifications"
     - "Ensure security best practices in all implementations"
     - "Design for scalability and performance from the start"
+
+flexible_multi_tenant_design:
+  configuration_driven:
+    enable_multi_tenant: "Environment variable ENABLE_MULTI_TENANT=true/false"
+    default_mode: "Single-tenant (ENABLE_MULTI_TENANT=false)"
+    migration_path: "Can enable multi-tenancy later without breaking changes"
+
+  single_tenant_mode:
+    description: "Default mode for simple applications"
+    database_strategy: "No tenant_id columns, simplified schema"
+    user_experience: "No tenant selection, direct login"
+    admin_complexity: "Minimal - just user/role management"
+
+    schema_differences:
+      users_table: "No tenant_id field required"
+      roles_table: "Global roles only"
+      permissions_table: "Global permissions only"
+      sessions_table: "Simple user sessions"
+
+    api_endpoints:
+      - "POST /auth/login (simple login)"
+      - "GET /auth/me (user profile)"
+      - "GET /users (all users)"
+      - "POST /roles (global roles)"
+
+  multi_tenant_mode:
+    description: "Enterprise mode for multiple organizations"
+    database_strategy: "Tenant_id columns + data isolation"
+    user_experience: "Tenant selection + context switching"
+    admin_complexity: "Full tenant management required"
+
+    schema_differences:
+      users_table: "Include tenant_id field"
+      roles_table: "Tenant-specific or global roles"
+      permissions_table: "Tenant-scoped permissions"
+      user_tenants_table: "Many-to-many user-tenant mapping"
+
+    api_endpoints:
+      - "GET /tenants (user's tenants)"
+      - "POST /auth/switch-tenant"
+      - "GET /users?tenant_id=xxx"
+      - "POST /tenants (create new tenant)"
+
+  migration_strategy:
+    single_to_multi_tenant:
+      step_1: "Add tenant_id columns with DEFAULT value"
+      step_2: "Create default tenant for existing data"
+      step_3: "Update API to handle tenant context"
+      step_4: "Enable ENABLE_MULTI_TENANT=true"
+      step_5: "Add tenant management UI"
+
+    database_migration_example: |
+      -- Migration: Add multi-tenant support
+      ALTER TABLE users ADD COLUMN tenant_id UUID DEFAULT '00000000-0000-0000-0000-000000000001';
+      ALTER TABLE roles ADD COLUMN tenant_id UUID DEFAULT '00000000-0000-0000-0000-000000000001';
+
+      -- Create default tenant
+      INSERT INTO tenants (id, name, subdomain) 
+      VALUES ('00000000-0000-0000-0000-000000000001', 'Default Organization', 'default');
+
+    backward_compatibility: "Single-tenant apps continue working unchanged"
+
+  implementation_approach:
+    conditional_middleware:
+      tenant_context: "Only active when ENABLE_MULTI_TENANT=true"
+      tenant_validation: "Skip validation in single-tenant mode"
+      tenant_isolation: "No isolation needed in single-tenant"
+
+    database_queries:
+      single_tenant: "SELECT * FROM users WHERE id = ?"
+      multi_tenant: "SELECT * FROM users WHERE id = ? AND tenant_id = ?"
+
+    api_responses:
+      single_tenant: |
+        {
+          "user": {
+            "id": "uuid",
+            "email": "user@example.com",
+            "roles": ["admin"]
+          }
+        }
+      multi_tenant: |
+        {
+          "user": {
+            "id": "uuid", 
+            "email": "user@example.com",
+            "roles": ["admin"],
+            "tenant": {
+              "id": "tenant-uuid",
+              "name": "Acme Corp"
+            }
+          }
+        }
+
+  configuration_examples:
+    single_tenant_env: |
+      # .env for single-tenant mode
+      ENABLE_MULTI_TENANT=false
+      DEFAULT_TENANT_ID=00000000-0000-0000-0000-000000000001
+
+    multi_tenant_env: |
+      # .env for multi-tenant mode  
+      ENABLE_MULTI_TENANT=true
+      REQUIRE_TENANT_SELECTION=true
+      MAX_TENANTS_PER_USER=5
+
+  code_examples:
+    conditional_schema: |
+      // User model with conditional tenant
+      interface User {
+        id: string;
+        email: string;
+        ...(config.ENABLE_MULTI_TENANT && { tenantId: string });
+      }
+
+    conditional_middleware: |
+      // Middleware that adapts to mode
+      export const tenantMiddleware = (req, res, next) => {
+        if (config.ENABLE_MULTI_TENANT) {
+          // Extract and validate tenant context
+          req.tenantId = extractTenantFromRequest(req);
+        } else {
+          // Use default tenant or skip
+          req.tenantId = config.DEFAULT_TENANT_ID;
+        }
+        next();
+      };
+
+    conditional_queries: |
+      // Repository with mode-aware queries
+      async findUsers(filters: UserFilters) {
+        let query = 'SELECT * FROM users WHERE 1=1';
+        const params = [];
+        
+        if (config.ENABLE_MULTI_TENANT && filters.tenantId) {
+          query += ' AND tenant_id = ?';
+          params.push(filters.tenantId);
+        }
+        
+        return db.query(query, params);
+      }
+
+  benefits_of_flexible_approach:
+    start_simple: "Begin with single-tenant, scale to multi-tenant"
+    no_overhead: "Zero multi-tenant complexity when not needed"
+    future_proof: "Can enable multi-tenancy without rewrite"
+    gradual_migration: "Smooth transition path"
+    cost_effective: "Pay complexity cost only when needed"
+
+  use_case_recommendations:
+    single_tenant_for:
+      - "Personal projects"
+      - "Small teams (< 50 users)"
+      - "Simple applications"
+      - "MVP/prototype phase"
+
+    multi_tenant_for:
+      - "SaaS applications"
+      - "Enterprise customers"
+      - "Multiple organizations"
+      - "B2B platforms"
