@@ -24,10 +24,12 @@ AegisX serves as a **Central Core API** that manages authentication, user manage
 - **Language**: TypeScript 5.x
 - **Database**: PostgreSQL 15+ (Primary), Redis 7+ (Cache)
 - **Message Queue**: RabbitMQ 3.12+
-- **Testing**: Vitest + Playwright + Testcontainers
+- **Testing**: Vitest + Playwright + Testcontainers + Artillery + k6
 - **Build**: SWC compiler (20x faster than tsc)
 - **DI**: TSyringe for dependency injection
 - **ORM**: Knex.js for database operations
+- **Linting**: ESLint 8.x + Prettier 3.x
+- **Security Testing**: OWASP ZAP + Snyk
 
 ### Security & Auth
 - **Authentication**: JWT RS256 + OAuth 2.0
@@ -191,9 +193,22 @@ aegisx-ecosystem/
 **Implementation**: RabbitMQ for events, HTTP for real-time operations
 
 ### 5. Testing Strategy
-**Decision**: Vitest + Testcontainers  
-**Rationale**: Modern, fast, container-based integration testing  
-**Implementation**: 90%+ coverage requirement
+**Decision**: Comprehensive testing pyramid with enterprise-grade tools  
+**Rationale**: HIS/ERP systems require extensive testing for compliance  
+**Implementation**: 90%+ coverage requirement with security testing
+
+**Testing Stack:**
+- **Unit Tests (70%)**: Vitest + @vitest/ui for fast feedback
+- **Integration Tests (20%)**: Vitest + Testcontainers for real database testing
+- **E2E Tests (10%)**: Playwright for critical business workflows
+- **Performance Tests**: Artillery + k6 for load and stress testing
+- **Security Tests**: OWASP ZAP + Snyk for vulnerability scanning
+
+**HIS/ERP Specific Workflows:**
+- Patient registration and medical record workflows (HIS)
+- Financial transaction processing (ERP) 
+- Audit trail verification and compliance testing
+- Role-based access control validation
 
 ## 📊 Performance Considerations
 
@@ -240,6 +255,96 @@ aegisx-ecosystem/
 - **Encryption in Transit**: TLS 1.3
 - **Password Security**: bcrypt with cost 12
 - **Audit Logging**: All user actions logged
+
+## 🔍 Code Quality & Testing
+
+### ESLint Configuration
+**Enterprise-grade linting for HIS/ERP compliance:**
+
+**Core Configuration:**
+- **Base**: @typescript-eslint/recommended + airbnb-typescript
+- **Security**: eslint-plugin-security for SQL injection and XSS prevention
+- **Quality**: eslint-plugin-sonarjs for code complexity analysis
+- **TypeScript**: Strict type checking with no-any rules
+
+**Enterprise Rules:**
+- **Security Rules**: Detect SQL injection, object injection, eval usage
+- **TypeScript Rules**: Explicit return types, strict boolean expressions
+- **Code Quality**: Max complexity (15), max parameters (4), max lines (300)
+- **HIS/ERP Specific**: No console.log in production, proper error handling
+
+**Automation:**
+- **Pre-commit Hooks**: Husky + lint-staged for automatic fixing
+- **CI/CD Integration**: GitHub Actions with lint checks
+- **Prettier Integration**: Consistent code formatting
+
+### Testing Strategy
+
+**Testing Pyramid (Enterprise Standard):**
+```
+E2E Tests (10%)     ←  Critical business workflows
+Integration (20%)   ←  API endpoints + database
+Unit Tests (70%)    ←  Fast, isolated components
+```
+
+**Comprehensive Test Coverage:**
+
+**1. Unit Testing (70%)**
+- **Framework**: Vitest with @vitest/ui for enhanced developer experience
+- **Coverage Target**: 90% minimum (95% for critical modules)
+- **Approach**: Fast, isolated component testing with mocking
+
+**2. Integration Testing (20%)**
+- **Framework**: Vitest + Testcontainers
+- **Database**: Real PostgreSQL containers for authentic testing
+- **API Testing**: Complete HTTP endpoint testing with authentication
+
+**3. E2E Testing (10%)**
+- **Framework**: Playwright for cross-browser testing
+- **Focus**: Critical business workflows only
+- **HIS Workflows**: Patient registration, medical records, audit trails
+- **ERP Workflows**: Financial transactions, inventory management
+
+**4. Performance Testing**
+- **Load Testing**: Artillery for sustained load (1000+ concurrent users)
+- **Stress Testing**: k6 for breaking point identification
+- **Scenarios**: Peak hours simulation, report generation, backup operations
+
+**5. Security Testing**
+- **Vulnerability Scanning**: OWASP ZAP for web application security
+- **Dependency Checking**: Snyk for npm package vulnerabilities
+- **Compliance Testing**: HIPAA (HIS), SOX (ERP), GDPR validation
+
+**HIS/ERP Specific Test Cases:**
+- **Patient Data Security**: Medical record access controls
+- **Financial Integrity**: Transaction accuracy and audit trails
+- **Compliance Validation**: Healthcare and financial regulations
+- **User Permission Testing**: Role-based access scenarios
+- **Data Retention**: Automated data lifecycle management
+
+**Test Data Management:**
+- **Factory Pattern**: Faker.js for realistic test data generation
+- **Fixtures**: Predefined datasets for consistent testing
+- **Isolation**: Clean database state between tests
+- **Compliance**: Anonymized data for production-like testing
+
+**CI/CD Testing Pipeline:**
+```yaml
+Testing Pipeline:
+  1. Linting & Formatting (ESLint + Prettier)
+  2. Unit Tests (Vitest)
+  3. Integration Tests (Testcontainers)
+  4. Security Scans (OWASP ZAP + Snyk)
+  5. E2E Tests (Playwright)
+  6. Performance Tests (Artillery)
+  7. Coverage Reports (c8)
+```
+
+**Coverage Requirements:**
+- **Overall**: 90% minimum
+- **Critical Modules**: 95% required
+- **HIS Critical**: Patient data, medical records, audit logging
+- **ERP Critical**: Financial calculations, inventory tracking, compliance
 
 ## 🔄 Integration Patterns
 
@@ -320,13 +425,23 @@ docker-compose.yml:
 - **Monitoring**: Prometheus + Grafana + Jaeger
 
 ### CI/CD Pipeline
+**Enhanced Enterprise Pipeline:**
 1. **Code Commit** → Trigger GitHub Actions
-2. **Testing** → Unit, integration, e2e tests
-3. **Security Scan** → Vulnerability assessment
-4. **Build** → Docker image creation
-5. **Deploy** → Staging environment
-6. **E2E Tests** → Full workflow testing
-7. **Production** → Blue-green deployment
+2. **Quality Gates** → ESLint + Prettier + TypeScript checking
+3. **Unit Testing** → Vitest with 90%+ coverage requirement
+4. **Integration Testing** → Testcontainers with real database
+5. **Security Scanning** → OWASP ZAP + Snyk vulnerability assessment
+6. **Performance Testing** → Artillery load testing
+7. **Build** → Docker image creation with security scanning
+8. **Deploy Staging** → Automated staging deployment
+9. **E2E Testing** → Playwright full workflow testing
+10. **Production Deploy** → Blue-green deployment with monitoring
+
+**Quality Gates:**
+- **Linting**: ESLint must pass with zero errors
+- **Coverage**: 90% minimum (95% for critical modules)
+- **Security**: Zero high/critical vulnerabilities
+- **Performance**: Response time < 200ms for auth operations
 
 ## 💡 Future Enhancements
 
@@ -374,12 +489,20 @@ docker-compose.yml:
 
 **Ready to start development:**
 1. **Command**: "เริ่มสร้าง Core API" → Begin AegisX Core implementation
-2. **Command**: "สร้าง Todo App" → Build example Todo application
-3. **Command**: "Deploy Production" → Production deployment setup
+2. **Command**: "สร้าง Todo App" → Build example Todo application  
+3. **Command**: "Setup ESLint & Testing" → Configure development environment
+4. **Command**: "Deploy Production" → Production deployment setup
+
+**Development Setup Includes:**
+- **ESLint Configuration**: Enterprise-grade linting rules
+- **Testing Environment**: Vitest + Testcontainers + Playwright setup
+- **Pre-commit Hooks**: Husky + lint-staged automation
+- **CI/CD Pipeline**: GitHub Actions with quality gates
 
 **For questions or clarification:**
 - Reference this document for project context
-- Check `aegisx-core-architecture.yaml` for detailed specs
+- Check `aegisx-core-architecture.yaml` for detailed specs  
+- Review ESLint and Testing strategy sections above
 - Use established patterns for new features
 
 ---
