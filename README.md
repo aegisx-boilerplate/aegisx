@@ -21,22 +21,29 @@ AegisX เป็น **Nx Monorepo** ที่ประกอบด้วย mult
 
 ```mermaid
 graph TD
-    A[AegisX Nx Monorepo] --> B[@aegisx/core Package]
-    A --> C[@aegisx/angular-ui Package]
-    A --> D[@aegisx/cli Package]
+    A["AegisX Nx Monorepo<br/>✅ Phase 1 Complete"] --> B["📦 packages/"]
+    A --> C["📱 apps/"]
+    A --> D["📚 libs/"]
+    A --> E["🛠️ tools/"]
     
-    B --> E[🏥 HIS Application]
-    B --> F[💼 ERP Application] 
-    B --> G[📋 Todo Application]
+    B --> B1["@aegisx/core<br/>⏳ Phase 2 - Planned"]
+    B --> B2["@aegisx/angular-ui<br/>⏳ Phase 3 - Planned"]
+    B --> B3["@aegisx/cli<br/>⏳ Phase 4 - Planned"]
     
-    C --> H[🅰️ Angular Components]
-    C --> I[🛡️ RBAC Guards & Directives]
-    C --> J[🎨 Pre-built UI Components]
+    C --> C1["demo-his<br/>⏳ Phase 5 - Planned"]
+    C --> C2["demo-erp<br/>⏳ Phase 5 - Planned"]
+    C --> C3["playground<br/>⏳ Phase 5 - Planned"]
     
-    B --> K[🔐 Authentication Core]
-    B --> L[👥 User Management Core]
-    B --> M[🛡️ RBAC Authorization Core]
-    B --> N[🗄️ Database Models]
+    D --> D1["shared<br/>⏳ Future"]
+    D --> D2["testing<br/>⏳ Future"]
+    
+    style A fill:#90EE90
+    style B1 fill:#FFE4B5
+    style B2 fill:#FFE4B5
+    style B3 fill:#FFE4B5
+    style C1 fill:#FFE4B5
+    style C2 fill:#FFE4B5
+    style C3 fill:#FFE4B5
 ```
 
 ---
