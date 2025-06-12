@@ -19,9 +19,7 @@
     "outDir": "./dist",
     "baseUrl": ".",
     "paths": {
-      "@aegisx/core": ["packages/core/src/index.ts"],
-      "@aegisx/angular-ui": ["packages/angular-ui/src/public-api.ts"],
-      "@aegisx/cli": ["packages/cli/src/index.ts"]
+      "@aegisx/core": ["packages/core/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
