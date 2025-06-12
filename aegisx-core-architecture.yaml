@@ -7,49 +7,135 @@ project:
     Ensures scalability, testability, and maintainability.
     Can be used as a universal boilerplate core API for multiple systems.
 
+  scope:
+    included:
+      [
+        "Backend API",
+        "Database layer",
+        "Authentication",
+        "Message Queue",
+        "Caching",
+        "Testing",
+        "Documentation",
+      ]
+    excluded:
+      [
+        "Frontend apps",
+        "Mobile apps",
+        "Nx workspace frontend",
+        "Client-side architecture",
+      ]
+
+  integration_points:
+    frontend: "RESTful API + WebSocket, JWT auth, CORS, OpenAPI docs"
+    external: "PostgreSQL, Redis, RabbitMQ, Third-party APIs"
+
 technical_stack:
-  runtime: Node.js 18+
+  runtime: Node.js 22 LTS
   framework: Fastify 4.x
   language: TypeScript 5.x
   database:
-    primary: PostgreSQL 14+
+    primary: PostgreSQL 15+
     cache: Redis 7+
     search: Elasticsearch 8.x (optional)
-  message_queue: Bull/BullMQ with Redis
-  testing:
-    unit: Jest + ts-jest
-    integration: Supertest + Testcontainers
-    e2e: Playwright (optional)
-  monitoring:
-    metrics: Prometheus + Grafana
-    logging: Winston + ELK Stack
-    tracing: OpenTelemetry + Jaeger
-  documentation: Swagger/OpenAPI 3.0
+  message_queue: RabbitMQ 3.12+
+  testing: Vitest + Playwright + Testcontainers
+  monitoring: Prometheus + Grafana + OpenTelemetry
   build_system:
     compiler: SWC (20x faster than tsc)
     type_checking: TypeScript compiler (separate from build)
     bundler: SWC with zero configuration
     dev_server: ts-node-dev for development
-  validation: TypeBox for schema validation
-  orm: Knex.js for database operations
+  validation: TypeBox schemas
+  orm: Knex.js
+  dependency_injection: TSyringe
+  documentation: OpenAPI 3.0 + Swagger
   message_broker: RabbitMQ for event-driven architecture
 
 architecture:
-  style: Modular Monolith
-  structure:
-    - Domain-Based Modules
-    - Nested Features
-    - Layered (Controller, Service, Schema)
-  principles:
-    - High cohesion within features
-    - Loose coupling between modules
-    - Event-driven communication
+  style: "Modular Monolith"
+  structure: "Domain-Based Modules → Features → Layers (Controller, Service, Repository)"
   patterns:
-    - Repository Pattern
-    - Unit of Work Pattern
-    - Command Query Responsibility Segregation (CQRS)
-    - Event Sourcing (for audit trail)
-    - Dependency Injection
+    [
+      "Repository Pattern",
+      "CQRS",
+      "Event Sourcing",
+      "Dependency Injection",
+      "Unit of Work Pattern",
+    ]
+  principles: ["High Cohesion", "Loose Coupling", "Event-Driven Communication"]
+
+folder_structure: |
+  src/
+  ├── shared/           # Cross-cutting concerns
+  │   ├── interfaces/   # Common interfaces
+  │   ├── middleware/   # Auth, validation, error handling
+  │   ├── utils/        # Helpers and utilities
+  │   ├── config/       # Configuration management
+  │   ├── constants/    # Application constants
+  │   └── types/        # Global TypeScript types
+  ├── modules/          # Domain modules
+  │   ├── user/         # User domain
+  │   │   ├── controllers/
+  │   │   ├── services/
+  │   │   ├── repositories/
+  │   │   ├── schemas/
+  │   │   ├── interfaces/
+  │   │   └── types/
+  │   ├── auth/         # Authentication domain
+  │   ├── role/         # Role & Permission management
+  │   ├── notification/ # Notification system
+  │   └── audit/        # Audit logging
+  ├── database/         # DB migrations, seeds
+  ├── events/           # Event handlers & publishers
+  ├── jobs/             # Background job processing
+  ├── plugins/          # Fastify plugins
+  ├── routes/           # Route definitions
+  └── app.ts           # Application entry point
+
+core_modules:
+  authentication:
+    features:
+      [
+        "Login",
+        "Register",
+        "Password Reset",
+        "Email Verification",
+        "2FA",
+        "Session Management",
+      ]
+    tokens: "JWT (Access + Refresh) with RS256 algorithm"
+    providers: "Local, OAuth2 (Google, GitHub), LDAP support"
+    security: "Rate limiting, Account lockout, Password policies"
+
+  authorization:
+    rbac: "Role-Based Access Control with hierarchical roles"
+    pbac: "Permission-Based Access Control with granular permissions"
+    resource_level: "Resource-specific permissions (own vs all)"
+    middleware: "Route-level and method-level authorization"
+
+  user_management:
+    features:
+      [
+        "CRUD operations",
+        "Profile management",
+        "Avatar upload",
+        "User preferences",
+      ]
+    validation: "Email uniqueness, Password strength, Input sanitization"
+    events: "User created/updated/deleted events"
+
+  audit_logging:
+    tracking: "All user actions, data changes, API calls"
+    retention: "Configurable retention periods"
+    compliance: "GDPR, SOX, HIPAA compliance support"
+    search: "Full-text search capabilities"
+
+  notification_system:
+    channels: ["Email", "SMS", "Push notifications", "In-app"]
+    templates: "Dynamic template system with variables"
+    scheduling: "Delayed and recurring notifications"
+    preferences: "User notification preferences"
 
 security:
   authentication:
@@ -76,175 +162,210 @@ security:
     helmet: "helmet.js for security headers"
     cors: "CORS configuration"
     csp: "CSP (Content Security Policy)"
+  input_sanitization: "XSS prevention, SQL injection protection"
+  file_upload: "Virus scanning, File type validation, Size limits"
+  api_security: "API versioning, Request signing, HTTPS enforcement"
 
 database_design:
-  users:
-    table: users
-    fields:
-      - id: UUID (primary key)
-      - email: VARCHAR(255) UNIQUE NOT NULL
-      - password_hash: VARCHAR(255) NOT NULL
-      - first_name: VARCHAR(100)
-      - last_name: VARCHAR(100)
-      - is_active: BOOLEAN DEFAULT true
-      - email_verified: BOOLEAN DEFAULT false
-      - created_at: TIMESTAMP
-      - updated_at: TIMESTAMP
-    indexes:
-      - email (unique)
-      - created_at
-      - is_active
+  tables:
+    [
+      "users",
+      "roles",
+      "permissions",
+      "user_roles",
+      "role_permissions",
+      "events",
+      "audit_logs",
+      "notifications",
+      "sessions",
+    ]
+  patterns: ["UUID primary keys", "Timestamps", "Soft deletes", "Audit trail"]
+  indexes: "Strategic indexing on query patterns"
+  migrations: "Version-controlled with Knex.js"
+  seeds: "Test data and initial configuration"
+  backup: "Automated backup strategies"
+  performance: "Connection pooling, Query optimization"
 
-  roles:
-    table: roles
-    fields:
-      - id: UUID (primary key)
-      - name: VARCHAR(50) UNIQUE NOT NULL
-      - description: TEXT
-      - is_system: BOOLEAN DEFAULT false
-      - created_at: TIMESTAMP
-      - updated_at: TIMESTAMP
+  detailed_schema:
+    users:
+      table: users
+      fields:
+        - id: UUID (primary key)
+        - email: VARCHAR(255) UNIQUE NOT NULL
+        - password_hash: VARCHAR(255) NOT NULL
+        - first_name: VARCHAR(100)
+        - last_name: VARCHAR(100)
+        - is_active: BOOLEAN DEFAULT true
+        - email_verified: BOOLEAN DEFAULT false
+        - created_at: TIMESTAMP
+        - updated_at: TIMESTAMP
+      indexes:
+        - email (unique)
+        - created_at
+        - is_active
 
-  permissions:
-    table: permissions
-    fields:
-      - id: UUID (primary key)
-      - name: VARCHAR(100) UNIQUE NOT NULL
-      - resource: VARCHAR(50) NOT NULL
-      - action: VARCHAR(50) NOT NULL
-      - description: TEXT
-      - created_at: TIMESTAMP
+    roles:
+      table: roles
+      fields:
+        - id: UUID (primary key)
+        - name: VARCHAR(50) UNIQUE NOT NULL
+        - description: TEXT
+        - is_system: BOOLEAN DEFAULT false
+        - created_at: TIMESTAMP
+        - updated_at: TIMESTAMP
 
-  user_roles:
-    table: user_roles
-    fields:
-      - user_id: UUID (FK to users.id)
-      - role_id: UUID (FK to roles.id)
-      - assigned_by: UUID (FK to users.id)
-      - assigned_at: TIMESTAMP
-    primary_key: [user_id, role_id]
+    permissions:
+      table: permissions
+      fields:
+        - id: UUID (primary key)
+        - name: VARCHAR(100) UNIQUE NOT NULL
+        - resource: VARCHAR(50) NOT NULL
+        - action: VARCHAR(50) NOT NULL
+        - description: TEXT
+        - created_at: TIMESTAMP
 
-  role_permissions:
-    table: role_permissions
-    fields:
-      - role_id: UUID (FK to roles.id)
-      - permission_id: UUID (FK to permissions.id)
-      - granted_by: UUID (FK to users.id)
-      - granted_at: TIMESTAMP
-    primary_key: [role_id, permission_id]
+    events:
+      table: events
+      fields:
+        - id: UUID (primary key)
+        - event_type: VARCHAR(100) NOT NULL
+        - aggregate_id: UUID
+        - aggregate_type: VARCHAR(50)
+        - event_data: JSONB NOT NULL
+        - metadata: JSONB
+        - version: INTEGER NOT NULL
+        - occurred_at: TIMESTAMP NOT NULL
+        - created_at: TIMESTAMP DEFAULT NOW()
+      indexes:
+        - aggregate_id, version
+        - event_type
+        - occurred_at
 
-  events:
-    table: events
-    fields:
-      - id: UUID (primary key)
-      - event_type: VARCHAR(100) NOT NULL
-      - aggregate_id: UUID
-      - aggregate_type: VARCHAR(50)
-      - event_data: JSONB NOT NULL
-      - metadata: JSONB
-      - version: INTEGER NOT NULL
-      - occurred_at: TIMESTAMP NOT NULL
-      - created_at: TIMESTAMP DEFAULT NOW()
-    indexes:
-      - aggregate_id, version
-      - event_type
-      - occurred_at
-
-  audit_logs:
-    table: audit_logs
-    fields:
-      - id: UUID (primary key)
-      - user_id: UUID (FK to users.id)
-      - action: VARCHAR(100) NOT NULL
-      - resource_type: VARCHAR(50)
-      - resource_id: UUID
-      - old_values: JSONB
-      - new_values: JSONB
-      - ip_address: INET
-      - user_agent: TEXT
-      - occurred_at: TIMESTAMP NOT NULL
-    indexes:
-      - user_id, occurred_at
-      - resource_type, resource_id
-      - action
-      - occurred_at
+    audit_logs:
+      table: audit_logs
+      fields:
+        - id: UUID (primary key)
+        - user_id: UUID (FK to users.id)
+        - action: VARCHAR(100) NOT NULL
+        - resource_type: VARCHAR(50)
+        - resource_id: UUID
+        - old_values: JSONB
+        - new_values: JSONB
+        - ip_address: INET
+        - user_agent: TEXT
+        - occurred_at: TIMESTAMP NOT NULL
+      indexes:
+        - user_id, occurred_at
+        - resource_type, resource_id
+        - action
+        - occurred_at
 
 api_specifications:
-  versioning:
-    strategy: "URL path versioning (/api/v1/, /api/v2/)"
-    current: v1
-    deprecation_policy: "6 months notice"
+  versioning: "URL path (/api/v1/, /api/v2/)"
+  response_format: "Standardized JSON with success/error structure"
+  error_codes: "Categorized codes (AUTH_001, VALIDATION_001, etc.)"
+  pagination: "Cursor-based for large datasets"
+  documentation: "OpenAPI 3.0 with Swagger UI"
+  filtering: "Query parameter filtering and sorting"
+  compression: "Gzip compression for responses"
+  caching: "ETag and Cache-Control headers"
 
-  response_format:
-    success:
-      structure:
-        - "success: true"
-        - "data: object|array"
-        - "meta: object (pagination, etc.)"
-    error:
-      structure:
-        - "success: false"
-        - "error: object"
-        - "code: string"
-        - "message: string"
-        - "details: array (validation errors)"
+  detailed_specs:
+    versioning:
+      strategy: "URL path versioning (/api/v1/, /api/v2/)"
+      current: v1
+      deprecation_policy: "6 months notice"
 
-  error_codes:
-    authentication:
-      - "AUTH_001: Invalid credentials"
-      - "AUTH_002: Token expired"
-      - "AUTH_003: Token invalid"
-      - "AUTH_004: API key invalid"
-      - "AUTH_005: Account locked"
-    authorization:
-      - "AUTHZ_001: Insufficient permissions"
-      - "AUTHZ_002: Resource access denied"
-      - "AUTHZ_003: Role not found"
-      - "AUTHZ_004: Permission denied"
-    validation:
-      - "VAL_001: Required field missing"
-      - "VAL_002: Invalid field format"
-      - "VAL_003: Field value out of range"
-      - "VAL_004: Duplicate value"
-    system:
-      - "SYS_001: Internal server error"
-      - "SYS_002: Service unavailable"
-      - "SYS_003: Database connection error"
-      - "SYS_004: Rate limit exceeded"
+    response_format:
+      success:
+        structure:
+          - "success: true"
+          - "data: object|array"
+          - "meta: object (pagination, etc.)"
+      error:
+        structure:
+          - "success: false"
+          - "error: object"
+          - "code: string"
+          - "message: string"
+          - "details: array (validation errors)"
 
-  endpoints:
-    authentication:
-      - "POST /api/v1/auth/login"
-      - "POST /api/v1/auth/logout"
-      - "POST /api/v1/auth/refresh"
-      - "POST /api/v1/auth/forgot-password"
-      - "POST /api/v1/auth/reset-password"
-    users:
-      - "GET /api/v1/users (list with pagination)"
-      - "GET /api/v1/users/:id"
-      - "POST /api/v1/users"
-      - "PUT /api/v1/users/:id"
-      - "DELETE /api/v1/users/:id"
-      - "GET /api/v1/users/me (current user profile)"
-    roles:
-      - "GET /api/v1/roles"
-      - "GET /api/v1/roles/:id"
-      - "POST /api/v1/roles"
-      - "PUT /api/v1/roles/:id"
-      - "DELETE /api/v1/roles/:id"
-    permissions:
-      - "GET /api/v1/permissions"
-      - "GET /api/v1/permissions/:id"
-      - "POST /api/v1/permissions"
-      - "PUT /api/v1/permissions/:id"
-      - "DELETE /api/v1/permissions/:id"
-    health:
-      - "GET /health (basic health check)"
-      - "GET /health/detailed (detailed system status)"
-      - "GET /metrics (Prometheus metrics)"
+    error_codes:
+      authentication:
+        - "AUTH_001: Invalid credentials"
+        - "AUTH_002: Token expired"
+        - "AUTH_003: Token invalid"
+        - "AUTH_004: API key invalid"
+        - "AUTH_005: Account locked"
+      authorization:
+        - "AUTHZ_001: Insufficient permissions"
+        - "AUTHZ_002: Resource access denied"
+        - "AUTHZ_003: Role not found"
+        - "AUTHZ_004: Permission denied"
+      validation:
+        - "VAL_001: Required field missing"
+        - "VAL_002: Invalid field format"
+        - "VAL_003: Field value out of range"
+        - "VAL_004: Duplicate value"
+      system:
+        - "SYS_001: Internal server error"
+        - "SYS_002: Service unavailable"
+        - "SYS_003: Database connection error"
+        - "SYS_004: Rate limit exceeded"
 
-performance:
-  caching:
+    endpoints:
+      authentication:
+        - "POST /api/v1/auth/login"
+        - "POST /api/v1/auth/logout"
+        - "POST /api/v1/auth/refresh"
+        - "POST /api/v1/auth/forgot-password"
+        - "POST /api/v1/auth/reset-password"
+      users:
+        - "GET /api/v1/users (list with pagination)"
+        - "GET /api/v1/users/:id"
+        - "POST /api/v1/users"
+        - "PUT /api/v1/users/:id"
+        - "DELETE /api/v1/users/:id"
+        - "GET /api/v1/users/me (current user profile)"
+      roles:
+        - "GET /api/v1/roles"
+        - "GET /api/v1/roles/:id"
+        - "POST /api/v1/roles"
+        - "PUT /api/v1/roles/:id"
+        - "DELETE /api/v1/roles/:id"
+      permissions:
+        - "GET /api/v1/permissions"
+        - "GET /api/v1/permissions/:id"
+        - "POST /api/v1/permissions"
+        - "PUT /api/v1/permissions/:id"
+        - "DELETE /api/v1/permissions/:id"
+      health:
+        - "GET /health (basic health check)"
+        - "GET /health/detailed (detailed system status)"
+        - "GET /metrics (Prometheus metrics)"
+
+message_queue_system:
+  broker: RabbitMQ
+  patterns:
+    [
+      "Event Publishing",
+      "Event Handlers",
+      "Dead Letter Queues",
+      "Delayed Messages",
+    ]
+  exchanges: ["Direct", "Topic", "Fanout"]
+  use_cases: ["User events", "Audit logs", "Notifications", "Background jobs"]
+  retry_logic: "Exponential backoff with maximum retry limits"
+  monitoring: "Queue depth monitoring and alerting"
+
+caching_strategy:
+  layers: ["Application cache", "Database query cache", "Session cache"]
+  redis_usage: "Session storage, Rate limiting, Temporary data"
+  cache_patterns: ["Cache-aside", "Write-through", "Write-behind"]
+  invalidation: "Event-based cache invalidation"
+  performance: "Cache hit ratio monitoring"
+
+  detailed_strategy:
     strategy:
       - Redis for session storage
       - Application-level caching for frequently accessed data
@@ -254,27 +375,121 @@ performance:
       - Role/Permission data: 1 hour
       - System configuration: 24 hours
 
-  database_optimization:
-    connection_pooling:
-      min: 5
-      max: 20
-      idle_timeout: 30s
-    query_optimization:
-      - Use prepared statements
-      - Implement query result caching
-      - Database query monitoring
-    indexing:
-      - Primary keys on all tables
-      - Foreign key indexes
-      - Composite indexes for common queries
+background_jobs:
+  processor: "Bull/BullMQ with Redis"
+  job_types:
+    ["Email sending", "File processing", "Data cleanup", "Report generation"]
+  scheduling: "Cron-based and delayed job execution"
+  monitoring: "Job status tracking and failure handling"
+  scaling: "Horizontal job worker scaling"
 
-  rate_limiting:
-    global: 1000 requests/minute per IP
-    authenticated: 5000 requests/minute per user
-    api_key: 10000 requests/minute per key
-    specific_endpoints:
-      login: 5 attempts/minute per IP
-      password_reset: 3 attempts/hour per email
+file_management:
+  storage: "Local filesystem or cloud storage (S3, GCS)"
+  upload: "Multipart upload with progress tracking"
+  processing: "Image resizing, Document conversion"
+  security: "Virus scanning, Access control"
+  cdn: "CDN integration for static assets"
+
+logging_monitoring:
+  structured_logging: "Winston with JSON format"
+  log_levels: "Error, Warn, Info, Debug with environment-based filtering"
+  distributed_tracing: "OpenTelemetry with Jaeger"
+  metrics: "Prometheus with custom business metrics"
+  alerting: "Grafana alerts on key metrics"
+  apm: "Application Performance Monitoring"
+
+testing_strategy:
+  unit: "Vitest for services, repositories, utilities"
+  integration: "API endpoints with test database"
+  e2e: "Playwright for complete user flows"
+  performance: "Load testing with autocannon"
+  tools: "Testcontainers for database, MSW for external APIs"
+  coverage: "80%+ code coverage requirements"
+  ci_testing: "Automated testing in CI/CD pipeline"
+
+  detailed_strategy:
+    unit_tests:
+      coverage: 90% minimum
+      framework: Vitest
+      mocking: vi.mock() for external dependencies
+
+    integration_tests:
+      database: Testcontainers for PostgreSQL
+      cache: Testcontainers for Redis
+      api: Supertest for HTTP testing
+
+    e2e_tests:
+      framework: Playwright
+      environment: Dedicated testing environment
+
+    performance_tests:
+      load_testing: Artillery or k6
+      stress_testing: Gradual load increase
+      benchmarking: Regular performance benchmarks
+
+configuration_management:
+  environment_variables: "dotenv with validation"
+  config_validation: "Schema-based configuration validation"
+  secrets_management: "External secret stores (Vault, AWS Secrets)"
+  feature_flags: "Dynamic feature toggling"
+  hot_reload: "Configuration changes without restart"
+
+error_handling:
+  global_handler: "Centralized error handling middleware"
+  error_types: "Custom error classes with specific handling"
+  logging: "Structured error logging with context"
+  user_feedback: "User-friendly error messages"
+  monitoring: "Error tracking and alerting"
+
+health_monitoring:
+  health_checks: "Database, Redis, RabbitMQ connectivity"
+  readiness_probes: "Service dependency checks"
+  liveness_probes: "Application health status"
+  metrics_endpoint: "Prometheus metrics exposure"
+  status_page: "Public status page for external services"
+
+api_gateway_features:
+  rate_limiting: "Distributed rate limiting with Redis"
+  request_transformation: "Input/output data transformation"
+  response_caching: "Response caching at gateway level"
+  load_balancing: "Round-robin and weighted routing"
+  circuit_breaker: "Fault tolerance patterns"
+
+websocket_support:
+  real_time: "Socket.io integration with Fastify"
+  authentication: "JWT-based WebSocket authentication"
+  room_management: "User rooms and broadcasting"
+  scaling: "Redis adapter for multi-instance support"
+  events: "Real-time notifications and updates"
+
+performance:
+  caching: "Redis for session data, query results"
+  database: "Connection pooling, query optimization"
+  api: "Response compression, ETags, rate limiting"
+  monitoring: "APM with OpenTelemetry, Prometheus metrics"
+
+  detailed_optimization:
+    database_optimization:
+      connection_pooling:
+        min: 5
+        max: 20
+        idle_timeout: 30s
+      query_optimization:
+        - Use prepared statements
+        - Implement query result caching
+        - Database query monitoring
+      indexing:
+        - Primary keys on all tables
+        - Foreign key indexes
+        - Composite indexes for common queries
+
+    rate_limiting:
+      global: 1000 requests/minute per IP
+      authenticated: 5000 requests/minute per user
+      api_key: 10000 requests/minute per key
+      specific_endpoints:
+        login: 5 attempts/minute per IP
+        password_reset: 3 attempts/hour per email
 
 environments:
   development:
@@ -482,28 +697,15 @@ migration_strategy:
     deprecation: 6 months deprecation period
     documentation: Migration guides for each version
 
-testing_strategy:
-  unit_tests:
-    coverage: 90% minimum
-    framework: Jest + ts-jest
-    mocking: jest.mock() for external dependencies
-
-  integration_tests:
-    database: Testcontainers for PostgreSQL
-    cache: Testcontainers for Redis
-    api: Supertest for HTTP testing
-
-  e2e_tests:
-    framework: Playwright (optional)
-    environment: Dedicated testing environment
-
-  performance_tests:
-    load_testing: Artillery or k6
-    stress_testing: Gradual load increase
-    benchmarking: Regular performance benchmarks
-
 ci_cd:
-  pipeline:
+  pipeline: "GitHub Actions"
+  stages: ["Test", "Build", "Security Scan", "Deploy"]
+  testing: "Automated unit, integration, e2e tests"
+  deployment: "Zero-downtime rolling deployments"
+  rollback: "Automated rollback on deployment failures"
+  environments: "Automated deployment to staging and production"
+
+  detailed_pipeline:
     - Code checkout
     - Dependency installation
     - Linting and formatting check
@@ -627,7 +829,7 @@ nx_workspace:
     - Implement proper secret management
 
   testing:
-    - Use Jest for unit tests in libs and apps
+    - Use Vitest for unit tests in libs and apps
     - Create integration tests inside app folder or dedicated libs
     - Run lint and format checks via Nx targets
     - Implement test coverage reporting
@@ -638,11 +840,12 @@ docker:
     services:
       - postgres: PostgreSQL 14
       - redis: Redis 7
+      - rabbitmq: RabbitMQ 3-management
       - elasticsearch: Elasticsearch 8 (optional)
 
   production:
     multi_stage_build: true
-    base_image: node:18-alpine
+    base_image: node:22-alpine
     security:
       - Run as non-root user
       - Use distroless images when possible
@@ -764,6 +967,13 @@ project_structure:
         - "README.md - Project overview and setup"
 
 deployment:
+  containerization: "Docker with multi-stage builds"
+  orchestration: "Kubernetes with separate services"
+  environments: ["Development", "Staging", "Production"]
+  scaling: "Horizontal scaling with load balancers"
+  monitoring: "Health checks, metrics, distributed tracing"
+  blue_green: "Zero-downtime deployment strategies"
+
   docker:
     development:
       compose_services:
@@ -775,7 +985,7 @@ deployment:
 
     production:
       dockerfile: "Multi-stage build for optimization"
-      base_image: "node:18-alpine"
+      base_image: "node:22-alpine"
       build_command: "docker build -t aegisx-api ."
       security:
         - "Non-root user execution"
@@ -801,7 +1011,7 @@ deployment:
       - "Setup CDN for static assets"
 
     monitoring:
-      - "Setup PM2 for process management"
+      - "Setup Docker health checks"
       - "Configure Docker logs collection"
       - "Setup health check endpoints"
       - "Configure alerting systems"
@@ -896,16 +1106,16 @@ testing_implementation:
   ci_integration:
     github_actions:
       - "Automated testing on PR and push"
-      - "Node.js versions 20 and 22 testing"
+      - "Node.js versions 22 testing"
       - "Coverage report generation"
       - "Security vulnerability scanning"
 
   testing_tools:
-    framework: "Jest with ts-jest for TypeScript"
-    mocking: "jest.mock() for external dependencies"
+    framework: "Vitest for TypeScript"
+    mocking: "vi.mock() for external dependencies"
     database: "Testcontainers for PostgreSQL testing"
     api_testing: "Supertest for HTTP endpoint testing"
-    coverage: "Built-in Jest coverage reporting"
+    coverage: "Built-in Vitest coverage reporting"
 
 documentation_system:
   api_documentation:
@@ -987,3 +1197,72 @@ monitoring_analytics:
       - "API usage trends"
       - "Performance bottleneck identification"
       - "Resource utilization optimization"
+
+compliance_security:
+  data_protection: "GDPR compliance with data portability"
+  encryption: "Data at rest and in transit encryption"
+  audit_trail: "Complete audit logging for compliance"
+  backup_recovery: "Automated backup and disaster recovery"
+  penetration_testing: "Regular security assessments"
+
+frontend_integration:
+  api_contract: "RESTful endpoints + WebSocket for real-time"
+  authentication: "JWT Bearer tokens"
+  cors: "Configured for development and production origins"
+  documentation: "OpenAPI spec for SDK generation"
+  error_handling: "Standardized error response format"
+  sdk_generation: "Auto-generated TypeScript SDK"
+
+frontend_responsibility_separation:
+  api_backend_responsibilities:
+    - "Data validation and sanitization"
+    - "Business logic implementation"
+    - "Database operations and transactions"
+    - "Authentication and authorization"
+    - "Rate limiting and security"
+    - "Audit logging and monitoring"
+    - "Background job processing"
+    - "External API integrations"
+
+  frontend_application_responsibilities:
+    - "User interface and user experience"
+    - "Client-side routing and navigation"
+    - "State management (Redux, Zustand, etc.)"
+    - "Form validation (client-side)"
+    - "Caching strategies (React Query, SWR)"
+    - "Component architecture and design system"
+    - "Build optimization and bundling"
+    - "Browser compatibility and polyfills"
+
+deployment_architecture:
+  api_deployment:
+    environment: "Containerized with Docker/Kubernetes"
+    scaling: "Horizontal scaling based on API load"
+    monitoring: "API-specific metrics and logging"
+    health_checks: "API health endpoints"
+
+  frontend_deployment:
+    note: "Frontend apps deployed separately through Nx workspace"
+    separation_benefits:
+      - "Independent deployment cycles"
+      - "Technology stack flexibility"
+      - "Team autonomy"
+      - "Scalability per application needs"
+      - "Different caching strategies"
+
+implementation_notes:
+  ai_instruction_purpose: >
+    This document serves as comprehensive architectural guidance for AI code generation.
+    All features listed should be implemented following the specified patterns and principles.
+    Focus on implementing complete, production-ready solutions that maintain architectural consistency.
+
+  key_principles:
+    - "Follow TypeScript strict mode and type safety"
+    - "Implement proper error handling with standardized responses"
+    - "Use dependency injection for testability and modularity"
+    - "Apply event-driven patterns for loose coupling"
+    - "Maintain clear separation of concerns across all layers"
+    - "Write comprehensive tests for all functionality"
+    - "Document all APIs with OpenAPI specifications"
+    - "Ensure security best practices in all implementations"
+    - "Design for scalability and performance from the start"
