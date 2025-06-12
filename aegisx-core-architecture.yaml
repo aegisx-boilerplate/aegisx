@@ -1,0 +1,989 @@
+project:
+  name: AegisX Universal Core API
+  description: >
+    Enterprise-grade API boilerplate built with Fastify, TypeScript, and Event-Driven Architecture.
+    Designed using a Modular Monolith Architecture with Domain-Based Modules and Nested Features,
+    following a layered approach (controller, service, schema) inside each feature.
+    Ensures scalability, testability, and maintainability.
+    Can be used as a universal boilerplate core API for multiple systems.
+
+technical_stack:
+  runtime: Node.js 18+
+  framework: Fastify 4.x
+  language: TypeScript 5.x
+  database:
+    primary: PostgreSQL 14+
+    cache: Redis 7+
+    search: Elasticsearch 8.x (optional)
+  message_queue: Bull/BullMQ with Redis
+  testing:
+    unit: Jest + ts-jest
+    integration: Supertest + Testcontainers
+    e2e: Playwright (optional)
+  monitoring:
+    metrics: Prometheus + Grafana
+    logging: Winston + ELK Stack
+    tracing: OpenTelemetry + Jaeger
+  documentation: Swagger/OpenAPI 3.0
+  build_system:
+    compiler: SWC (20x faster than tsc)
+    type_checking: TypeScript compiler (separate from build)
+    bundler: SWC with zero configuration
+    dev_server: ts-node-dev for development
+  validation: TypeBox for schema validation
+  orm: Knex.js for database operations
+  message_broker: RabbitMQ for event-driven architecture
+
+architecture:
+  style: Modular Monolith
+  structure:
+    - Domain-Based Modules
+    - Nested Features
+    - Layered (Controller, Service, Schema)
+  principles:
+    - High cohesion within features
+    - Loose coupling between modules
+    - Event-driven communication
+  patterns:
+    - Repository Pattern
+    - Unit of Work Pattern
+    - Command Query Responsibility Segregation (CQRS)
+    - Event Sourcing (for audit trail)
+    - Dependency Injection
+
+security:
+  authentication:
+    jwt:
+      algorithm: RS256
+      expiry: "15m (access), 7d (refresh)"
+      issuer: aegisx-api
+    api_key:
+      format: "aegisx_ + base64(32_bytes)"
+      rate_limit: "1000/hour per key"
+  authorization:
+    rbac: "Role-Based Access Control"
+    pbac: "Permission-Based Access Control"
+    resource_based: "Resource-level permissions"
+  input_validation:
+    schema: "JSON Schema validation"
+    sanitization: "DOMPurify for HTML content"
+    rate_limiting: "100 req/min per IP, 1000 req/min per user"
+  encryption:
+    passwords: "bcrypt (cost: 12)"
+    sensitive_data: "AES-256-GCM"
+    database: "TDE (Transparent Data Encryption)"
+  headers:
+    helmet: "helmet.js for security headers"
+    cors: "CORS configuration"
+    csp: "CSP (Content Security Policy)"
+
+database_design:
+  users:
+    table: users
+    fields:
+      - id: UUID (primary key)
+      - email: VARCHAR(255) UNIQUE NOT NULL
+      - password_hash: VARCHAR(255) NOT NULL
+      - first_name: VARCHAR(100)
+      - last_name: VARCHAR(100)
+      - is_active: BOOLEAN DEFAULT true
+      - email_verified: BOOLEAN DEFAULT false
+      - created_at: TIMESTAMP
+      - updated_at: TIMESTAMP
+    indexes:
+      - email (unique)
+      - created_at
+      - is_active
+
+  roles:
+    table: roles
+    fields:
+      - id: UUID (primary key)
+      - name: VARCHAR(50) UNIQUE NOT NULL
+      - description: TEXT
+      - is_system: BOOLEAN DEFAULT false
+      - created_at: TIMESTAMP
+      - updated_at: TIMESTAMP
+
+  permissions:
+    table: permissions
+    fields:
+      - id: UUID (primary key)
+      - name: VARCHAR(100) UNIQUE NOT NULL
+      - resource: VARCHAR(50) NOT NULL
+      - action: VARCHAR(50) NOT NULL
+      - description: TEXT
+      - created_at: TIMESTAMP
+
+  user_roles:
+    table: user_roles
+    fields:
+      - user_id: UUID (FK to users.id)
+      - role_id: UUID (FK to roles.id)
+      - assigned_by: UUID (FK to users.id)
+      - assigned_at: TIMESTAMP
+    primary_key: [user_id, role_id]
+
+  role_permissions:
+    table: role_permissions
+    fields:
+      - role_id: UUID (FK to roles.id)
+      - permission_id: UUID (FK to permissions.id)
+      - granted_by: UUID (FK to users.id)
+      - granted_at: TIMESTAMP
+    primary_key: [role_id, permission_id]
+
+  events:
+    table: events
+    fields:
+      - id: UUID (primary key)
+      - event_type: VARCHAR(100) NOT NULL
+      - aggregate_id: UUID
+      - aggregate_type: VARCHAR(50)
+      - event_data: JSONB NOT NULL
+      - metadata: JSONB
+      - version: INTEGER NOT NULL
+      - occurred_at: TIMESTAMP NOT NULL
+      - created_at: TIMESTAMP DEFAULT NOW()
+    indexes:
+      - aggregate_id, version
+      - event_type
+      - occurred_at
+
+  audit_logs:
+    table: audit_logs
+    fields:
+      - id: UUID (primary key)
+      - user_id: UUID (FK to users.id)
+      - action: VARCHAR(100) NOT NULL
+      - resource_type: VARCHAR(50)
+      - resource_id: UUID
+      - old_values: JSONB
+      - new_values: JSONB
+      - ip_address: INET
+      - user_agent: TEXT
+      - occurred_at: TIMESTAMP NOT NULL
+    indexes:
+      - user_id, occurred_at
+      - resource_type, resource_id
+      - action
+      - occurred_at
+
+api_specifications:
+  versioning:
+    strategy: "URL path versioning (/api/v1/, /api/v2/)"
+    current: v1
+    deprecation_policy: "6 months notice"
+
+  response_format:
+    success:
+      structure:
+        - "success: true"
+        - "data: object|array"
+        - "meta: object (pagination, etc.)"
+    error:
+      structure:
+        - "success: false"
+        - "error: object"
+        - "code: string"
+        - "message: string"
+        - "details: array (validation errors)"
+
+  error_codes:
+    authentication:
+      - "AUTH_001: Invalid credentials"
+      - "AUTH_002: Token expired"
+      - "AUTH_003: Token invalid"
+      - "AUTH_004: API key invalid"
+      - "AUTH_005: Account locked"
+    authorization:
+      - "AUTHZ_001: Insufficient permissions"
+      - "AUTHZ_002: Resource access denied"
+      - "AUTHZ_003: Role not found"
+      - "AUTHZ_004: Permission denied"
+    validation:
+      - "VAL_001: Required field missing"
+      - "VAL_002: Invalid field format"
+      - "VAL_003: Field value out of range"
+      - "VAL_004: Duplicate value"
+    system:
+      - "SYS_001: Internal server error"
+      - "SYS_002: Service unavailable"
+      - "SYS_003: Database connection error"
+      - "SYS_004: Rate limit exceeded"
+
+  endpoints:
+    authentication:
+      - "POST /api/v1/auth/login"
+      - "POST /api/v1/auth/logout"
+      - "POST /api/v1/auth/refresh"
+      - "POST /api/v1/auth/forgot-password"
+      - "POST /api/v1/auth/reset-password"
+    users:
+      - "GET /api/v1/users (list with pagination)"
+      - "GET /api/v1/users/:id"
+      - "POST /api/v1/users"
+      - "PUT /api/v1/users/:id"
+      - "DELETE /api/v1/users/:id"
+      - "GET /api/v1/users/me (current user profile)"
+    roles:
+      - "GET /api/v1/roles"
+      - "GET /api/v1/roles/:id"
+      - "POST /api/v1/roles"
+      - "PUT /api/v1/roles/:id"
+      - "DELETE /api/v1/roles/:id"
+    permissions:
+      - "GET /api/v1/permissions"
+      - "GET /api/v1/permissions/:id"
+      - "POST /api/v1/permissions"
+      - "PUT /api/v1/permissions/:id"
+      - "DELETE /api/v1/permissions/:id"
+    health:
+      - "GET /health (basic health check)"
+      - "GET /health/detailed (detailed system status)"
+      - "GET /metrics (Prometheus metrics)"
+
+performance:
+  caching:
+    strategy:
+      - Redis for session storage
+      - Application-level caching for frequently accessed data
+      - HTTP caching headers for static content
+    ttl:
+      - User sessions: 15 minutes
+      - Role/Permission data: 1 hour
+      - System configuration: 24 hours
+
+  database_optimization:
+    connection_pooling:
+      min: 5
+      max: 20
+      idle_timeout: 30s
+    query_optimization:
+      - Use prepared statements
+      - Implement query result caching
+      - Database query monitoring
+    indexing:
+      - Primary keys on all tables
+      - Foreign key indexes
+      - Composite indexes for common queries
+
+  rate_limiting:
+    global: 1000 requests/minute per IP
+    authenticated: 5000 requests/minute per user
+    api_key: 10000 requests/minute per key
+    specific_endpoints:
+      login: 5 attempts/minute per IP
+      password_reset: 3 attempts/hour per email
+
+environments:
+  development:
+    database:
+      host: localhost
+      port: 5432
+      ssl: false
+    redis:
+      host: localhost
+      port: 6379
+    logging:
+      level: debug
+      format: pretty
+
+  staging:
+    database:
+      host: staging-db.internal
+      port: 5432
+      ssl: true
+      connection_pool: 10
+    redis:
+      host: staging-redis.internal
+      port: 6379
+      cluster: false
+    logging:
+      level: info
+      format: json
+
+  production:
+    database:
+      host: prod-db-cluster.internal
+      port: 5432
+      ssl: true
+      connection_pool: 20
+      read_replicas: 2
+    redis:
+      cluster: true
+      nodes: 3
+    logging:
+      level: warn
+      format: json
+      external: true # Send to ELK stack
+
+core_features:
+  - name: Authentication (auth)
+    capabilities:
+      - JWT Authentication
+      - API Key Authentication
+      - Flexible Authentication (JWT + API Key)
+      - Role-based Access Control (RBAC)
+      - Permission-based Access Control
+      - Multi-factor Authentication (MFA)
+      - Session Management
+      - Password Policy Enforcement
+
+  - name: User Management (user)
+    capabilities:
+      - User Registration
+      - User Profile Management
+      - User Settings
+      - User Preferences
+      - User Activity Tracking
+      - Email Verification
+      - Account Activation/Deactivation
+      - User Search and Filtering
+
+  - name: RBAC
+    capabilities:
+      - Role Management
+      - Permission Management
+      - Role Assignment
+      - Permission Assignment
+      - User-Role Mapping
+      - Role-Permission Mapping
+      - Role Hierarchy
+      - Dynamic Permissions
+      - Resource-Based Access Control
+
+  - name: Event Bus System
+    capabilities:
+      - Event Publishing
+      - Event Subscribing
+      - Event Queue Management
+      - Event Persistence
+      - Event Analytics
+      - Event Replay
+      - Event Versioning
+      - Dead Letter Queue
+
+  - name: Audit System
+    capabilities:
+      - Activity Logging
+      - Security Audit
+      - User Action Tracking
+      - System Event Logging
+      - Audit Trail Management
+      - Real-time Audit Alerts
+      - Compliance Reporting
+      - Data Retention Policies
+
+  - name: Health Monitoring
+    capabilities:
+      - System Health Checks
+      - Service Status Monitoring
+      - Performance Metrics
+      - Resource Usage Tracking
+      - Error Rate Monitoring
+      - Database Health Monitoring
+      - Cache Health Monitoring
+      - Custom Health Checks
+
+  - name: Error Handling
+    capabilities:
+      - Custom Error Types
+      - Error Logging
+      - Error Reporting
+      - Error Recovery
+      - Error Analytics
+      - Error Notification
+      - Error Aggregation
+      - Error Rate Limiting
+
+  - name: Event Analytics
+    capabilities:
+      - Event Data Collection
+      - Event Analysis
+      - Usage Statistics
+      - Performance Metrics
+      - User Behavior Analysis
+      - Real-time Dashboards
+      - Custom Reports
+      - Data Export
+
+core_flows:
+  authentication:
+    flow: >
+      Request -> Rate Limiting -> Auth Middleware -> JWT/API Key Validation -> 
+      User Context -> RBAC Check -> Permission Check -> Response
+  event:
+    flow: >
+      Event Trigger -> Event Validation -> Event Bus -> Event Queue -> 
+      Event Handlers -> Event Analytics -> Audit Log -> Dead Letter Queue (if failed)
+  rbac:
+    flow: >
+      Request -> User Context -> Role Resolution -> Permission Check -> 
+      Resource Access Validation -> Cache Update -> Response
+  audit:
+    flow: >
+      Action -> Audit Logger -> Event Bus -> Audit Storage -> 
+      Real-time Alerts -> Audit Analytics -> Compliance Check
+
+design_guidelines:
+  - Separate core features into clear modules
+  - Use interfaces between modules
+  - Apply Dependency Injection
+  - Implement comprehensive error handling
+  - Use TypeScript strict mode
+  - Follow SOLID principles
+  - Implement proper logging and monitoring
+  - Use database transactions for data consistency
+  - Implement proper input validation and sanitization
+  - Use environment-specific configurations
+  - Implement proper testing strategies
+  - Use code formatting and linting tools
+  - Improve Event System:
+      - Use Event Sourcing Pattern
+      - Separate Event Store
+      - Add Event Versioning
+      - Implement Event Replay
+  - Improve RBAC:
+      - Add Role Hierarchy
+      - Add Dynamic Permissions
+      - Support Resource-Based Access
+      - Implement Permission Caching
+  - Improve Audit System:
+      - Add Real-Time Audit
+      - Add Audit Analytics
+      - Add Compliance Reporting
+      - Implement Data Retention
+  - Improve Error Handling:
+      - Add Error Recovery
+      - Add Error Analytics
+      - Add Error Notification
+      - Implement Circuit Breaker Pattern
+  - Add Monitoring & Analytics:
+      - Real-Time Monitoring
+      - Performance Analytics
+      - Usage Analytics
+      - Security Analytics
+
+migration_strategy:
+  database:
+    tool: Knex.js migrations
+    versioning: Sequential numbering
+    rollback: Support for rollback scripts
+    seeding: Initial data seeding scripts
+
+  events:
+    versioning: Semantic versioning for event schemas
+    compatibility: Backward compatibility for 2 major versions
+    migration: Event transformation scripts
+
+  api:
+    versioning: URL path versioning
+    deprecation: 6 months deprecation period
+    documentation: Migration guides for each version
+
+testing_strategy:
+  unit_tests:
+    coverage: 90% minimum
+    framework: Jest + ts-jest
+    mocking: jest.mock() for external dependencies
+
+  integration_tests:
+    database: Testcontainers for PostgreSQL
+    cache: Testcontainers for Redis
+    api: Supertest for HTTP testing
+
+  e2e_tests:
+    framework: Playwright (optional)
+    environment: Dedicated testing environment
+
+  performance_tests:
+    load_testing: Artillery or k6
+    stress_testing: Gradual load increase
+    benchmarking: Regular performance benchmarks
+
+ci_cd:
+  pipeline:
+    - Code checkout
+    - Dependency installation
+    - Linting and formatting check
+    - Unit tests
+    - Integration tests
+    - Security scanning
+    - Build application
+    - Deploy to staging
+    - E2E tests on staging
+    - Deploy to production
+
+  tools:
+    ci: GitHub Actions / GitLab CI
+    security: Snyk / OWASP dependency check
+    quality: SonarQube
+    deployment: Docker + Kubernetes
+
+recommendations:
+  - name: Move to Pure Domain-Driven Design (DDD)
+    details:
+      - Represent each module as a Bounded Context
+      - Use aggregates, entities, and value objects
+      - Prevent leakage of internal models
+      - Implement domain events
+      - Use ubiquitous language
+
+  - name: Enforce Consistent Layered Architecture
+    details:
+      - Feature folder: controller, service, schema only
+      - No business logic in controller
+      - Services must not depend on transport layer
+      - Use dependency injection containers
+      - Implement proper error boundaries
+
+  - name: Split Core into Internal Libraries
+    details:
+      - Extract reusable packages: RBAC, Auth, Audit, EventBus
+      - Improve testing and cross-system reuse
+      - Version internal libraries independently
+      - Create shared type definitions
+
+  - name: Introduce Module Registry
+    details:
+      - Auto-register modules with lifecycle hooks (onInit, onShutdown)
+      - Enable scalable module loading
+      - Implement health checks per module
+      - Support hot module reloading in development
+
+  - name: Event Store Design
+    details:
+      - Use event_store table or Redis/Kafka
+      - Support replay, audit, and consistency
+      - Implement event snapshots for performance
+      - Add event schema validation
+
+  - name: Plugin-First Architecture
+    details:
+      - Allow system extension with plugins
+      - Expose system hooks: onAuth, onEventPublished
+      - Implement plugin lifecycle management
+      - Create plugin marketplace/registry
+
+  - name: Extend CLI Tooling
+    details:
+      - CLI scaffolding for dev experience (e.g., `aegisx g module`)
+      - Include format, test, lint built-in
+      - Database migration commands
+      - Development server with hot reload
+
+  - name: Internal Developer Portal
+    details:
+      - Docs, API specs, audit, health dashboard
+      - Improve observability and team collaboration
+      - Real-time system metrics
+      - Development workflow automation
+
+nx_workspace:
+  purpose: >
+    Use Nx as a monorepo tool to organize the modular monolith project, improve
+    developer productivity, and enable scalable code sharing and dependency management.
+
+  benefits:
+    - Incremental builds and testing with Nx caching
+    - Explicit dependency graph visualization
+    - Easy code sharing via libraries across modules/features
+    - Consistent linting, formatting, and testing configuration
+    - Built-in CLI tooling for generating modules, services, and controllers
+    - Support for multiple runtimes (Node.js, frontend frameworks) if needed
+
+  structure_recommendation:
+    apps:
+      - aegisx-api/ # The main Fastify API application
+    libs:
+      - auth/ # Auth module as a reusable library
+      - user/ # User management library
+      - rbac/ # RBAC logic and models
+      - audit/ # Audit logging and tracking
+      - event-bus/ # Event bus and event sourcing libs
+      - shared/ # Shared utilities, types, constants
+      - core/ # Core domain entities and interfaces
+      - database/ # Database utilities and migrations
+      - monitoring/ # Health checks and metrics
+      - testing/ # Testing utilities and fixtures
+
+  development_guidelines:
+    - Enforce strict boundaries between libs using Nx tags and lint rules
+    - Use Nx generators or custom schematics for creating new features/modules
+    - Structure each domain lib with layered folders: controller, service, schema
+    - Avoid direct cross-imports that break module boundaries
+    - Use Dependency Injection and interfaces to decouple implementations
+    - Utilize Nx affected commands to optimize CI/CD pipeline builds and tests
+    - Implement consistent code formatting with Prettier
+    - Use ESLint with TypeScript rules
+    - Implement pre-commit hooks for code quality
+
+  build_and_deploy:
+    - Build apps and libs separately for deployment
+    - Consider using Nx Cloud for distributed caching and faster builds
+    - Separate environment configurations per app for multi-stage deployments
+    - Use Docker multi-stage builds for production
+    - Implement proper secret management
+
+  testing:
+    - Use Jest for unit tests in libs and apps
+    - Create integration tests inside app folder or dedicated libs
+    - Run lint and format checks via Nx targets
+    - Implement test coverage reporting
+    - Use Nx affected for running only changed tests
+
+docker:
+  development:
+    services:
+      - postgres: PostgreSQL 14
+      - redis: Redis 7
+      - elasticsearch: Elasticsearch 8 (optional)
+
+  production:
+    multi_stage_build: true
+    base_image: node:18-alpine
+    security:
+      - Run as non-root user
+      - Use distroless images when possible
+      - Scan for vulnerabilities
+
+  compose:
+    version: "3.8"
+    networks: Custom bridge network
+    volumes: Named volumes for data persistence
+
+build_system:
+  compiler:
+    primary: SWC
+    benefits:
+      - "20x faster than TypeScript compiler"
+      - "Zero configuration for most TypeScript projects"
+      - "Smaller bundle size with better optimizations"
+      - "Same output - fully compatible"
+      - "Better DX - faster feedback loop"
+    note: "SWC only transpiles code, TypeScript runs separately for type checking"
+
+  scripts:
+    development:
+      - "npm run dev - Start development server with ts-node-dev"
+      - "npm run test:watch - Run tests in watch mode"
+
+    production:
+      - "npm run build - Compile TypeScript to JavaScript using SWC"
+      - "npm run type-check - Run TypeScript type checking only"
+      - "npm run check - Run full code quality checks (lint + type-check + build)"
+      - "npm run start - Run production server"
+
+    testing:
+      - "npm run test - Run all tests"
+      - "npm run test:coverage - Run tests with coverage report"
+      - "npm run test:watch - Run tests in watch mode"
+
+    quality:
+      - "npm run lint - ESLint for code linting"
+      - "npm run format - Format code with Prettier"
+      - "npm run commit - Interactive commit with commitizen"
+
+    release:
+      - "npm run release:dry - Test release locally (dry run)"
+
+git_workflow:
+  commit_convention: Conventional Commits
+  tools:
+    - Husky for git hooks
+    - Commitizen for interactive commits
+    - Commitlint for commit message validation
+    - Semantic Release for automated versioning
+
+  commit_types:
+    feat: "New features → Minor version bump"
+    fix: "Bug fixes → Patch version bump"
+    perf: "Performance improvements → Patch version bump"
+    docs: "Documentation updates"
+    style: "Code style changes"
+    refactor: "Code refactoring → Patch version bump"
+    test: "Adding tests"
+    chore: "Maintenance tasks"
+    build: "Build system changes"
+    ci: "CI/CD changes"
+    breaking_change: "Add BREAKING CHANGE: in commit body → Major version bump"
+
+  pre_commit_hooks:
+    - ESLint for code linting
+    - TypeScript type checking
+    - Prettier formatting
+
+  automated_releases:
+    main: "Automatic release to production"
+    beta: "Beta pre-release"
+    alpha: "Alpha pre-release"
+    dry_run: "npm run release:dry"
+
+project_structure:
+  detailed:
+    src:
+      core:
+        - "auth/ - Authentication system with JWT and API keys"
+        - "user/ - User management with CRUD operations"
+        - "rbac/ - Role-based access control system"
+        - "audit/ - Comprehensive audit logging"
+        - "api-key/ - API key management system"
+      features:
+        - "Feature modules for specific business logic"
+      config:
+        - "Environment configuration and validation"
+      database:
+        - "Knex.js migrations and seeds"
+        - "Database connection and pooling"
+      shared:
+        - "Shared utilities and common functions"
+        - "Type definitions and interfaces"
+        - "Constants and enums"
+
+    root_files:
+      configuration:
+        - ".env.example - Environment variables template"
+        - ".nvmrc - Node.js version specification"
+        - ".commitlintrc.json - Commit message linting"
+        - ".eslintrc.json - ESLint configuration"
+        - ".prettierignore - Prettier ignore patterns"
+        - "tsconfig.json - TypeScript configuration"
+
+      docker:
+        - "Dockerfile - Production container setup"
+        - "docker-compose.yml - Development environment"
+        - ".dockerignore - Docker build exclusions"
+
+      ci_cd:
+        - ".github/workflows/ - GitHub Actions CI/CD"
+        - ".husky/ - Git hooks configuration"
+
+      documentation:
+        - "docs/ - Comprehensive documentation"
+        - "README.md - Project overview and setup"
+
+deployment:
+  docker:
+    development:
+      compose_services:
+        - "PostgreSQL database"
+        - "Redis cache"
+        - "RabbitMQ message broker"
+        - "Application server"
+      command: "docker-compose up -d"
+
+    production:
+      dockerfile: "Multi-stage build for optimization"
+      base_image: "node:18-alpine"
+      build_command: "docker build -t aegisx-api ."
+      security:
+        - "Non-root user execution"
+        - "Minimal attack surface"
+        - "Security scanning integration"
+
+  environment_checklist:
+    security:
+      - "Set strong JWT_SECRET and JWT_REFRESH_SECRET"
+      - "Configure production database with SSL"
+      - "Setup Redis cluster for high availability"
+      - "Configure RabbitMQ cluster with proper queues"
+      - "Review and rotate API keys regularly"
+      - "Setup proper CORS origins"
+      - "Configure rate limiting based on usage"
+      - "Setup SSL/TLS certificates"
+
+    performance:
+      - "Database connection pooling tuning"
+      - "Redis memory optimization and persistence"
+      - "RabbitMQ queue management and monitoring"
+      - "Enable gzip compression"
+      - "Setup CDN for static assets"
+
+    monitoring:
+      - "Setup PM2 for process management"
+      - "Configure Docker logs collection"
+      - "Setup health check endpoints"
+      - "Configure alerting systems"
+
+features_implemented:
+  authentication:
+    jwt_system:
+      - "Access tokens (15 minutes expiry)"
+      - "Refresh tokens (7 days expiry)"
+      - "Token blacklisting on logout"
+      - "Automatic token refresh"
+
+    api_key_system:
+      - "API key generation and management"
+      - "Rate limiting per API key"
+      - "API key rotation capabilities"
+
+    security_features:
+      - "Password hashing with bcrypt"
+      - "Account lockout after failed attempts"
+      - "IP tracking and logging"
+      - "Session management"
+
+  user_management:
+    crud_operations:
+      - "User registration with validation"
+      - "User profile management"
+      - "User search and filtering"
+      - "Account activation/deactivation"
+
+    validation:
+      - "Email format validation"
+      - "Password strength requirements"
+      - "Input sanitization"
+      - "TypeBox schema validation"
+
+  rbac_system:
+    role_management:
+      - "Dynamic role creation"
+      - "Role hierarchy support"
+      - "Role assignment to users"
+      - "System vs custom roles"
+
+    permission_system:
+      - "Granular permission control"
+      - "Resource-based permissions"
+      - "Permission inheritance"
+      - "Dynamic permission checking"
+
+  audit_system:
+    logging_capabilities:
+      - "User action tracking"
+      - "API endpoint access logging"
+      - "Data change tracking (before/after)"
+      - "IP address and user agent logging"
+      - "Timestamp and user context"
+
+    analytics:
+      - "User activity reports"
+      - "API usage statistics"
+      - "Security event monitoring"
+      - "Performance metrics"
+
+  event_system:
+    rabbitmq_integration:
+      - "Event publishing and subscribing"
+      - "Queue management"
+      - "Dead letter queue handling"
+      - "Event persistence"
+      - "Event replay capabilities"
+
+    event_types:
+      - "User events (login, logout, registration)"
+      - "System events (errors, performance)"
+      - "Business events (custom domain events)"
+      - "Audit events (data changes)"
+
+testing_implementation:
+  coverage_targets:
+    configuration: "Environment validation and config loading"
+    authentication: "JWT tokens, login/logout, middleware"
+    user_management: "CRUD operations and validation"
+    api_endpoints: "Request/response validation"
+    event_system: "RabbitMQ integration and event publishing"
+    database_operations: "Repository patterns and queries"
+
+  test_structure:
+    unit_tests: "src/**/__tests__/ - Co-located with source code"
+    integration_tests: "Database and external service integration"
+    e2e_tests: "Full application workflow testing"
+
+  ci_integration:
+    github_actions:
+      - "Automated testing on PR and push"
+      - "Node.js versions 20 and 22 testing"
+      - "Coverage report generation"
+      - "Security vulnerability scanning"
+
+  testing_tools:
+    framework: "Jest with ts-jest for TypeScript"
+    mocking: "jest.mock() for external dependencies"
+    database: "Testcontainers for PostgreSQL testing"
+    api_testing: "Supertest for HTTP endpoint testing"
+    coverage: "Built-in Jest coverage reporting"
+
+documentation_system:
+  api_documentation:
+    swagger: "OpenAPI 3.0 specification"
+    interactive: "Swagger UI for API exploration"
+    postman: "Postman collection export"
+
+  guides:
+    getting_started:
+      - "Docker Compose Development Guide"
+      - "Development Workflow"
+      - "Environment Setup"
+
+    architecture:
+      - "Event-Driven Architecture Overview"
+      - "Event Bus Documentation"
+      - "Audit Logging System"
+
+    authentication:
+      - "Auth Enhancement Summary"
+      - "Auth Routes Testing Guide"
+      - "JWT Implementation Details"
+
+    deployment:
+      - "Docker Deployment Guide"
+      - "Production Environment Setup"
+      - "Security Configuration"
+
+    analytics:
+      - "Event Analytics System"
+      - "Monitoring and Metrics"
+      - "Performance Optimization"
+
+release_management:
+  semantic_versioning:
+    current_version: "v2.23.1"
+    total_releases: 48
+    automation: "Semantic Release with GitHub Actions"
+
+  release_channels:
+    production: "main branch → automatic production release"
+    staging: "beta branch → beta pre-release"
+    development: "alpha branch → alpha pre-release"
+
+  changelog:
+    automated: "Generated from conventional commits"
+    format: "Keep a Changelog format"
+    sections:
+      - "Added - New features"
+      - "Changed - Changes in existing functionality"
+      - "Deprecated - Soon-to-be removed features"
+      - "Removed - Removed features"
+      - "Fixed - Bug fixes"
+      - "Security - Security improvements"
+
+monitoring_analytics:
+  real_time_tracking:
+    user_activities:
+      - "Login/logout events"
+      - "API endpoint usage"
+      - "Feature usage patterns"
+      - "Error rate monitoring"
+
+    system_metrics:
+      - "Response time monitoring"
+      - "Database query performance"
+      - "Memory and CPU usage"
+      - "Cache hit/miss ratios"
+
+  audit_analytics:
+    compliance_reporting:
+      - "User access reports"
+      - "Data modification tracking"
+      - "Security event logging"
+      - "Regulatory compliance data"
+
+    business_intelligence:
+      - "User behavior analysis"
+      - "API usage trends"
+      - "Performance bottleneck identification"
+      - "Resource utilization optimization"
