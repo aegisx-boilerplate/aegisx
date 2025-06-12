@@ -12,19 +12,31 @@
 
 ## 🎯 **Core Concept**
 
-AegisX Core เป็น **shared npm package** ที่รวม authentication, authorization, และ user management เอาไว้ในที่เดียว แทนที่จะสร้าง auth system ใหม่ในทุกโปรเจค เพียงแค่ `npm install @aegisx/core` แล้วใช้งานได้เลย
+AegisX เป็น **Nx Monorepo** ที่ประกอบด้วย multiple packages สำหรับ enterprise authentication & authorization ใช้แค่ `npm install @aegisx/core @aegisx/angular-ui` แล้วใช้งานได้เลย ทั้ง backend core และ Angular UI components พร้อมใช้งาน
+
+### **📦 Package Ecosystem**
+- **@aegisx/core** - Authentication & authorization core (Node.js)
+- **@aegisx/angular-ui** - Pre-built Angular components & guards  
+- **@aegisx/cli** - CLI tools for scaffolding & setup
 
 ```mermaid
 graph TD
-    A[@aegisx/core Package] --> B[🏥 HIS Application]
-    A --> C[💼 ERP Application] 
-    A --> D[📋 Todo Application]
-    A --> E[📱 Mobile Apps]
+    A[AegisX Nx Monorepo] --> B[@aegisx/core Package]
+    A --> C[@aegisx/angular-ui Package]
+    A --> D[@aegisx/cli Package]
     
-    A --> F[🔐 Authentication]
-    A --> G[👥 User Management]
-    A --> H[🛡️ RBAC Authorization]
-    A --> I[🗄️ Database Models]
+    B --> E[🏥 HIS Application]
+    B --> F[💼 ERP Application] 
+    B --> G[📋 Todo Application]
+    
+    C --> H[🅰️ Angular Components]
+    C --> I[🛡️ RBAC Guards & Directives]
+    C --> J[🎨 Pre-built UI Components]
+    
+    B --> K[🔐 Authentication Core]
+    B --> L[👥 User Management Core]
+    B --> M[🛡️ RBAC Authorization Core]
+    B --> N[🗄️ Database Models]
 ```
 
 ---
@@ -65,8 +77,14 @@ graph TD
 
 ### **Installation**
 ```bash
-# Install the core package
+# Backend Authentication Core
 npm install @aegisx/core
+
+# Angular UI Components (สำหรับ Angular apps)
+npm install @aegisx/angular-ui
+
+# CLI Tools (optional)
+npm install -g @aegisx/cli
 
 # Install peer dependencies
 npm install pg knex bcrypt jsonwebtoken
@@ -136,7 +154,7 @@ app.post('/register', async (req, res) => {
 });
 ```
 
-### **Authorization**
+### **Authorization (Backend)**
 ```typescript
 import { Guards, PermissionService } from '@aegisx/core';
 
@@ -165,32 +183,120 @@ app.get('/reports', Guards.requireAuth, async (req, res) => {
 });
 ```
 
+### **Angular UI Components**
+```typescript
+// app.module.ts
+import { AegisXAngularUIModule } from '@aegisx/angular-ui';
+
+@NgModule({
+  imports: [
+    AegisXAngularUIModule.forRoot({
+      apiUrl: 'http://localhost:3000/api',
+      authEndpoint: '/auth'
+    })
+  ]
+})
+export class AppModule { }
+
+// login.component.ts
+import { AegisXLoginComponent } from '@aegisx/angular-ui/auth';
+
+@Component({
+  template: `
+    <aegisx-login 
+      (loginSuccess)="onLoginSuccess($event)"
+      (loginError)="onLoginError($event)">
+    </aegisx-login>
+  `
+})
+export class LoginPageComponent {
+  onLoginSuccess(user: any) {
+    // Handle successful login
+    this.router.navigate(['/dashboard']);
+  }
+}
+
+// Using RBAC guards and directives
+import { AuthGuard, HasPermissionDirective } from '@aegisx/angular-ui/rbac';
+
+@Component({
+  template: `
+    <button *aegisxHasPermission="'patient:create'" 
+            (click)="createPatient()">
+      Create Patient
+    </button>
+    
+    <div *aegisxHasRole="'doctor'">
+      Doctor-only content
+    </div>
+  `
+})
+export class PatientListComponent { }
+```
+
 ---
 
 ## 🏗️ **Architecture**
 
-### **Package Structure**
+### **Nx Monorepo Structure**
 ```
-@aegisx/core/
-├── src/
-│   ├── auth/              # Authentication system
-│   │   ├── AuthService.ts
-│   │   ├── JwtService.ts
-│   │   └── middleware.ts
-│   ├── rbac/              # Authorization system
-│   │   ├── RoleService.ts
-│   │   ├── PermissionService.ts
-│   │   └── guards.ts
-│   ├── user/              # User management
-│   │   ├── UserService.ts
-│   │   ├── UserModel.ts
-│   │   └── validation.ts
-│   ├── database/          # Database layer
-│   │   ├── migrations/
-│   │   ├── seeds/
-│   │   └── connection.ts
-│   └── utils/             # Utilities
-└── dist/                  # Compiled output
+aegisx/                              # Nx Monorepo Root
+├── packages/
+│   ├── core/                        # @aegisx/core
+│   │   ├── src/
+│   │   │   ├── auth/              # Authentication system
+│   │   │   │   ├── AuthService.ts
+│   │   │   │   ├── JwtService.ts
+│   │   │   │   └── middleware.ts
+│   │   │   ├── rbac/              # Authorization system
+│   │   │   │   ├── RoleService.ts
+│   │   │   │   ├── PermissionService.ts
+│   │   │   │   └── guards.ts
+│   │   │   ├── user/              # User management
+│   │   │   │   ├── UserService.ts
+│   │   │   │   ├── UserModel.ts
+│   │   │   │   └── validation.ts
+│   │   │   └── database/          # Database layer
+│   │   │       ├── migrations/
+│   │   │       ├── seeds/
+│   │   │       └── connection.ts
+│   │   └── package.json           # @aegisx/core
+│   │
+│   ├── angular-ui/                 # @aegisx/angular-ui
+│   │   ├── src/lib/
+│   │   │   ├── auth/              # Angular Auth Components
+│   │   │   │   ├── login/
+│   │   │   │   ├── register/
+│   │   │   │   └── forgot-password/
+│   │   │   ├── rbac/              # Angular RBAC Components
+│   │   │   │   ├── guards/
+│   │   │   │   ├── directives/
+│   │   │   │   └── components/
+│   │   │   ├── user/              # User Management UI
+│   │   │   │   ├── profile/
+│   │   │   │   ├── user-list/
+│   │   │   │   └── user-form/
+│   │   │   └── shared/            # Shared Angular utilities
+│   │   └── package.json           # @aegisx/angular-ui
+│   │
+│   └── cli/                        # @aegisx/cli
+│       ├── src/
+│       │   ├── commands/
+│       │   └── generators/
+│       └── package.json           # @aegisx/cli
+│
+├── apps/
+│   ├── demo-his/                   # Demo HIS Angular app
+│   ├── demo-erp/                   # Demo ERP Angular app
+│   └── playground/                 # Development playground
+│
+├── libs/                           # Shared libraries
+│   ├── shared/
+│   └── testing/
+│
+├── nx.json                         # Nx configuration
+├── angular.json                    # Angular workspace config
+└── package.json                    # Root package.json
 ```
 
 ### **Usage Pattern**
@@ -357,12 +463,13 @@ await createAegisX({
 - Node.js 22 LTS
 - PostgreSQL 15+
 - npm 10+
+- Nx CLI (`npm i -g nx`)
 
-### **Setup Development Environment**
+### **Setup Nx Workspace**
 ```bash
 # Clone repository
-git clone https://github.com/your-org/aegisx-core.git
-cd aegisx-core
+git clone https://github.com/your-org/aegisx.git
+cd aegisx
 
 # Install dependencies
 npm install
@@ -370,25 +477,72 @@ npm install
 # Setup test database
 createdb aegisx_test
 npm run db:setup
-
-# Run tests
-npm test
-
-# Build package
-npm run build
 ```
 
-### **Publishing**
+### **Nx Development Commands**
 ```bash
-# Build and test
-npm run build
-npm test
+# Build all packages
+nx run-many -t build
 
-# Version bump
-npm version patch
+# Build specific package
+nx build core
+nx build angular-ui
+
+# Run tests
+nx run-many -t test
+nx test core
+nx test angular-ui
+
+# Lint code
+nx run-many -t lint
+
+# Serve demo applications
+nx serve demo-his
+nx serve demo-erp
+
+# Generate new library
+nx g @nx/node:library new-feature --directory=libs
+nx g @nx/angular:library ui-components --directory=packages
+
+# Dependency graph
+nx graph
+```
+
+### **Development Workflow**
+```bash
+# 1. Start development server
+nx serve playground
+
+# 2. Work on core package
+nx build core --watch
+
+# 3. Work on Angular UI
+nx build angular-ui --watch
+
+# 4. Run tests in watch mode
+nx test core --watch
+nx test angular-ui --watch
+
+# 5. Check affected projects
+nx affected:test
+nx affected:build
+```
+
+### **Publishing Packages**
+```bash
+# Build all packages
+nx run-many -t build
+
+# Version bump (individual packages)
+cd packages/core && npm version patch
+cd packages/angular-ui && npm version patch
 
 # Publish to npm
-npm publish
+nx run-many -t publish
+
+# Or publish individually
+cd packages/core && npm publish
+cd packages/angular-ui && npm publish
 ```
 
 ---
@@ -414,10 +568,17 @@ MIT License - see [LICENSE](./LICENSE) file for details.
 
 ## 🔗 **Links**
 
-- **NPM Package**: [@aegisx/core](https://www.npmjs.com/package/@aegisx/core)
+### **📦 NPM Packages**
+- **@aegisx/core**: [Authentication & Authorization Core](https://www.npmjs.com/package/@aegisx/core)
+- **@aegisx/angular-ui**: [Angular UI Components](https://www.npmjs.com/package/@aegisx/angular-ui)
+- **@aegisx/cli**: [CLI Tools](https://www.npmjs.com/package/@aegisx/cli)
+
+### **📚 Resources**
 - **Documentation**: [Full Documentation](./docs/)
-- **GitHub Issues**: [Report Issues](https://github.com/your-org/aegisx-core/issues)
-- **Examples**: [Example Projects](./examples/)
+- **GitHub Repository**: [AegisX Monorepo](https://github.com/your-org/aegisx)
+- **GitHub Issues**: [Report Issues](https://github.com/your-org/aegisx/issues)
+- **Demo Applications**: [Live Demos](./apps/)
+- **Nx Workspace**: [Development Guide](./docs/development.md)
 
 ---
 
