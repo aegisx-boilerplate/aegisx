@@ -39,7 +39,25 @@ technical_stack:
     cache: Redis 7+
     search: Elasticsearch 8.x (optional)
   message_queue: RabbitMQ 3.12+
-  testing: Vitest + Playwright + Testcontainers
+  testing:
+    unit: Vitest + @vitest/ui
+    integration: Vitest + Testcontainers
+    e2e: Playwright
+    performance: Artillery + k6
+    security: OWASP ZAP + Snyk
+    coverage: c8 (built into Vitest)
+  linting:
+    eslint: ESLint 8.x
+    config: "@typescript-eslint/recommended + airbnb-typescript"
+    plugins:
+      - "@typescript-eslint/eslint-plugin"
+      - "eslint-plugin-security"
+      - "eslint-plugin-import"
+      - "eslint-plugin-node"
+      - "eslint-plugin-promise"
+      - "eslint-plugin-sonarjs"
+    rules: "Enterprise-grade rules for HIS/ERP compliance"
+    formatter: Prettier 3.x
   monitoring: Prometheus + Grafana + OpenTelemetry
   build_system:
     compiler: SWC (20x faster than tsc)
@@ -398,35 +416,6 @@ logging_monitoring:
   alerting: "Grafana alerts on key metrics"
   apm: "Application Performance Monitoring"
 
-testing_strategy:
-  unit: "Vitest for services, repositories, utilities"
-  integration: "API endpoints with test database"
-  e2e: "Playwright for complete user flows"
-  performance: "Load testing with autocannon"
-  tools: "Testcontainers for database, MSW for external APIs"
-  coverage: "80%+ code coverage requirements"
-  ci_testing: "Automated testing in CI/CD pipeline"
-
-  detailed_strategy:
-    unit_tests:
-      coverage: 90% minimum
-      framework: Vitest
-      mocking: vi.mock() for external dependencies
-
-    integration_tests:
-      database: Testcontainers for PostgreSQL
-      cache: Testcontainers for Redis
-      api: Supertest for HTTP testing
-
-    e2e_tests:
-      framework: Playwright
-      environment: Dedicated testing environment
-
-    performance_tests:
-      load_testing: Artillery or k6
-      stress_testing: Gradual load increase
-      benchmarking: Regular performance benchmarks
-
 configuration_management:
   environment_variables: "dotenv with validation"
   config_validation: "Schema-based configuration validation"
@@ -700,7 +689,7 @@ migration_strategy:
 ci_cd:
   pipeline: "GitHub Actions"
   stages: ["Test", "Build", "Security Scan", "Deploy"]
-  testing: "Automated unit, integration, e2e tests"
+  test_automation: "Automated unit, integration, e2e tests"
   deployment: "Zero-downtime rolling deployments"
   rollback: "Automated rollback on deployment failures"
   environments: "Automated deployment to staging and production"
@@ -828,7 +817,7 @@ nx_workspace:
     - Use Docker multi-stage builds for production
     - Implement proper secret management
 
-  testing:
+  quality_assurance:
     - Use Vitest for unit tests in libs and apps
     - Create integration tests inside app folder or dedicated libs
     - Run lint and format checks via Nx targets
@@ -878,7 +867,7 @@ build_system:
       - "npm run check - Run full code quality checks (lint + type-check + build)"
       - "npm run start - Run production server"
 
-    testing:
+    test_scripts:
       - "npm run test - Run all tests"
       - "npm run test:coverage - Run tests with coverage report"
       - "npm run test:watch - Run tests in watch mode"
@@ -1578,3 +1567,349 @@ flexible_multi_tenant_design:
       - "Enterprise customers"
       - "Multiple organizations"
       - "B2B platforms"
+
+eslint_configuration:
+  core_config:
+    extends:
+      - "@typescript-eslint/recommended"
+      - "@typescript-eslint/recommended-requiring-type-checking"
+      - "airbnb-typescript/base"
+      - "plugin:security/recommended"
+      - "plugin:sonarjs/recommended"
+    parser: "@typescript-eslint/parser"
+    parser_options:
+      ecmaVersion: 2022
+      sourceType: "module"
+      project: "./tsconfig.json"
+
+  enterprise_rules:
+    typescript_specific:
+      "@typescript-eslint/no-any": "error"
+      "@typescript-eslint/explicit-function-return-type": "error"
+      "@typescript-eslint/no-explicit-any": "error"
+      "@typescript-eslint/prefer-nullish-coalescing": "error"
+      "@typescript-eslint/prefer-optional-chain": "error"
+      "@typescript-eslint/strict-boolean-expressions": "error"
+      "@typescript-eslint/no-unsafe-assignment": "error"
+      "@typescript-eslint/no-unsafe-call": "error"
+      "@typescript-eslint/no-unsafe-member-access": "error"
+      "@typescript-eslint/no-unsafe-return": "error"
+
+    security_rules:
+      "security/detect-object-injection": "error"
+      "security/detect-sql-injection": "error"
+      "security/detect-non-literal-fs-filename": "error"
+      "security/detect-eval-with-expression": "error"
+      "security/detect-no-csrf-before-method-override": "error"
+      "security/detect-possible-timing-attacks": "warn"
+
+    code_quality:
+      "sonarjs/cognitive-complexity": ["error", 15]
+      "sonarjs/no-duplicate-string": ["error", 5]
+      "sonarjs/no-identical-functions": "error"
+      "sonarjs/no-redundant-boolean": "error"
+      "sonarjs/prefer-immediate-return": "error"
+      "complexity": ["error", 10]
+      "max-depth": ["error", 4]
+      "max-lines": ["error", 300]
+      "max-params": ["error", 4]
+
+    his_erp_specific:
+      "no-console": "error" # Production logging должен быть через logger
+      "no-debugger": "error"
+      "no-alert": "error"
+      "no-eval": "error"
+      "prefer-const": "error"
+      "no-var": "error"
+      "eqeqeq": "error"
+      "curly": "error"
+
+  husky_integration:
+    pre_commit: "lint-staged"
+    pre_push: "npm run test && npm run lint"
+    commit_msg: "commitizen + conventional commits"
+
+  lint_staged_config: |
+    {
+      "*.{ts,tsx}": [
+        "eslint --fix",
+        "prettier --write",
+        "git add"
+      ],
+      "*.{json,md,yaml,yml}": [
+        "prettier --write",
+        "git add"
+      ]
+    }
+
+testing_strategy:
+  testing_pyramid:
+    unit_tests: "70% - Fast, isolated component testing"
+    integration_tests: "20% - API endpoints and database interactions"
+    e2e_tests: "10% - Critical user workflows"
+
+  unit_testing:
+    framework: "Vitest with @vitest/ui for dev experience"
+    coverage_target: "90% line coverage minimum"
+    test_structure: |
+      tests/
+      ├── unit/
+      │   ├── controllers/
+      │   ├── services/
+      │   ├── repositories/
+      │   ├── middleware/
+      │   └── utils/
+      └── fixtures/
+          ├── users.json
+          ├── roles.json
+          └── mock-data/
+
+    example_test_pattern: |
+      // Example: UserService.test.ts
+      import { describe, it, expect, beforeEach, vi } from 'vitest'
+      import { UserService } from '../src/modules/user/services/UserService'
+
+      describe('UserService', () => {
+        let userService: UserService
+        let mockRepository: MockUserRepository
+        
+        beforeEach(() => {
+          mockRepository = new MockUserRepository()
+          userService = new UserService(mockRepository)
+        })
+        
+        describe('createUser', () => {
+          it('should create user with valid data', async () => {
+            // Arrange
+            const userData = { email: 'test@example.com', name: 'Test User' }
+            
+            // Act
+            const result = await userService.createUser(userData)
+            
+            // Assert
+            expect(result).toMatchObject({
+              id: expect.any(String),
+              email: 'test@example.com',
+              name: 'Test User'
+            })
+          })
+          
+          it('should throw error for duplicate email', async () => {
+            // Test implementation
+          })
+        })
+      })
+
+  integration_testing:
+    framework: "Vitest + Testcontainers"
+    database: "PostgreSQL test containers"
+    approach: "Test real API endpoints with real database"
+    test_structure: |
+      tests/
+      ├── integration/
+      │   ├── auth/
+      │   │   ├── login.test.ts
+      │   │   ├── register.test.ts
+      │   │   └── password-reset.test.ts
+      │   ├── users/
+      │   │   ├── crud.test.ts
+      │   │   ├── permissions.test.ts
+      │   │   └── roles.test.ts
+      │   └── audit/
+      │       ├── logging.test.ts
+      │       └── compliance.test.ts
+
+    example_integration_test: |
+      // Example: API integration test
+      import { describe, it, expect, beforeAll, afterAll } from 'vitest'
+      import { FastifyInstance } from 'fastify'
+      import { buildApp } from '../src/app'
+      import { setupTestDatabase, cleanupTestDatabase } from './helpers/database'
+
+      describe('User API Integration', () => {
+        let app: FastifyInstance
+        let authToken: string
+        
+        beforeAll(async () => {
+          await setupTestDatabase()
+          app = buildApp({ testing: true })
+          await app.ready()
+          
+          // Setup auth token
+          const response = await app.inject({
+            method: 'POST',
+            url: '/auth/login',
+            payload: { email: 'admin@test.com', password: 'password123' }
+          })
+          authToken = response.json().accessToken
+        })
+        
+        afterAll(async () => {
+          await app.close()
+          await cleanupTestDatabase()
+        })
+        
+        it('should create user via API', async () => {
+          const response = await app.inject({
+            method: 'POST',
+            url: '/users',
+            headers: { authorization: `Bearer ${authToken}` },
+            payload: {
+              email: 'newuser@test.com',
+              firstName: 'New',
+              lastName: 'User'
+            }
+          })
+          
+          expect(response.statusCode).toBe(201)
+          expect(response.json()).toMatchObject({
+            id: expect.any(String),
+            email: 'newuser@test.com'
+          })
+        })
+      })
+
+  e2e_testing:
+    framework: "Playwright"
+    scope: "Critical business workflows only"
+    his_erp_workflows:
+      - "User login and dashboard access"
+      - "Patient registration (HIS)"
+      - "Medical record creation and update (HIS)"
+      - "Financial transaction processing (ERP)"
+      - "Inventory management (ERP)"
+      - "Audit trail verification"
+      - "Role-based access control validation"
+
+    example_e2e_test: |
+      // Example: Critical workflow test
+      import { test, expect } from '@playwright/test'
+
+      test('HIS: Complete patient registration workflow', async ({ page }) => {
+        // Login
+        await page.goto('/login')
+        await page.fill('[data-testid="email"]', 'doctor@hospital.com')
+        await page.fill('[data-testid="password"]', 'securePassword123')
+        await page.click('[data-testid="login-button"]')
+        
+        // Navigate to patient registration
+        await page.click('[data-testid="patients-menu"]')
+        await page.click('[data-testid="new-patient"]')
+        
+        // Fill patient form
+        await page.fill('[data-testid="patient-name"]', 'John Doe')
+        await page.fill('[data-testid="patient-id"]', 'P123456')
+        await page.selectOption('[data-testid="patient-gender"]', 'male')
+        
+        // Submit and verify
+        await page.click('[data-testid="save-patient"]')
+        await expect(page.locator('[data-testid="success-message"]')).toBeVisible()
+        
+        // Verify patient appears in list
+        await page.click('[data-testid="patients-list"]')
+        await expect(page.locator('text=John Doe')).toBeVisible()
+      })
+
+  performance_testing:
+    framework: "Artillery + k6"
+    targets:
+      load_testing: "1000 concurrent users"
+      stress_testing: "System breaking point identification"
+      spike_testing: "Sudden traffic burst handling"
+    his_erp_scenarios:
+      - "Patient lookup during peak hours"
+      - "Financial report generation"
+      - "Database backup operations"
+      - "Audit log queries"
+
+  security_testing:
+    framework: "OWASP ZAP + Snyk"
+    automated_scans:
+      - "Dependency vulnerability scanning"
+      - "SQL injection testing"
+      - "XSS prevention validation"
+      - "Authentication bypass attempts"
+      - "Authorization privilege escalation"
+    compliance_testing:
+      - "HIPAA security rule compliance (HIS)"
+      - "SOX data integrity validation (ERP)"
+      - "GDPR data protection verification"
+
+  test_data_management:
+    strategy: "Fixture-based with factory patterns"
+    his_erp_data_sets:
+      - "Patient demographics and medical records"
+      - "User roles and permissions matrix"
+      - "Financial transactions and audit trails"
+      - "Inventory items and stock movements"
+
+    example_test_factory: |
+      // Test data factory
+      export class TestDataFactory {
+        static createPatient(overrides = {}) {
+          return {
+            id: faker.string.uuid(),
+            patientId: faker.string.alphanumeric(8),
+            firstName: faker.person.firstName(),
+            lastName: faker.person.lastName(),
+            dateOfBirth: faker.date.past({ years: 50 }),
+            gender: faker.helpers.arrayElement(['male', 'female', 'other']),
+            ...overrides
+          }
+        }
+        
+        static createMedicalRecord(patientId: string, overrides = {}) {
+          return {
+            id: faker.string.uuid(),
+            patientId,
+            diagnosis: faker.lorem.sentence(),
+            treatment: faker.lorem.paragraph(),
+            doctorId: faker.string.uuid(),
+            createdAt: faker.date.recent(),
+            ...overrides
+          }
+        }
+      }
+
+  ci_cd_integration:
+    github_actions: |
+      name: Test Suite
+      on: [push, pull_request]
+      jobs:
+        test:
+          runs-on: ubuntu-latest
+          services:
+            postgres:
+              image: postgres:15
+              env:
+                POSTGRES_PASSWORD: test
+              options: >-
+                --health-cmd pg_isready
+                --health-interval 10s
+                --health-timeout 5s
+                --health-retries 5
+          steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                node-version: 22
+            - run: npm ci
+            - run: npm run lint
+            - run: npm run test:unit
+            - run: npm run test:integration
+            - run: npm run test:e2e
+            - run: npm run test:security
+
+  coverage_requirements:
+    minimum_coverage: "90% overall"
+    critical_modules: "95% coverage required"
+    his_critical_modules:
+      - "Patient data handling"
+      - "Medical record security"
+      - "Audit logging"
+      - "User authentication/authorization"
+    erp_critical_modules:
+      - "Financial calculations"
+      - "Inventory tracking"
+      - "Transaction processing"
+      - "Compliance reporting"
