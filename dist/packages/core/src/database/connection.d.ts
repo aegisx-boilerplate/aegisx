@@ -33,3 +33,4 @@ export declare function rollbackMigration(): Promise<void>;
  * Run database seeds
  */
 export declare function runSeeds(): Promise<void>;
+//# sourceMappingURL=connection.d.ts.map

@@ -13,3 +13,4 @@ export interface Permission extends BaseEntity {
     action: string;
     scope?: 'own' | 'dept' | 'all';
 }
+//# sourceMappingURL=rbac.d.ts.map

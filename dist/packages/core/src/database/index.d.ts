@@ -10,3 +10,4 @@ export * from './models';
 export * from './migrations';
 export * from './seeds';
 export * from './utils';
+//# sourceMappingURL=index.d.ts.map

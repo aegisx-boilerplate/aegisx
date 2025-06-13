@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../packages/core/src/user/index.ts"],
+  "sourcesContent": ["/**\n * User Management Module\n *\n * Provides user CRUD operations, profile management,\n * validation, and user-related utilities.\n */\n\n// Services\n// TODO: Phase 2.5 - Implement user services\n// export * from './UserService';\n\n// Models\n// TODO: Phase 2.5 - Implement user models\n// export * from './UserModel';\n\n// Types\n// TODO: Phase 2.5 - Implement user types\n// export * from './types';\n\n// Validation\n// TODO: Phase 2.5 - Implement user validation\n// export * from './validation';\n\n// Placeholder export to make this a valid module\nexport const USER_MODULE_PLACEHOLDER = 'user-module'; "],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAwBO,MAAM,0BAA0B;",
+  "names": []
+}

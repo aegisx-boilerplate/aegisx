@@ -10,22 +10,36 @@
  */
 
 // === Authentication System ===
-export * from './auth';
+// Temporarily disabled due to ES module issues
+// export * from './auth';
 
 // === Authorization System (RBAC) ===
-export * from './rbac';
+// export * from './rbac';
 
 // === User Management ===
-export * from './user';
+// export * from './user';
 
 // === Database Layer ===
-export * from './database';
+// export * from './database';
 
 // === Utilities ===
-export * from './utils';
+// export * from './utils';
 
 // === TypeScript Types ===
-export * from './types';
+// export { 
+//   LoginRequest, 
+//   LoginResponse, 
+//   JwtPayload as JwtPayloadType 
+// } from './types/auth';
+// export * from './types/core';
+// export * from './types/rbac';
+// export * from './types/user';
+// export * from './types/database';
+// export * from './types/config';
 
 // === Core Configuration ===
-export { createAegisX } from './core';
+// Temporarily disabled
+// export { createAegisX } from './core';
+
+// === Simple Core (for testing) ===
+export * from './simple';

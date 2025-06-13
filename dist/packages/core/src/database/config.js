@@ -64,3 +64,4 @@ exports.testDatabaseConfig = {
         max: 5
     }
 };
+//# sourceMappingURL=config.js.map

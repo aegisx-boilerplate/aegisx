@@ -23,7 +23,20 @@ export declare class SessionModel {
      */
     static findByToken(token: string): Promise<Session | null>;
     /**
-     * Create new session
-     */
+ * Create new session
+ */
     static create(sessionData: Omit<Session, 'id' | 'createdAt' | 'updatedAt'>): Promise<Session>;
+    /**
+     * Update session
+     */
+    static update(id: ID, sessionData: Partial<Session>): Promise<Session | null>;
+    /**
+     * Delete session
+     */
+    static delete(id: ID): Promise<boolean>;
+    /**
+     * Find session by ID
+     */
+    static findById(id: ID): Promise<Session | null>;
 }
+//# sourceMappingURL=SessionModel.d.ts.map

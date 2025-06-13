@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../packages/core/src/database/models/index.ts"],
+  "sourcesContent": ["/**\n * Database Models\n * \n * Centralized exports for all database models\n */\n\nexport * from './UserModel';\nexport * from './RoleModel';\nexport * from './PermissionModel';\nexport * from './SessionModel'; "],
+  "mappings": ";;;;;;;;;;;;;;;AAAA;AAAA;AAMA,2BAAc,wBANd;AAOA,2BAAc,wBAPd;AAQA,2BAAc,8BARd;AASA,2BAAc,2BATd;",
+  "names": []
+}

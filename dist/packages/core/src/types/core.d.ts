@@ -22,3 +22,4 @@ export interface PaginatedResult<T> {
     limit: number;
     totalPages: number;
 }
+//# sourceMappingURL=core.d.ts.map

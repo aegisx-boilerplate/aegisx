@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../packages/core/src/database/index.ts"],
+  "sourcesContent": ["/**\n * Database Module\n *\n * Provides database connection, models, migrations,\n * and query utilities using Knex.js.\n */\n\n// Connection & Configuration\nexport * from './connection';\nexport * from './config';\n\n// Models\nexport * from './models';\n\n// Migration utilities\nexport * from './migrations';\n\n// Seed utilities  \nexport * from './seeds';\n\n// Database utilities\nexport * from './utils'; "],
+  "mappings": ";;;;;;;;;;;;;;;AAAA;AAAA;AAQA,6BAAc,yBARd;AASA,6BAAc,qBATd;AAYA,6BAAc,qBAZd;AAeA,6BAAc,yBAfd;AAkBA,6BAAc,oBAlBd;AAqBA,6BAAc,oBArBd;",
+  "names": []
+}

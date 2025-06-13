@@ -6,8 +6,7 @@
  */
 
 // Password utilities
-// TODO: Phase 2.3 - Implement password utilities
-// export * from './password';
+export * from './password';
 
 // Validation utilities  
 // TODO: Phase 2.6 - Implement validation utilities
@@ -27,7 +26,4 @@
 
 // Helpers
 // TODO: Phase 2.6 - Implement helpers
-// export * from './helpers';
-
-// Placeholder export to make this a valid module
-export const UTILS_MODULE_PLACEHOLDER = 'utils-module'; 
+// export * from './helpers'; 

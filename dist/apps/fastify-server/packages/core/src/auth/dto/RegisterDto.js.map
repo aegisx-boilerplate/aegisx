@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../packages/core/src/auth/dto/RegisterDto.ts"],
+  "sourcesContent": ["export interface RegisterDto {\n    email: string;\n    password: string;\n    firstName: string;\n    lastName: string;\n    phoneNumber?: string;\n} "],
+  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

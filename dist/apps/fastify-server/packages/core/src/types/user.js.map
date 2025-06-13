@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../packages/core/src/types/user.ts"],
+  "sourcesContent": ["/**\n * User Types\n */\n\nimport type { ID, BaseEntity } from './core';\nimport type { Role } from './rbac';\n\nexport interface User extends BaseEntity {\n    email: string;\n    firstName: string;\n    lastName: string;\n    passwordHash: string;\n    roles?: Role[];\n    isActive: boolean;\n    lastLoginAt?: Date;\n}\n\n// TODO: Add more user types "],
+  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

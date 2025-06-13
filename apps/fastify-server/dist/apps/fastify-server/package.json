@@ -1,0 +1,10 @@
+{
+  "name": "fastify-server",
+  "version": "0.0.1",
+  "dependencies": {
+    "fastify": "5.2.2",
+    "fastify-plugin": "5.0.1"
+  },
+  "main": "./main.js",
+  "type": "commonjs"
+}

@@ -88,3 +88,4 @@ async function runSeeds() {
     await db.seed.run();
     console.log('🌱 Database seeds completed');
 }
+//# sourceMappingURL=connection.js.map

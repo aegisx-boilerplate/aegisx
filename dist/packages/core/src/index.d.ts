@@ -8,10 +8,5 @@
  * @author AegisX Team
  * @version 0.0.1
  */
-export * from './auth';
-export * from './rbac';
-export * from './user';
-export * from './database';
-export * from './utils';
-export * from './types';
-export { createAegisX } from './core';
+export * from './simple';
+//# sourceMappingURL=index.d.ts.map

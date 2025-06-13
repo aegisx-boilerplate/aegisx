@@ -17,3 +17,4 @@ export declare class PermissionModel {
      */
     static findByName(name: string): Promise<Permission | null>;
 }
+//# sourceMappingURL=PermissionModel.d.ts.map

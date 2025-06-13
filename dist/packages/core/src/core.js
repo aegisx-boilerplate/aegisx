@@ -71,8 +71,19 @@ async function createAegisX(config) {
     console.log('🗄️ Connecting to database...');
     const { initializeDatabase } = await Promise.resolve().then(() => __importStar(require('./database')));
     await initializeDatabase(config.database);
-    // TODO: Phase 2.3 - Setup JWT service
+    // Phase 2.3 - Setup JWT service
     console.log('🔑 Setting up authentication...');
+    // Initialize default JWT config if not provided
+    const jwtConfig = config.jwt || {
+        secret: process.env['JWT_SECRET'] || 'aegisx-default-secret-change-in-production',
+        expiresIn: '15m',
+        refreshSecret: process.env['JWT_REFRESH_SECRET'],
+        refreshExpiresIn: '7d'
+    };
+    // Create authentication service instance for initialization
+    const { AuthService } = await Promise.resolve().then(() => __importStar(require('./auth')));
+    const authService = new AuthService(jwtConfig, undefined, undefined);
+    console.log('✓ Authentication system initialized');
     // TODO: Phase 2.4 - Initialize RBAC system
     console.log('🛡️  Setting up authorization...');
     // TODO: Phase 2.5 - Initialize user management
@@ -92,3 +103,4 @@ function isInitialized() {
     // TODO: Implement initialization check
     return false;
 }
+//# sourceMappingURL=core.js.map

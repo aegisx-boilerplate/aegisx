@@ -1,0 +1,66 @@
+{
+  "name": "fastify-server",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/fastify-server/src",
+  "projectType": "application",
+  "tags": [],
+  "implicitDependencies": ["core"],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/fastify-server",
+        "format": ["cjs"],
+        "bundle": false,
+        "main": "apps/fastify-server/src/main.ts",
+        "tsConfig": "apps/fastify-server/tsconfig.app.json",
+        "assets": ["apps/fastify-server/src/assets"],
+        "generatePackageJson": true,
+        "external": ["@aegisx/core"],
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "fastify-server:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "fastify-server:build:development"
+        },
+        "production": {
+          "buildTarget": "fastify-server:build:production"
+        }
+      }
+    },
+    "test": {
+      "options": {
+        "passWithNoTests": true
+      }
+    }
+  }
+}

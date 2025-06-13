@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../apps/fastify-server/src/app/routes/root.ts"],
+  "sourcesContent": ["import { FastifyInstance } from 'fastify';\n\nexport default async function (fastify: FastifyInstance) {\n  fastify.get('/', async function () {\n    return { message: 'Hello Fastify Server!' };\n  });\n\n  // Simple test route\n  fastify.get('/test', async function () {\n    return {\n      status: 'ok',\n      message: 'Fastify server is working!',\n      timestamp: new Date().toISOString()\n    };\n  });\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAEA,eAAO,aAAwB,SAA0B;AACvD,UAAQ,IAAI,KAAK,iBAAkB;AACjC,WAAO,EAAE,SAAS,wBAAwB;AAAA,EAC5C,CAAC;AAGD,UAAQ,IAAI,SAAS,iBAAkB;AACrC,WAAO;AAAA,MACL,QAAQ;AAAA,MACR,SAAS;AAAA,MACT,YAAW,oBAAI,KAAK,GAAE,YAAY;AAAA,IACpC;AAAA,EACF,CAAC;AACH;",
+  "names": []
+}

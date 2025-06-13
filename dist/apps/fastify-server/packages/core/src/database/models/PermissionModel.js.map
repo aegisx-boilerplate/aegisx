@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../packages/core/src/database/models/PermissionModel.ts"],
+  "sourcesContent": ["/**\n * Permission Database Model\n */\n\nimport { getDatabase } from '../connection';\nimport type { Permission } from '../../types/rbac';\nimport type { ID } from '../../types/core';\n\nexport const PERMISSION_TABLE = 'permissions';\n\n/**\n * Permission Model for database operations\n */\nexport class PermissionModel {\n    /**\n     * Find permission by ID\n     */\n    static async findById(id: ID): Promise<Permission | null> {\n        const db = getDatabase();\n        const permission = await db(PERMISSION_TABLE).where({ id }).first();\n        return permission || null;\n    }\n\n    /**\n     * Find permission by name\n     */\n    static async findByName(name: string): Promise<Permission | null> {\n        const db = getDatabase();\n        const permission = await db(PERMISSION_TABLE).where({ name }).first();\n        return permission || null;\n    }\n} "],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAIA,wBAA4B;AAIrB,MAAM,mBAAmB;AAKzB,MAAM,gBAAgB;AAAA;AAAA;AAAA;AAAA,EAIzB,aAAa,SAAS,IAAoC;AACtD,UAAM,SAAK,+BAAY;AACvB,UAAM,aAAa,MAAM,GAAG,gBAAgB,EAAE,MAAM,EAAE,GAAG,CAAC,EAAE,MAAM;AAClE,WAAO,cAAc;AAAA,EACzB;AAAA;AAAA;AAAA;AAAA,EAKA,aAAa,WAAW,MAA0C;AAC9D,UAAM,SAAK,+BAAY;AACvB,UAAM,aAAa,MAAM,GAAG,gBAAgB,EAAE,MAAM,EAAE,KAAK,CAAC,EAAE,MAAM;AACpE,WAAO,cAAc;AAAA,EACzB;AACJ;",
+  "names": []
+}

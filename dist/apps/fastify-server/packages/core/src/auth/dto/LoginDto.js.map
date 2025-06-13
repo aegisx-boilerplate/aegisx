@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../packages/core/src/auth/dto/LoginDto.ts"],
+  "sourcesContent": ["export interface LoginDto {\n    email: string;\n    password: string;\n} "],
+  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

@@ -4,3 +4,4 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 // TODO: Add Knex types and database model types 
+//# sourceMappingURL=database.js.map

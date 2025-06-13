@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../packages/core/src/database/migrations/index.ts"],
+  "sourcesContent": ["/**\n * Database Migrations\n */\n\nexport * from './001_create_users_table'; "],
+  "mappings": ";;;;;;;;;;;;;;;AAAA;AAAA;AAIA,+BAAc,qCAJd;",
+  "names": []
+}

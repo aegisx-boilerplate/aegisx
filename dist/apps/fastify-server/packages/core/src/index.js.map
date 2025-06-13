@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../packages/core/src/index.ts"],
+  "sourcesContent": ["/**\n * @aegisx/core - Enterprise Authentication & Authorization Core Package\n * \n * Main exports for the AegisX authentication and authorization system.\n * This package provides reusable authentication, RBAC, and user management\n * functionality that can be integrated into any Node.js application.\n * \n * @author AegisX Team\n * @version 0.0.1\n */\n\n// === Authentication System ===\n// Temporarily disabled due to ES module issues\n// export * from './auth';\n\n// === Authorization System (RBAC) ===\n// export * from './rbac';\n\n// === User Management ===\n// export * from './user';\n\n// === Database Layer ===\n// export * from './database';\n\n// === Utilities ===\n// export * from './utils';\n\n// === TypeScript Types ===\n// export { \n//   LoginRequest, \n//   LoginResponse, \n//   JwtPayload as JwtPayloadType \n// } from './types/auth';\n// export * from './types/core';\n// export * from './types/rbac';\n// export * from './types/user';\n// export * from './types/database';\n// export * from './types/config';\n\n// === Core Configuration ===\n// Temporarily disabled\n// export { createAegisX } from './core';\n\n// === Simple Core (for testing) ===\nexport * from './simple';\n"],
+  "mappings": ";;;;;;;;;;;;;;;AAAA;AAAA;AA4CA,wBAAc,qBA5Cd;",
+  "names": []
+}

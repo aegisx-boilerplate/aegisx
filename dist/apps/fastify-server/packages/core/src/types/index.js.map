@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../packages/core/src/types/index.ts"],
+  "sourcesContent": ["/**\n * TypeScript Types Module\n * \n * Centralized type definitions for the entire AegisX core package.\n * All interfaces, types, and enums are defined here.\n */\n\n// Core types\nexport * from './core';\n\n// Authentication types\nexport * from './auth';\n\n// RBAC types\nexport * from './rbac';\n\n// User types\nexport * from './user';\n\n// Database types\nexport * from './database';\n\n// Configuration types\nexport * from './config'; "],
+  "mappings": ";;;;;;;;;;;;;;;AAAA;AAAA;AAQA,0BAAc,mBARd;AAWA,0BAAc,mBAXd;AAcA,0BAAc,mBAdd;AAiBA,0BAAc,mBAjBd;AAoBA,0BAAc,uBApBd;AAuBA,0BAAc,qBAvBd;",
+  "names": []
+}

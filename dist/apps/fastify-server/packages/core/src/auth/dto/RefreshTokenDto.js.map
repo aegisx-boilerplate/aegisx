@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../packages/core/src/auth/dto/RefreshTokenDto.ts"],
+  "sourcesContent": ["export interface RefreshTokenDto {\n    refreshToken: string;\n} "],
+  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

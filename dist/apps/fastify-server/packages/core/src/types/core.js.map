@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../packages/core/src/types/core.ts"],
+  "sourcesContent": ["/**\n * Core Types\n * \n * Basic type definitions used throughout AegisX.\n */\n\nexport type ID = string | number;\n\nexport interface BaseEntity {\n    id: ID;\n    createdAt: Date;\n    updatedAt: Date;\n}\n\nexport interface PaginationOptions {\n    page?: number;\n    limit?: number;\n    sortBy?: string;\n    sortOrder?: 'asc' | 'desc';\n}\n\nexport interface PaginatedResult<T> {\n    data: T[];\n    total: number;\n    page: number;\n    limit: number;\n    totalPages: number;\n}\n\n// TODO: Add more core types as needed "],
+  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

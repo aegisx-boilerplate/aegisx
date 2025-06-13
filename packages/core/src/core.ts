@@ -38,8 +38,22 @@ export async function createAegisX(config: AegisXConfig): Promise<void> {
     const { initializeDatabase } = await import('./database');
     await initializeDatabase(config.database);
 
-    // TODO: Phase 2.3 - Setup JWT service
+    // Phase 2.3 - Setup JWT service
     console.log('🔑 Setting up authentication...');
+
+    // Initialize default JWT config if not provided
+    const jwtConfig = config.jwt || {
+        secret: process.env['JWT_SECRET'] || 'aegisx-default-secret-change-in-production',
+        expiresIn: '15m',
+        refreshSecret: process.env['JWT_REFRESH_SECRET'],
+        refreshExpiresIn: '7d'
+    };
+
+    // Create authentication service instance for initialization
+    const { AuthService } = await import('./auth');
+    const authService = new AuthService(jwtConfig, undefined, undefined);
+
+    console.log('✓ Authentication system initialized');
 
     // TODO: Phase 2.4 - Initialize RBAC system
     console.log('🛡️  Setting up authorization...');

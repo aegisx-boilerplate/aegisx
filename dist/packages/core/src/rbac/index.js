@@ -20,3 +20,4 @@ exports.RBAC_MODULE_PLACEHOLDER = void 0;
 // export * from './types';
 // Placeholder export to make this a valid module
 exports.RBAC_MODULE_PLACEHOLDER = 'rbac-module';
+//# sourceMappingURL=index.js.map

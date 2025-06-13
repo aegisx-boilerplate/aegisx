@@ -10,3 +10,4 @@ export * from './rbac';
 export * from './user';
 export * from './database';
 export * from './config';
+//# sourceMappingURL=index.d.ts.map

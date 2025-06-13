@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../packages/core/src/database/models/RoleModel.ts"],
+  "sourcesContent": ["/**\n * Role Database Model\n */\n\nimport { getDatabase } from '../connection';\nimport type { Role } from '../../types/rbac';\nimport type { ID } from '../../types/core';\n\nexport const ROLE_TABLE = 'roles';\n\n/**\n * Role Model for database operations\n */\nexport class RoleModel {\n    /**\n     * Find role by ID\n     */\n    static async findById(id: ID): Promise<Role | null> {\n        const db = getDatabase();\n        const role = await db(ROLE_TABLE).where({ id }).first();\n        return role || null;\n    }\n\n    /**\n     * Find role by name\n     */\n    static async findByName(name: string): Promise<Role | null> {\n        const db = getDatabase();\n        const role = await db(ROLE_TABLE).where({ name }).first();\n        return role || null;\n    }\n} "],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAIA,wBAA4B;AAIrB,MAAM,aAAa;AAKnB,MAAM,UAAU;AAAA;AAAA;AAAA;AAAA,EAInB,aAAa,SAAS,IAA8B;AAChD,UAAM,SAAK,+BAAY;AACvB,UAAM,OAAO,MAAM,GAAG,UAAU,EAAE,MAAM,EAAE,GAAG,CAAC,EAAE,MAAM;AACtD,WAAO,QAAQ;AAAA,EACnB;AAAA;AAAA;AAAA;AAAA,EAKA,aAAa,WAAW,MAAoC;AACxD,UAAM,SAAK,+BAAY;AACvB,UAAM,OAAO,MAAM,GAAG,UAAU,EAAE,MAAM,EAAE,KAAK,CAAC,EAAE,MAAM;AACxD,WAAO,QAAQ;AAAA,EACnB;AACJ;",
+  "names": []
+}

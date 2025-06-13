@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../packages/core/src/rbac/index.ts"],
+  "sourcesContent": ["/**\n * RBAC (Role-Based Access Control) Module\n *\n * Provides role and permission management, authorization guards,\n * and permission checking functionality.\n */\n\n// Services\n// TODO: Phase 2.4 - Implement RBAC services\n// export * from './RoleService';\n// export * from './PermissionService';\n\n// Guards & Middleware\n// TODO: Phase 2.4 - Implement RBAC guards and middleware\n// export * from './guards';\n// export * from './middleware';\n\n// Types\n// TODO: Phase 2.4 - Implement RBAC types\n// export * from './types';\n\n// Placeholder export to make this a valid module\nexport const RBAC_MODULE_PLACEHOLDER = 'rbac-module'; "],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAsBO,MAAM,0BAA0B;",
+  "names": []
+}

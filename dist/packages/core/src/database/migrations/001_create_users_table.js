@@ -25,3 +25,4 @@ async function up(knex) {
 async function down(knex) {
     return knex.schema.dropTable('users');
 }
+//# sourceMappingURL=001_create_users_table.js.map

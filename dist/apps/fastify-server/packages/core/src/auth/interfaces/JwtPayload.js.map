@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../packages/core/src/auth/interfaces/JwtPayload.ts"],
+  "sourcesContent": ["export interface JwtPayload {\n    sub: string; // User ID\n    email: string;\n    roles: string[];\n    iat?: number; // Issued at\n    exp?: number; // Expiration time\n} "],
+  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

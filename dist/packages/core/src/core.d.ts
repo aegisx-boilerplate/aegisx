@@ -37,3 +37,4 @@ export declare function getVersion(): string;
  * Check if AegisX is properly initialized
  */
 export declare function isInitialized(): boolean;
+//# sourceMappingURL=core.d.ts.map

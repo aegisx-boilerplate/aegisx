@@ -28,3 +28,4 @@ class PermissionModel {
     }
 }
 exports.PermissionModel = PermissionModel;
+//# sourceMappingURL=PermissionModel.js.map

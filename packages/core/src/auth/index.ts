@@ -5,12 +5,29 @@
  * password management, and session handling.
  */
 
+// Module
+// export * from './AuthModule';
+
+// Controllers
+export * from './controllers/AuthController';
+
 // Services
-// TODO: Phase 2.3 - Implement authentication services
-// export * from './AuthService';
-// export * from './JwtService';
-// export * from './PasswordService';
-// export * from './SessionService';
+export * from './AuthService';
+export * from './JwtService';
+export { JwtTokens } from './JwtService';
+export * from './PasswordService';
+export * from './SessionService';
+
+// Guards
+export * from './guards/JwtAuthGuard';
+
+// Interfaces
+export * from './interfaces/JwtPayload';
+
+// DTOs
+export * from './dto/LoginDto';
+export * from './dto/RegisterDto';
+export * from './dto/RefreshTokenDto';
 
 // Middleware
 // TODO: Phase 2.3 - Implement authentication middleware
@@ -18,7 +35,4 @@
 
 // Types
 // TODO: Phase 2.3 - Implement auth types
-// export * from './types';
-
-// Placeholder export to make this a valid module
-export const AUTH_MODULE_PLACEHOLDER = 'auth-module'; 
+// export * from './types'; 

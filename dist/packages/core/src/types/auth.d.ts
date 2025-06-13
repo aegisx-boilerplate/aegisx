@@ -16,6 +16,8 @@ export interface JwtPayload {
     userId: ID;
     email: string;
     roles: string[];
+    type: 'access' | 'refresh';
     iat?: number;
     exp?: number;
 }
+//# sourceMappingURL=auth.d.ts.map

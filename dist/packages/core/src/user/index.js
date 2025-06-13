@@ -21,3 +21,4 @@ exports.USER_MODULE_PLACEHOLDER = void 0;
 // export * from './validation';
 // Placeholder export to make this a valid module
 exports.USER_MODULE_PLACEHOLDER = 'user-module';
+//# sourceMappingURL=index.js.map

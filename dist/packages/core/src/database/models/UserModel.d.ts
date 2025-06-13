@@ -37,3 +37,4 @@ export declare class UserModel {
      */
     static count(): Promise<number>;
 }
+//# sourceMappingURL=UserModel.d.ts.map

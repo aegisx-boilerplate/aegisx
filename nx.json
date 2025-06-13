@@ -17,6 +17,11 @@
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["default", "^default"]
+    },
+    "@nx/esbuild:esbuild": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["default", "^default"]
     }
   },
   "workspaceLayout": {
@@ -42,7 +47,8 @@
       "plugin": "@nx/jest/plugin",
       "options": {
         "targetName": "test"
-      }
+      },
+      "exclude": ["fastify-server-e2e/**/*", "apps/fastify-server-e2e/**/*"]
     }
   ],
   "release": {

@@ -17,3 +17,4 @@ export declare const defaultDatabaseConfig: DatabaseConfig;
  * Test database configuration
  */
 export declare const testDatabaseConfig: DatabaseConfig;
+//# sourceMappingURL=config.d.ts.map

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../packages/core/src/auth/guards/JwtAuthGuard.ts"],
+  "sourcesContent": ["import { FastifyRequest, FastifyReply } from 'fastify';\nimport { JwtService } from '../JwtService';\n\nexport async function JwtAuthGuard(\n    request: FastifyRequest,\n    reply: FastifyReply\n): Promise<void> {\n    try {\n        const token = request.headers.authorization?.split(' ')[1];\n        if (!token) {\n            throw new Error('No token provided');\n        }\n\n        const jwtService = new JwtService(request.server, { secret: 'temp-secret' });\n        const payload = await jwtService.verifyToken(token);\n\n        // TODO: Implement proper user attachment to request\n        // request.user = payload;\n        // Temporary implementation - store in headers or context\n    } catch (error) {\n        await reply.code(401).send({ message: 'Invalid token' });\n    }\n} "],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AACA,wBAA2B;AAE3B,eAAsB,aAClB,SACA,OACa;AACb,MAAI;AACA,UAAM,QAAQ,QAAQ,QAAQ,eAAe,MAAM,GAAG,EAAE,CAAC;AACzD,QAAI,CAAC,OAAO;AACR,YAAM,IAAI,MAAM,mBAAmB;AAAA,IACvC;AAEA,UAAM,aAAa,IAAI,6BAAW,QAAQ,QAAQ,EAAE,QAAQ,cAAc,CAAC;AAC3E,UAAM,UAAU,MAAM,WAAW,YAAY,KAAK;AAAA,EAKtD,SAAS,OAAO;AACZ,UAAM,MAAM,KAAK,GAAG,EAAE,KAAK,EAAE,SAAS,gBAAgB,CAAC;AAAA,EAC3D;AACJ;",
+  "names": []
+}

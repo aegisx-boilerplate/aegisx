@@ -24,19 +24,31 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createAegisX = void 0;
 // === Authentication System ===
-__exportStar(require("./auth"), exports);
+// Temporarily disabled due to ES module issues
+// export * from './auth';
 // === Authorization System (RBAC) ===
-__exportStar(require("./rbac"), exports);
+// export * from './rbac';
 // === User Management ===
-__exportStar(require("./user"), exports);
+// export * from './user';
 // === Database Layer ===
-__exportStar(require("./database"), exports);
+// export * from './database';
 // === Utilities ===
-__exportStar(require("./utils"), exports);
+// export * from './utils';
 // === TypeScript Types ===
-__exportStar(require("./types"), exports);
+// export { 
+//   LoginRequest, 
+//   LoginResponse, 
+//   JwtPayload as JwtPayloadType 
+// } from './types/auth';
+// export * from './types/core';
+// export * from './types/rbac';
+// export * from './types/user';
+// export * from './types/database';
+// export * from './types/config';
 // === Core Configuration ===
-var core_1 = require("./core");
-Object.defineProperty(exports, "createAegisX", { enumerable: true, get: function () { return core_1.createAegisX; } });
+// Temporarily disabled
+// export { createAegisX } from './core';
+// === Simple Core (for testing) ===
+__exportStar(require("./simple"), exports);
+//# sourceMappingURL=index.js.map

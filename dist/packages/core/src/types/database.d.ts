@@ -8,3 +8,4 @@ export interface DatabaseConnectionOptions {
     user: string;
     password: string;
 }
+//# sourceMappingURL=database.d.ts.map

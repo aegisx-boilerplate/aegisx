@@ -5,3 +5,4 @@
  * and permission checking functionality.
  */
 export declare const RBAC_MODULE_PLACEHOLDER = "rbac-module";
+//# sourceMappingURL=index.d.ts.map

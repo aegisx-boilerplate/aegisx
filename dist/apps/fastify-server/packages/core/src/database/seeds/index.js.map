@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../packages/core/src/database/seeds/index.ts"],
+  "sourcesContent": ["/**\n * Database Seeds\n */\n\n// TODO: Add seed files when needed\nexport const SEEDS_PLACEHOLDER = 'seeds'; "],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAKO,MAAM,oBAAoB;",
+  "names": []
+}

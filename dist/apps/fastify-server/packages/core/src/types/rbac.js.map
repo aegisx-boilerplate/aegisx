@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../packages/core/src/types/rbac.ts"],
+  "sourcesContent": ["/**\n * RBAC Types\n */\n\nimport type { ID, BaseEntity } from './core';\n\nexport interface Role extends BaseEntity {\n    name: string;\n    description?: string;\n    permissions: Permission[];\n}\n\nexport interface Permission extends BaseEntity {\n    name: string;\n    resource: string;\n    action: string;\n    scope?: 'own' | 'dept' | 'all';\n}\n\n// TODO: Add more RBAC types "],
+  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

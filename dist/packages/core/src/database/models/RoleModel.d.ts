@@ -17,3 +17,4 @@ export declare class RoleModel {
      */
     static findByName(name: string): Promise<Role | null>;
 }
+//# sourceMappingURL=RoleModel.d.ts.map

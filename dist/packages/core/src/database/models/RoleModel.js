@@ -28,3 +28,4 @@ class RoleModel {
     }
 }
 exports.RoleModel = RoleModel;
+//# sourceMappingURL=RoleModel.js.map

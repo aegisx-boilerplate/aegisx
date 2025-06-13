@@ -19,11 +19,9 @@ export interface DatabaseConfig {
 
 export interface JwtConfig {
     secret: string;
-    algorithm?: 'HS256' | 'HS384' | 'HS512' | 'RS256' | 'RS384' | 'RS512';
     expiresIn: string;
+    refreshSecret?: string;
     refreshExpiresIn?: string;
-    issuer?: string;
-    audience?: string;
 }
 
 export interface SecurityConfig {
@@ -42,8 +40,20 @@ export interface MultiTenantConfig {
 
 export interface AegisXConfig {
     database: DatabaseConfig;
-    jwt: JwtConfig;
+    jwt?: JwtConfig;
     security?: SecurityConfig;
     multiTenant?: MultiTenantConfig;
     debug?: boolean;
+    auth?: {
+        passwordPolicy?: {
+            minLength?: number;
+            requireUppercase?: boolean;
+            requireLowercase?: boolean;
+            requireNumbers?: boolean;
+            requireSpecialChars?: boolean;
+        };
+        sessionTimeout?: string;
+        maxFailedAttempts?: number;
+        lockoutDuration?: string;
+    };
 } 

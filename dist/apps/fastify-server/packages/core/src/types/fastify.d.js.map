@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../packages/core/src/types/fastify.d.ts"],
+  "sourcesContent": ["import '@fastify/jwt';\nimport { JwtPayload } from '../auth/types/jwt.types';\n\ndeclare module 'fastify' {\n    interface FastifyRequest {\n        user?: JwtPayload;\n    }\n\n    interface FastifyInstance {\n        jwt: {\n            sign(payload: JwtPayload, options?: { expiresIn?: string }): Promise<string>;\n            verify<T = JwtPayload>(token: string): Promise<T>;\n        };\n    }\n} "],
+  "mappings": ";AAAA,iBAAO;",
+  "names": []
+}

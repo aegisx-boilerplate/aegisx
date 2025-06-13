@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../packages/core/src/types/config.ts"],
+  "sourcesContent": ["/**\n * Configuration Types\n * \n * Type definitions for AegisX configuration options.\n */\n\nexport interface DatabaseConfig {\n    host: string;\n    port: number;\n    database: string;\n    user: string;\n    password: string;\n    ssl?: boolean;\n    pool?: {\n        min: number;\n        max: number;\n    };\n}\n\nexport interface JwtConfig {\n    secret: string;\n    expiresIn: string;\n    refreshSecret?: string;\n    refreshExpiresIn?: string;\n}\n\nexport interface SecurityConfig {\n    bcryptRounds?: number;\n    rateLimiting?: boolean;\n    sessionTimeout?: string;\n    maxLoginAttempts?: number;\n    lockoutDuration?: string;\n}\n\nexport interface MultiTenantConfig {\n    enabled: boolean;\n    defaultTenant?: string;\n    tenantIdField?: string;\n}\n\nexport interface AegisXConfig {\n    database: DatabaseConfig;\n    jwt?: JwtConfig;\n    security?: SecurityConfig;\n    multiTenant?: MultiTenantConfig;\n    debug?: boolean;\n    auth?: {\n        passwordPolicy?: {\n            minLength?: number;\n            requireUppercase?: boolean;\n            requireLowercase?: boolean;\n            requireNumbers?: boolean;\n            requireSpecialChars?: boolean;\n        };\n        sessionTimeout?: string;\n        maxFailedAttempts?: number;\n        lockoutDuration?: string;\n    };\n} "],
+  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}

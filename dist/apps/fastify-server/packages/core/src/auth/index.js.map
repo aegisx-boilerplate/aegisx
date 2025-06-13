@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../packages/core/src/auth/index.ts"],
+  "sourcesContent": ["/**\n * Authentication Module\n *\n * Provides JWT-based authentication, OAuth integration,\n * password management, and session handling.\n */\n\n// Module\n// export * from './AuthModule';\n\n// Controllers\nexport * from './controllers/AuthController';\n\n// Services\nexport * from './AuthService';\nexport * from './JwtService';\nexport { JwtTokens } from './JwtService';\nexport * from './PasswordService';\nexport * from './SessionService';\n\n// Guards\nexport * from './guards/JwtAuthGuard';\n\n// Interfaces\nexport * from './interfaces/JwtPayload';\n\n// DTOs\nexport * from './dto/LoginDto';\nexport * from './dto/RegisterDto';\nexport * from './dto/RefreshTokenDto';\n\n// Middleware\n// TODO: Phase 2.3 - Implement authentication middleware\n// export * from './middleware';\n\n// Types\n// TODO: Phase 2.3 - Implement auth types\n// export * from './types'; "],
+  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAWA,yBAAc,yCAXd;AAcA,yBAAc,0BAdd;AAeA,yBAAc,yBAfd;AAgBA,wBAA0B;AAC1B,yBAAc,8BAjBd;AAkBA,yBAAc,6BAlBd;AAqBA,yBAAc,kCArBd;AAwBA,yBAAc,oCAxBd;AA2BA,yBAAc,2BA3Bd;AA4BA,yBAAc,8BA5Bd;AA6BA,yBAAc,kCA7Bd;",
+  "names": []
+}

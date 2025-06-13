@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@aegisx/core": [
+        "dist/packages/core"
+      ]
+    }
+  },
+  "extends": "../../../../apps/fastify-server/tsconfig.app.json"
+}

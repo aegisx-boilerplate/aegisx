@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../packages/core/src/types/database.ts"],
+  "sourcesContent": ["/**\n * Database Types\n */\n\nexport interface DatabaseConnectionOptions {\n    host: string;\n    port: number;\n    database: string;\n    user: string;\n    password: string;\n}\n\n// TODO: Add Knex types and database model types "],
+  "mappings": ";;;;;;;;;;;;;;AAAA;AAAA;",
+  "names": []
+}
